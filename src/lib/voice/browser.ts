@@ -7,7 +7,6 @@ export interface SpeechHandle {
 }
 
 let currentAudio: HTMLAudioElement | null = null;
-let currentUtterance: SpeechSynthesisUtterance | null = null;
 
 export function stopSpeaking(): void {
   if (currentAudio) {
@@ -18,7 +17,6 @@ export function stopSpeaking(): void {
   if (typeof window !== "undefined" && "speechSynthesis" in window) {
     window.speechSynthesis.cancel();
   }
-  currentUtterance = null;
 }
 
 export function isSpeechSynthesisSupported(): boolean {
@@ -32,7 +30,6 @@ function speakWithBrowser(text: string): Promise<void> {
       return;
     }
     const utterance = new SpeechSynthesisUtterance(text);
-    currentUtterance = utterance;
     const voices = window.speechSynthesis.getVoices();
     const preferred = voices.find((voice) => /en-(US|GB)/i.test(voice.lang) && /female|samantha|aria|jenny/i.test(voice.name));
     const fallback = voices.find((voice) => /^en/i.test(voice.lang));

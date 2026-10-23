@@ -2,7 +2,7 @@ import type { AgentId, ChatContext, InterviewQuestion } from "@/lib/types";
 import { detectRole, extractSkills, roleById, type RoleProfile } from "@/lib/data/roles";
 import { buildQuestionSet } from "@/lib/interview/questions";
 import { evaluateTurn } from "@/lib/interview/engine";
-import { clamp, countMatches, hashString, splitSentences, truncate, unique, wordCount } from "@/lib/text";
+import { clamp, countMatches, hashString, splitSentences, truncate, wordCount } from "@/lib/text";
 
 const ACTION_VERBS = [
   "built",
