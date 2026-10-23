@@ -20,6 +20,7 @@ interface WorkflowState {
   workflowName: string;
   isRunning: boolean;
   hydrated: boolean;
+  setHydrated: (value: boolean) => void;
   setNodes: (nodes: WorkflowNode[]) => void;
   addNode: (type: WorkflowNodeType) => void;
   removeNode: (id: string) => void;
@@ -51,6 +52,8 @@ export const useWorkflowStore = create<WorkflowState>()(
       workflowName: "30-minute drill",
       isRunning: false,
       hydrated: false,
+
+      setHydrated: (value) => set({ hydrated: value }),
 
       setNodes: (nodes) => set({ nodes, workflowName: "Custom pipeline" }),
 
@@ -115,8 +118,15 @@ export const useWorkflowStore = create<WorkflowState>()(
       applyEvent: (event) => {
         if (!event.runId) return;
         set((state) => {
+          // Tolerate a server-generated run id: if it is unknown, bind to the
+          // single running run created by beginRun().
+          const fallback = state.runs.find((run) => run.status === "running");
+          const targetId = state.runs.some((run) => run.id === event.runId)
+            ? event.runId
+            : fallback?.id;
+
           const runs = state.runs.map((run) => {
-            if (run.id !== event.runId) return run;
+            if (run.id !== targetId) return run;
 
             if (event.type === "run-start") {
               return { ...run, status: "running" as WorkflowStatus, progress: 0 };
@@ -179,8 +189,7 @@ export const useWorkflowStore = create<WorkflowState>()(
         runs: state.runs,
       }),
       onRehydrateStorage: () => (state) => {
-        // Mark hydration without writing back into the partialized state.
-        if (state) state.hydrated = true;
+        state?.setHydrated(true);
       },
     },
   ),
