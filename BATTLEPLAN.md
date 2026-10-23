@@ -42,7 +42,7 @@ Already written and **frozen** by Agent 1:
 | :--- | :--- |
 | `src/app/api/**` | `src/app/page.tsx` (landing) |
 | `src/lib/**` | `src/app/login/page.tsx` |
-| `src/middleware.ts` | `src/app/dashboard/page.tsx` |
+| `src/proxy.ts` | `src/app/dashboard/page.tsx` |
 | `src/app/layout.tsx` | `src/app/interview/page.tsx` |
 | `src/app/globals.css` | `src/app/settings/page.tsx` |
 | `.env.example`, app `README.md` | `src/components/**` |

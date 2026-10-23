@@ -9,7 +9,7 @@
 
 ## 0. Kickoff prompt (paste this to Agent 2)
 
-> You are Agent 2 (Dev A: Frontend/UI) for ViewPilot Pro, a CodeFest 2026 job-readiness platform. Read `/home/akash/Documents/CodeFest/BATTLEPLAN.md` (especially "LIVE EXECUTION SPLIT") and `/home/akash/Documents/CodeFest/AGENT2-BRIEF.md` completely before writing code. Work only in the files assigned to Agent 2. Do not edit `src/app/api/**`, `src/lib/**`, `src/app/globals.css`, `src/app/layout.tsx`, `src/middleware.ts`, `package.json`, or `next.config.ts`. Build the landing page, login, dashboard (3-panel chat + drag-and-drop workflow builder), interview flow, and settings with the existing "Obsidian Glass" design system. Consume the frozen API and store contracts in the brief. Run `npx tsc --noEmit` and `npm run build` before reporting. Demo quality bar: premium, dense, dark glassmorphism, no placeholder lorem ipsum, every empty state designed, no dead buttons.
+> You are Agent 2 (Dev A: Frontend/UI) for ViewPilot Pro, a CodeFest 2026 job-readiness platform. Read `/home/akash/Documents/CodeFest/BATTLEPLAN.md` (especially "LIVE EXECUTION SPLIT") and `/home/akash/Documents/CodeFest/AGENT2-BRIEF.md` completely before writing code. Work only in the files assigned to Agent 2. Do not edit `src/app/api/**`, `src/lib/**`, `src/app/globals.css`, `src/app/layout.tsx`, `src/proxy.ts`, `package.json`, or `next.config.ts`. Build the landing page, login, dashboard (3-panel chat + drag-and-drop workflow builder), interview flow, and settings with the existing "Obsidian Glass" design system. Consume the frozen API and store contracts in the brief. Run `npx tsc --noEmit` and `npm run build` before reporting. Demo quality bar: premium, dense, dark glassmorphism, no placeholder lorem ipsum, every empty state designed, no dead buttons.
 
 ---
 
@@ -91,7 +91,7 @@ src/app/api/**               Agent 1
 src/lib/**                   Agent 1
 src/app/globals.css          Agent 1
 src/app/layout.tsx           Agent 1
-src/middleware.ts            Agent 1
+src/proxy.ts            Agent 1
 package.json / next.config.ts
 ```
 
