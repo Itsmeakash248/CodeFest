@@ -126,7 +126,7 @@ export default async function LandingPage() {
   const settingsHref = user ? "/settings" : "/login?next=%2Fsettings";
 
   return (
-    <div className="relative min-h-dvh overflow-x-clip">
+    <div className="landing-page relative min-h-dvh overflow-x-clip">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-[#15151f] focus:px-4 focus:py-2.5 focus:text-[12px] focus:text-white focus:outline-none focus:ring-2 focus:ring-[#6c63ff]/60"
