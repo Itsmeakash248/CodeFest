@@ -60,7 +60,7 @@ All keys are read **server-side only** and never shipped to the browser.
 | Variable | Required | Purpose |
 | :--- | :--- | :--- |
 | `GEMINI_API_KEY` | No | Primary chat model (`gemini-3.5-flash` by default) |
-| `OPENROUTER_API_KEY` | No | Fallback chat model if Gemini is unavailable |
+| `OPENROUTER_API_KEY` | No | Fallback chat model if Gemini is unavailable (account needs credits) |
 | `ELEVENLABS_API_KEY` | No | Natural interview voice; browser TTS is the fallback |
 | `ELEVENLABS_VOICE_ID` | No | Voice selection (default `XrExE9yKIg1WjnnlVkGX`) |
 | `GEMINI_MODEL` | No | Override the Gemini model |

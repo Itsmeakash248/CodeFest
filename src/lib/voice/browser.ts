@@ -66,7 +66,6 @@ export async function speakText(
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
     currentAudio = audio;
-    options?.onStart?.("elevenlabs");
     const finished = new Promise<void>((resolve) => {
       audio.onended = () => {
         URL.revokeObjectURL(url);
@@ -77,18 +76,29 @@ export async function speakText(
         resolve();
       };
     });
-    await audio.play().catch(async () => {
+
+    try {
+      await audio.play();
+      options?.onStart?.("elevenlabs");
+      return {
+        mode: "elevenlabs",
+        stop: () => {
+          audio.pause();
+          URL.revokeObjectURL(url);
+        },
+        finished,
+      };
+    } catch {
+      // Autoplay blocked or codec issue: fall back to the built-in voice.
       URL.revokeObjectURL(url);
-      await speakWithBrowser(clean);
-    });
-    return {
-      mode: "elevenlabs",
-      stop: () => {
-        audio.pause();
-        URL.revokeObjectURL(url);
-      },
-      finished,
-    };
+      currentAudio = null;
+      options?.onStart?.("browser");
+      return {
+        mode: "browser",
+        stop: () => stopSpeaking(),
+        finished: speakWithBrowser(clean),
+      };
+    }
   } catch {
     options?.onStart?.("browser");
     return {
