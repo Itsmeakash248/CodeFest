@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#04070b">
+<title>FlowPilot // Command Deck</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23070b12'/%3E%3Ccircle cx='23' cy='28' r='7' fill='%2300e5ff'/%3E%3Ccircle cx='41' cy='28' r='7' fill='%2300e5ff'/%3E%3Cpath d='M20 44h24' stroke='%2300e5ff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --p:#00e5ff;--p2:#8affff;--bg:#04070b;--panel:#09121a;--line:#17313d;
+  --text:#d8e8ec;--muted:#6f8b96;--red:#ff4d64;--green:#45ff9a;--amber:#ffc857;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  background:radial-gradient(circle at 50% -10%,rgba(0,229,255,.11),transparent 42%),var(--bg);
+  color:var(--text);font-family:var(--mono);font-size:14px;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,229,255,.035) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(0,229,255,.035) 1px,transparent 1px);
+  background-size:32px 32px;
+  -webkit-mask-image:radial-gradient(circle at 50% 20%,#000,transparent 90%);
+  mask-image:radial-gradient(circle at 50% 20%,#000,transparent 90%);
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.45;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0 1px,transparent 1px 3px);
+  mix-blend-mode:overlay;
+}
+button,input,select{font-family:inherit}
+button{-webkit-tap-highlight-color:transparent}
+.topbar{
+  max-width:1220px;margin:0 auto;padding:22px 20px 8px;display:flex;align-items:center;
+  justify-content:space-between;gap:14px;flex-wrap:wrap;position:relative;z-index:2;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{
+  width:42px;height:42px;border:1px solid var(--line);border-radius:13px;display:grid;
+  place-items:center;background:linear-gradient(145deg,#0b1b24,#050b10);
+  box-shadow:0 0 28px -12px var(--p);flex:none;
+}
+.brand-mark span{
+  width:21px;height:11px;border:2px solid var(--p);border-radius:9px 9px 3px 3px;
+  box-shadow:0 0 12px var(--p);position:relative;
+}
+.brand-mark span::before{
+  content:"";position:absolute;width:4px;height:4px;border-radius:50%;background:var(--p);
+  left:3px;top:2px;box-shadow:9px 0 0 var(--p);
+}
+.brand-title{font-weight:800;letter-spacing:.18em;font-size:15px}
+.brand-sub{font-size:9px;color:var(--muted);letter-spacing:.2em;margin-top:3px}
+.status-strip{display:flex;gap:7px;flex-wrap:wrap}
+.pill{
+  display:flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid var(--line);
+  border-radius:999px;background:rgba(8,17,24,.72);font-size:10px;letter-spacing:.08em;
+  color:var(--muted);white-space:nowrap;
+}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red)}
+.pill.on{color:#cdfce1;border-color:rgba(69,255,154,.3)}
+.pill.on .dot{background:var(--green);box-shadow:0 0 10px var(--green)}
+#ipText{color:#a8c6cf}
+main{
+  max-width:1220px;margin:0 auto;padding:12px 20px 34px;display:grid;
+  grid-template-columns:repeat(12,1fr);gap:14px;position:relative;z-index:2;
+}
+.card{
+  position:relative;background:linear-gradient(160deg,rgba(11,20,29,.95),rgba(5,9,14,.97));
+  border:1px solid var(--line);border-radius:16px;padding:16px;
+  box-shadow:0 18px 50px -30px #000;
+}
+.card::before,.card::after{
+  content:"";position:absolute;width:14px;height:14px;border-color:var(--p);
+  opacity:.5;pointer-events:none;
+}
+.card::before{left:-1px;top:-1px;border-left:1px solid;border-top:1px solid;border-radius:16px 0 0 0}
+.card::after{right:-1px;bottom:-1px;border-right:1px solid;border-bottom:1px solid;border-radius:0 0 16px 0}
+.face-card{grid-column:span 7;grid-row:span 2}
+.drive-card,.telemetry-card{grid-column:span 5}
+.system-card{grid-column:span 12;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start}
+.system-card .card-head{grid-column:1/-1}
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  font-size:10px;letter-spacing:.16em;color:#a9c7d0;margin-bottom:12px;
+}
+.card-head::after{
+  content:"";height:1px;flex:1;background:linear-gradient(90deg,var(--line),transparent);
+  order:1;margin-left:6px;
+}
+.card-head>.tag,.card-head>.live{order:2}
+.tag{
+  color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:3px 8px;
+  font-size:9px;letter-spacing:.1em;white-space:nowrap;
+}
+.live{display:flex;align-items:center;gap:6px;color:var(--green);font-size:9px;white-space:nowrap}
+.live i{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+.face-wrap{padding:4px 0 12px}
+.face{
+  --p:#ffc247;position:relative;aspect-ratio:4/3;border-radius:22px;overflow:hidden;
+  border:1px solid rgba(255,194,71,.25);
+  background:radial-gradient(ellipse at 50% 45%,rgba(255,194,71,.06),transparent 55%),
+             linear-gradient(180deg,#071017,#03070b);
+  box-shadow:inset 0 0 70px rgba(0,0,0,.85),0 24px 60px -40px var(--p);
+  transition:border-color .4s,box-shadow .4s;
+}
+.face::before{
+  content:"";position:absolute;inset:0;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:24px 24px;
+}
+.face::after{content:"";position:absolute;inset:14px;border:1px solid rgba(255,255,255,.06);border-radius:16px}
+.hud{position:absolute;left:7%;right:7%;top:8%;height:1px;background:linear-gradient(90deg,var(--p),transparent 30%,transparent 70%,var(--p));opacity:.35}
+.eye{
+  position:absolute;top:34%;width:23%;height:30%;border-radius:48% 48% 44% 44%;
+  border:2px solid var(--p);
+  background:radial-gradient(circle at 50% 50%,#f2ffff 0 8%,var(--p) 9% 21%,#061016 22% 100%);
+  box-shadow:0 0 26px -3px var(--p),inset 0 0 18px rgba(0,0,0,.8);
+  transition:all .35s ease;transform-origin:center;
+}
+.eye.left{left:16%}.eye.right{right:16%}
+.eye::after{content:"";position:absolute;left:20%;top:16%;width:20%;height:16%;border-radius:50%;background:#fff;opacity:.85;filter:blur(1px)}
+.mouth{position:absolute;left:50%;bottom:17%;transform:translateX(-50%);display:flex;align-items:center;gap:4px;height:30px}
+.mouth i{
+  display:block;width:5px;height:8px;border-radius:3px;background:var(--p);
+  box-shadow:0 0 9px var(--p);animation:wave 1.5s ease-in-out infinite;
+}
+@keyframes wave{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(2.3)}}
+.tilak,.diya{display:none}
+.face[data-emo="9"] .tilak{
+  display:block;position:absolute;left:50%;top:16%;width:5px;height:22px;
+  transform:translateX(-50%);border-radius:3px;
+  background:linear-gradient(180deg,#ffcf4d,#ff3b3b);box-shadow:0 0 14px #ff8a00;
+}
+.face[data-emo="9"] .diya{
+  display:block;position:absolute;left:50%;bottom:6%;width:28px;height:12px;
+  transform:translateX(-50%);border-radius:0 0 50% 50%;
+  background:linear-gradient(180deg,#7a3e00,#2b1400);border:1px solid #ff9d2e;
+  box-shadow:0 0 18px rgba(255,138,0,.5);
+}
+.face[data-emo="9"] .diya::before{
+  content:"";position:absolute;left:50%;bottom:10px;width:8px;height:13px;
+  transform:translateX(-50%);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  background:radial-gradient(circle at 50% 70%,#fff6b0,#ff9d00 55%,transparent 70%);
+  animation:flicker .35s infinite alternate;
+}
+@keyframes flicker{
+  from{transform:translateX(-50%) scale(1) rotate(-3deg)}
+  to{transform:translateX(-50%) scale(1.15) rotate(4deg)}
+}
+.face[data-emo="1"] .eye,.face[data-emo="9"] .eye{
+  top:40%;height:22%;border:0;border-top:9px solid var(--p);border-radius:50% 50% 0 0;
+  background:transparent;box-shadow:0 -8px 26px -7px var(--p);
+}
+.face[data-emo="1"] .eye::after,.face[data-emo="9"] .eye::after{display:none}
+.face[data-emo="3"] .eye{width:25%;height:34%;top:32%}
+.face[data-emo="4"] .eye{height:20%;top:42%;border-radius:18%;transform:skewY(6deg)}
+.face[data-emo="4"] .eye.right{transform:skewY(-6deg)}
+.face[data-emo="5"] .eye{height:17%;top:43%}
+.face[data-emo="5"] .eye::before{
+  content:"";position:absolute;left:-2px;right:-2px;top:-2px;height:70%;
+  background:#050a0e;border-bottom:2px solid var(--p);border-radius:50% 50% 20% 20%;z-index:2;
+}
+.face[data-emo="6"] .eye.left{
+  top:40%;height:22%;border:0;border-top:9px solid var(--p);border-radius:50% 50% 0 0;
+  background:transparent;box-shadow:0 -8px 26px -7px var(--p);
+}
+.face[data-emo="6"] .eye.left::after{display:none}
+.face[data-emo="6"] .eye.right{
+  top:52%;height:5px;border:0;border-radius:5px;background:var(--p);box-shadow:0 0 18px var(--p);
+}
+.face[data-emo="6"] .eye.right::after{display:none}
+.face[data-emo="7"] .eye{top:40%;height:26%}
+.face[data-emo="7"] .eye.left{transform:rotate(-7deg)}
+.face[data-emo="7"] .eye.right{transform:rotate(7deg)}
+.face[data-emo="8"] .eye{height:19%;top:43%;border-radius:26%;transform:rotate(9deg)}
+.face[data-emo="8"] .eye.right{transform:rotate(-9deg)}
+.face[data-emo="2"] .eye.right{transform:scale(.86);top:37%}
+.face[data-emo="2"] .eye.left{transform:scale(1.04)}
+.emotion-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+.emo{
+  display:flex;align-items:center;gap:7px;padding:8px 9px;border-radius:9px;
+  background:#0a111a;border:1px solid #1a2b38;color:#91a6b2;font-size:10px;
+  letter-spacing:.06em;cursor:pointer;transition:.18s;text-align:left;
+}
+.emo i{width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);flex:none}
+.emo:hover{border-color:#2b4b59;color:#d8f8ff}
+.emo.active{
+  border-color:var(--c);color:#fff;
+  background:linear-gradient(135deg,rgba(0,229,255,.13),rgba(0,229,255,.02));
+  box-shadow:0 0 22px -14px var(--c);
+}
+.auto-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--line);
+}
+.auto-row b{font-size:11px;letter-spacing:.08em}
+.auto-row small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.toggle{
+  width:48px;height:27px;border-radius:999px;border:1px solid var(--line);
+  background:#081118;position:relative;cursor:pointer;transition:.2s;flex:none;
+}
+.toggle span{position:absolute;width:19px;height:19px;border-radius:50%;left:3px;top:3px;background:#49636d;transition:.2s}
+.toggle.on{border-color:var(--p);background:rgba(0,229,255,.14);box-shadow:0 0 18px -8px var(--p)}
+.toggle.on span{left:24px;background:var(--p);box-shadow:0 0 10px var(--p)}
+.speed-row{
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;
+  color:var(--muted);font-size:10px;letter-spacing:.12em;
+}
+.speed-row b{color:var(--p2);font-size:11px;min-width:34px;text-align:right}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;height:4px;border-radius:99px;
+  background:linear-gradient(90deg,var(--p),#12333d);outline:none;width:100%;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--p);
+  box-shadow:0 0 12px var(--p);border:2px solid #041016;cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:13px;height:13px;border-radius:50%;background:var(--p);box-shadow:0 0 12px var(--p);
+  border:2px solid #041016;cursor:pointer;
+}
+.joystick{
+  width:210px;height:210px;max-width:64vw;margin:18px auto 10px;position:relative;
+  border-radius:50%;border:1px solid var(--line);
+  background:radial-gradient(circle,rgba(0,229,255,.10),rgba(4,10,14,.7) 58%,#04090c 70%);
+  box-shadow:inset 0 0 40px #000,0 0 45px -28px var(--p);
+  touch-action:none;cursor:grab;user-select:none;
+}
+.joystick:active{cursor:grabbing}
+.joystick .ring{position:absolute;inset:22px;border-radius:50%;border:1px dashed rgba(0,229,255,.18)}
+.joystick .cross{position:absolute;inset:0}
+.joystick .cross::before,.joystick .cross::after{content:"";position:absolute;background:rgba(0,229,255,.09)}
+.joystick .cross::before{left:14%;right:14%;top:50%;height:1px}
+.joystick .cross::after{top:14%;bottom:14%;left:50%;width:1px}
+.knob{
+  position:absolute;left:50%;top:50%;width:72px;height:72px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#174451,#07141b 70%);
+  border:1px solid var(--p);box-shadow:0 0 24px -8px var(--p),inset 0 0 18px #000;
+  transform:translate(-50%,-50%);pointer-events:none;display:grid;place-items:center;
+  will-change:transform;
+}
+.knob span{width:14px;height:14px;border-radius:50%;border:1px solid var(--p);box-shadow:0 0 14px var(--p)}
+.drive-readout{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 12px}
+.drive-readout div{
+  background:#071017;border:1px solid var(--line);border-radius:9px;padding:7px 8px;text-align:center;
+}
+.drive-readout span{display:block;color:var(--muted);font-size:9px;letter-spacing:.12em;margin-bottom:3px}
+.drive-readout b{font-size:13px;color:#cfeeff}
+.stop{
+  width:100%;border:1px solid #ff536b;border-radius:11px;padding:13px 12px;
+  background:linear-gradient(180deg,rgba(255,77,100,.22),rgba(255,77,100,.07));
+  color:#ffd8de;font-weight:800;letter-spacing:.12em;font-size:12px;cursor:pointer;
+  box-shadow:0 0 30px -14px var(--red);transition:.15s;
+}
+.stop:hover{background:linear-gradient(180deg,rgba(255,77,100,.32),rgba(255,77,100,.1));transform:translateY(-1px)}
+.stop span{margin-right:6px}
+kbd{
+  display:inline-block;padding:2px 5px;border:1px solid #2a4652;border-radius:4px;
+  background:#071118;color:#9fc2cc;font-size:9px;line-height:1.2;margin:0 1px;
+}
+.stop kbd{float:right;margin-top:1px}
+.hint{margin-top:9px;text-align:center;color:var(--muted);font-size:10px;line-height:1.7}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{background:#071017;border:1px solid var(--line);border-radius:10px;padding:9px}
+.stat span{display:block;color:var(--muted);font-size:9px;letter-spacing:.1em}
+.stat b{font-size:16px;color:#e9fbff;margin-top:3px;display:block}
+.motor-readout{margin-top:12px;display:grid;gap:8px}
+.motor{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:8px;font-size:10px;color:var(--muted)}
+.motor b{text-align:right;color:#cdebf5}
+.bar{height:8px;border-radius:99px;background:#061016;border:1px solid var(--line);position:relative;overflow:hidden}
+.bar i{
+  position:absolute;top:0;bottom:0;left:50%;width:0;background:var(--p);border-radius:99px;
+  transition:left .15s,width .15s,background .15s;box-shadow:0 0 9px var(--p);
+}
+.brake{
+  margin-top:12px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;
+  color:var(--muted);font-size:10px;letter-spacing:.12em;text-align:center;
+}
+.brake.on{color:#ffe1a8;border-color:rgba(255,200,87,.4);background:rgba(255,200,87,.06)}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field.bright{grid-column:span 2}
+.field>span{font-size:9px;color:var(--muted);letter-spacing:.12em}
+.field b{color:var(--p2);float:right}
+select{
+  background:#071017;color:#d6eef7;border:1px solid var(--line);border-radius:8px;
+  padding:9px;font-size:11px;outline:none;width:100%;
+}
+select:focus{border-color:var(--p)}
+.gaze{grid-column:span 2}
+.gaze-head{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);letter-spacing:.12em;margin-bottom:6px}
+.gaze-pad{
+  height:90px;border:1px solid var(--line);border-radius:10px;position:relative;
+  background:radial-gradient(circle at 50% 50%,rgba(0,229,255,.08),transparent 60%),#071017;
+  touch-action:none;overflow:hidden;cursor:crosshair;
+}
+.gaze-pad::before,.gaze-pad::after{content:"";position:absolute;background:rgba(0,229,255,.1)}
+.gaze-pad::before{left:0;right:0;top:50%;height:1px}
+.gaze-pad::after{top:0;bottom:0;left:50%;width:1px}
+.gaze-dot{
+  position:absolute;left:50%;top:50%;width:16px;height:16px;border-radius:50%;
+  border:1px solid var(--p);background:rgba(0,229,255,.25);box-shadow:0 0 16px var(--p);
+  transform:translate(-50%,-50%);pointer-events:none;
+}
+.action-row{grid-column:span 2;display:flex;gap:8px;align-items:end}
+.action-row button{
+  flex:1;border:1px solid #2a4a57;background:#08131a;color:#b9dde6;border-radius:9px;
+  padding:10px 8px;font-size:10px;letter-spacing:.1em;cursor:pointer;transition:.18s;
+}
+.action-row button:hover{border-color:var(--p);color:#fff;box-shadow:0 0 20px -12px var(--p)}
+.offline{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:20;display:none;
+  align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--red);border-radius:10px;
+  background:#1a0710;color:#ffc9d2;font-size:11px;letter-spacing:.1em;
+  box-shadow:0 0 30px -10px var(--red);white-space:nowrap;
+}
+body.offline .offline{display:flex}
+.toast{
+  position:fixed;left:50%;bottom:70px;transform:translate(-50%,20px);opacity:0;z-index:30;
+  padding:9px 14px;border:1px solid var(--line);border-radius:9px;background:#07131a;
+  color:#d8f4ff;font-size:11px;letter-spacing:.06em;pointer-events:none;transition:.25s;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.bad{border-color:rgba(255,77,100,.55);color:#ffd3da}
+footer{
+  max-width:1220px;margin:0 auto;padding:0 20px 30px;color:#516b75;font-size:9px;
+  letter-spacing:.12em;text-align:center;position:relative;z-index:2;
+}
+@media (max-width:900px){
+  main{grid-template-columns:1fr}
+  .face-card,.drive-card,.telemetry-card,.system-card{grid-column:auto;grid-row:auto}
+  .system-card{grid-template-columns:repeat(2,1fr)}
+  .gaze,.action-row{grid-column:span 2}
+}
+@media (max-width:620px){
+  .topbar{padding:16px 14px 6px}
+  main{padding:10px 14px 26px;gap:12px}
+  .card{padding:13px;border-radius:14px}
+  .emotion-grid{grid-template-columns:repeat(2,1fr)}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .system-card{grid-template-columns:1fr}
+  .field.bright{grid-column:auto}
+  .gaze,.action-row{grid-column:auto}
+  .action-row{flex-wrap:wrap}
+  .joystick{width:180px;height:180px;margin-top:14px}
+  .pill{padding:6px 8px;font-size:9px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body class="offline">
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark"><span></span></div>
+    <div>
+      <div class="brand-title">FLOWPILOT</div>
+      <div class="brand-sub">COMMAND DECK / ESP32-S3</div>
+    </div>
+  </div>
+  <div class="status-strip">
+    <div class="pill" id="wifiPill"><i class="dot"></i><span id="wifiText">LINK --</span></div>
+    <div class="pill" id="ipText">0.0.0.0</div>
+    <div class="pill">UP <span id="uptime">00:00</span></div>
+  </div>
+</header>
+
+<main>
+  <section class="card face-card">
+    <div class="card-head"><span>EXPRESSION CORE</span><span class="tag" id="emotionTag">DASARA</span></div>
+    <div class="face-wrap">
+      <div class="face" id="face" data-emo="9">
+        <div class="hud"></div>
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="mouth" id="mouth"></div>
+        <div class="tilak"></div>
+        <div class="diya"></div>
+      </div>
+    </div>
+    <div class="emotion-grid" id="emotionGrid"></div>
+    <div class="auto-row">
+      <div>
+        <b>AUTONOMOUS BEHAVIOR</b>
+        <small>Idle gaze + emotion drift. Disable for manual control.</small>
+      </div>
+      <button class="toggle on" id="autoToggle" type="button" aria-label="Toggle autonomous behavior" aria-pressed="true"><span></span></button>
+    </div>
+  </section>
+
+  <section class="card drive-card">
+    <div class="card-head"><span>LOCOMOTION</span><span class="tag">DIFFERENTIAL</span></div>
+    <div class="speed-row">
+      <span>SPEED</span>
+      <input id="speed" type="range" min="20" max="100" value="70" aria-label="Drive speed">
+      <b id="speedVal">70%</b>
+    </div>
+    <div class="joystick" id="joystick" aria-label="Drive joystick">
+      <div class="ring"></div>
+      <div class="cross"></div>
+      <div class="knob" id="knob"><span></span></div>
+    </div>
+    <div class="drive-readout">
+      <div><span>THROTTLE</span><b id="thr">+0.00</b></div>
+      <div><span>STEERING</span><b id="str">+0.00</b></div>
+      <div><span>MODE</span><b id="driveMode">IDLE</b></div>
+    </div>
+    <button class="stop" id="stopBtn" type="button"><span>■</span>EMERGENCY STOP <kbd>SPACE</kbd></button>
+    <div class="hint">Drag the pad or use <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>. Release to brake.</div>
+  </section>
+
+  <section class="card telemetry-card">
+    <div class="card-head"><span>TELEMETRY</span><span class="live"><i></i>LIVE</span></div>
+    <div class="stat-grid">
+      <div class="stat"><span>FPS</span><b id="fps">--</b></div>
+      <div class="stat"><span>CPU C0</span><b id="cpu0">--</b></div>
+      <div class="stat"><span>CPU C1</span><b id="cpu1">--</b></div>
+      <div class="stat"><span>HEAP</span><b id="heap">--</b></div>
+    </div>
+    <div class="motor-readout">
+      <div class="motor"><span>LEFT</span><div class="bar"><i id="leftBar"></i></div><b id="leftVal">+0.00</b></div>
+      <div class="motor"><span>RIGHT</span><div class="bar"><i id="rightBar"></i></div><b id="rightVal">+0.00</b></div>
+    </div>
+    <div class="brake" id="brakeState">COAST / IDLE</div>
+  </section>
+
+  <section class="card system-card">
+    <div class="card-head"><span>SYSTEM / HUD</span><span class="tag">REMOTE CONFIG</span></div>
+    <label class="field"><span>HUD OVERLAY</span>
+      <select id="overlayMode">
+        <option value="0">Off</option>
+        <option value="1" selected>Compact</option>
+        <option value="2">Detailed</option>
+        <option value="3">Minimal</option>
+      </select>
+    </label>
+    <label class="field"><span>OVERLAY DOCK</span>
+      <select id="overlayPos">
+        <option value="0" selected>Bottom center</option>
+        <option value="1">Top center</option>
+        <option value="2">Top right</option>
+        <option value="3">Bottom right</option>
+      </select>
+    </label>
+    <label class="field bright"><span>DISPLAY BRIGHTNESS <b id="brightVal">200</b></span>
+      <input id="brightness" type="range" min="10" max="255" value="200" aria-label="Display brightness">
+    </label>
+    <div class="gaze">
+      <div class="gaze-head"><span>GAZE TARGET</span><span>TAP / DRAG</span></div>
+      <div class="gaze-pad" id="gazePad"><div class="gaze-dot" id="gazeDot"></div></div>
+    </div>
+    <div class="action-row">
+      <button id="blinkBtn" type="button">BLINK</button>
+      <button id="winkBtn" type="button">WINK</button>
+      <button id="nextBtn" type="button">NEXT FACE</button>
+    </div>
+  </section>
+</main>
+
+<footer>FLOWPILOT // LAN CONTROL SURFACE · <span id="footIp">0.0.0.0</span> · DRIVE DEADMAN 800 MS · LAN ONLY / NO AUTH</footer>
+<div class="offline" id="offline"><span>●</span> LINK LOST — CONTROLS DISARMED</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const emotions = [
+    {id: 0, name: "NEUTRAL", label: "Neutral", c: "#00e5ff"},
+    {id: 1, name: "HAPPY", label: "Happy", c: "#00ff9a"},
+    {id: 2, name: "CURIOUS", label: "Curious", c: "#41cfff"},
+    {id: 3, name: "SURPRISED", label: "Surprised", c: "#ffe14d"},
+    {id: 4, name: "FOCUSED", label: "Focused", c: "#00f5e1"},
+    {id: 5, name: "SLEEPY", label: "Sleepy", c: "#b39bff"},
+    {id: 6, name: "WINK", label: "Wink", c: "#35e8ff"},
+    {id: 7, name: "SAD", label: "Sad", c: "#5e9dff"},
+    {id: 8, name: "RAGE", label: "Rage", c: "#ff3b4e"},
+    {id: 9, name: "DASARA", label: "Dasara", c: "#ffc247"}
+  ];
+
+  const face = $("#face");
+  const mouth = $("#mouth");
+  const grid = $("#emotionGrid");
+  const state = {
+    auto: true, autoHold: 0, emotion: 9, emotionHold: 0,
+    link: false, fail: 0, polling: false, wasDriving: false,
+    driveInFlight: false, joyActive: false, joyId: null,
+    joyX: 0, joyY: 0, keys: new Set()
+  };
+
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const round2 = v => Math.round(v * 100) / 100;
+  const round3 = v => Math.round(v * 1000) / 1000;
+  const signed = v => (v >= 0 ? "+" : "") + Number(v).toFixed(2);
+  const pad = v => String(v).padStart(2, "0");
+  const fmtTime = seconds => {
+    seconds = Math.max(0, Math.floor(Number(seconds) || 0));
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return h ? h + ":" + pad(m) + ":" + pad(s) : pad(m) + ":" + pad(s);
+  };
+
+  let toastTimer = 0;
+  function toast(message, bad = false) {
+    const el = $("#toast");
+    el.textContent = message;
+    el.classList.toggle("bad", bad);
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2400);
+  }
+
+  async function api(path, params, method = "POST", timeout = 4000) {
+    const qs = params ? "?" + new URLSearchParams(params).toString() : "";
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+    try {
+      const response = await fetch("/api/" + path + qs, {
+        method,
+        cache: "no-store",
+        signal: controller.signal
+      });
+      if (!response.ok) {
+        let message = "HTTP " + response.status;
+        try { message = await response.text(); } catch (ignored) {}
+        throw new Error(message);
+      }
+      return await response.json();
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function post(path, params) {
+    return api(path, params, "POST");
+  }
+
+  function setLink(online) {
+    if (state.link === online) return;
+    state.link = online;
+    document.body.classList.toggle("offline", !online);
+  }
+
+  function setFace(id) {
+    const meta = emotions[Number(id)];
+    if (!meta) return;
+    state.emotion = meta.id;
+    face.dataset.emo = String(meta.id);
+    face.style.setProperty("--p", meta.c);
+    face.style.borderColor = meta.c + "66";
+    $("#emotionTag").textContent = meta.name;
+    grid.querySelectorAll(".emo").forEach(button => {
+      button.classList.toggle("active", Number(button.dataset.id) === meta.id);
+    });
+  }
+
+  function updateAutoUI() {
+    const button = $("#autoToggle");
+    button.classList.toggle("on", state.auto);
+    button.setAttribute("aria-pressed", String(state.auto));
+  }
+
+  async function setAuto(enabled) {
+    state.auto = !!enabled;
+    state.autoHold = Date.now() + 1500;
+    updateAutoUI();
+    try {
+      await post("autonomy", {enabled: enabled ? 1 : 0});
+      toast(enabled ? "Autonomy enabled" : "Manual control");
+    } catch (error) {
+      toast("Autonomy update failed", true);
+    }
+  }
+
+  async function disableAuto() {
+    state.auto = false;
+    state.autoHold = Date.now() + 1500;
+    updateAutoUI();
+    try {
+      await post("autonomy", {enabled: 0});
+    } catch (error) {
+      toast("Manual override failed", true);
+    }
+  }
+
+  async function chooseEmotion(id) {
+    state.emotionHold = Date.now() + 2500;
+    setFace(id);
+    try {
+      if (state.auto) await disableAuto();
+      await post("emotion", {id: Number(id)});
+    } catch (error) {
+      toast("Emotion command failed", true);
+    }
+  }
+
+  // Build the animated mouth and expression buttons.
+  for (let i = 0; i < 9; i++) {
+    const bar = document.createElement("i");
+    bar.style.animationDelay = (-i * 0.17) + "s";
+    mouth.appendChild(bar);
+  }
+
+  emotions.forEach(emotion => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "emo";
+    button.dataset.id = String(emotion.id);
+    button.innerHTML = '<i style="--c:' + emotion.c + '"></i><span>' + emotion.name + '</span>';
+    button.addEventListener("click", () => chooseEmotion(emotion.id));
+    grid.appendChild(button);
+  });
+
+  $("#autoToggle").addEventListener("click", () => setAuto(!state.auto));
+
+  const joy = $("#joystick");
+  const knob = $("#knob");
+
+  function setKnob(x, y) {
+    knob.style.transform = "translate(-50%,-50%) translate(" +
+      (x * 58).toFixed(1) + "px," + (y * 58).toFixed(1) + "px)";
+  }
+
+  function readJoy(event) {
+    const rect = joy.getBoundingClientRect();
+    let x = (event.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
+    let y = (event.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
+    const magnitude = Math.hypot(x, y);
+    if (magnitude > 1) {
+      x /= magnitude;
+      y /= magnitude;
+    }
+    state.joyX = x;
+    state.joyY = y;
+    setKnob(x, y);
+  }
+
+  joy.addEventListener("pointerdown", event => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    event.preventDefault();
+    state.joyActive = true;
+    state.joyId = event.pointerId;
+    joy.setPointerCapture(event.pointerId);
+    readJoy(event);
+  });
+
+  joy.addEventListener("pointermove", event => {
+    if (!state.joyActive || event.pointerId !== state.joyId) return;
+    event.preventDefault();
+    readJoy(event);
+  });
+
+  function releaseJoy(event) {
+    if (!state.joyActive) return;
+    if (event && event.pointerId !== state.joyId) return;
+    state.joyActive = false;
+    state.joyId = null;
+    state.joyX = 0;
+    state.joyY = 0;
+    setKnob(0, 0);
+    maybeStop();
+  }
+
+  ["pointerup", "pointercancel", "lostpointercapture"].forEach(name => {
+    joy.addEventListener(name, releaseJoy);
+  });
+
+  const keyMap = {
+    w: "f", arrowup: "f", s: "b", arrowdown: "b",
+    a: "l", arrowleft: "l", d: "r", arrowright: "r"
+  };
+
+  function isFormField(target) {
+    return target && /^(INPUT|SELECT|TEXTAREA)$/.test(target.tagName);
+  }
+
+  function keyVector() {
+    let x = 0;
+    let y = 0;
+    if (state.keys.has("f")) y += 1;
+    if (state.keys.has("b")) y -= 1;
+    if (state.keys.has("r")) x += 1;
+    if (state.keys.has("l")) x -= 1;
+    const magnitude = Math.hypot(x, y);
+    if (magnitude > 1) {
+      x /= magnitude;
+      y /= magnitude;
+    }
+    return {x, y};
+  }
+
+  function currentDrive() {
+    let x = 0;
+    let y = 0;
+    if (state.joyActive) {
+      x = state.joyX;
+      y = -state.joyY;
+    } else {
+      const keys = keyVector();
+      x = keys.x;
+      y = keys.y;
+    }
+    const speed = Number($("#speed").value) / 100;
+    return {
+      throttle: clamp(y * speed, -1, 1),
+      steering: clamp(x * speed, -1, 1)
+    };
+  }
+
+  function updateReadout(drive) {
+    $("#thr").textContent = signed(drive.throttle);
+    $("#str").textContent = signed(drive.steering);
+    const moving = Math.abs(drive.throttle) > 0.025 || Math.abs(drive.steering) > 0.025;
+    $("#driveMode").textContent = !state.link ? "DISARMED" : moving ? "REMOTE" : "IDLE";
+  }
+
+  function disarmLocal() {
+    state.joyActive = false;
+    state.joyId = null;
+    state.joyX = 0;
+    state.joyY = 0;
+    state.keys.clear();
+    state.wasDriving = false;
+    setKnob(0, 0);
+    updateReadout({throttle: 0, steering: 0});
+  }
+
+  function stopDrive(notify) {
+    disarmLocal();
+    if (!state.link) return;
+    post("stop")
+      .then(() => { if (notify) toast("Motors braked"); })
+      .catch(() => { if (notify) toast("Stop failed - release controls", true); });
+  }
+
+  function maybeStop() {
+    const drive = currentDrive();
+    if (!state.joyActive &&
+        Math.abs(drive.throttle) < 0.03 &&
+        Math.abs(drive.steering) < 0.03) {
+      stopDrive(false);
+    }
+  }
+
+  function driveTick() {
+    const drive = currentDrive();
+    updateReadout(drive);
+    const moving = Math.abs(drive.throttle) > 0.025 || Math.abs(drive.steering) > 0.025;
+
+    if (!state.link) {
+      state.wasDriving = false;
+      return;
+    }
+
+    if (moving) {
+      state.wasDriving = true;
+      if (!state.driveInFlight) {
+        state.driveInFlight = true;
+        api("drive", {
+          throttle: round3(drive.throttle),
+          steering: round3(drive.steering)
+        }, "POST", 1500)
+          .catch(() => {})
+          .finally(() => { state.driveInFlight = false; });
+      }
+    } else if (state.wasDriving) {
+      state.wasDriving = false;
+      post("stop").catch(() => {});
+    }
+  }
+
+  window.addEventListener("keydown", event => {
+    if (isFormField(event.target)) return;
+    const key = event.key.toLowerCase();
+    if (key === " " || key === "spacebar") {
+      // Let a focused button receive Space normally; otherwise, it is a panic stop.
+      if (event.target && event.target.tagName === "BUTTON") return;
+      event.preventDefault();
+      stopDrive(true);
+      return;
+    }
+    const mapped = keyMap[key];
+    if (mapped) {
+      event.preventDefault();
+      state.keys.add(mapped);
+    }
+  });
+
+  window.addEventListener("keyup", event => {
+    const mapped = keyMap[event.key.toLowerCase()];
+    if (mapped) {
+      state.keys.delete(mapped);
+      maybeStop();
+    }
+  });
+
+  window.addEventListener("blur", () => {
+    // Losing browser focus disarms the joystick and any held keys.
+    stopDrive(false);
+  });
+
+  $("#speed").addEventListener("input", event => {
+    $("#speedVal").textContent = event.target.value + "%";
+  });
+
+  $("#stopBtn").addEventListener("click", () => stopDrive(true));
+
+  const gaze = $("#gazePad");
+  const gazeDot = $("#gazeDot");
+  let gazeActive = false;
+  let gazeLastSent = 0;
+
+  function gazeMove(event) {
+    event.preventDefault();
+    const rect = gaze.getBoundingClientRect();
+    const x = clamp(((event.clientX - rect.left) / rect.width) * 2 - 1, -1, 1);
+    const y = clamp(((event.clientY - rect.top) / rect.height) * 2 - 1, -1, 1);
+    gazeDot.style.left = ((x + 1) * 50) + "%";
+    gazeDot.style.top = ((y + 1) * 50) + "%";
+    const now = Date.now();
+    if (now - gazeLastSent < 80) return;
+    gazeLastSent = now;
+    post("look", {x: round2(x), y: round2(y)}).catch(() => {});
+  }
+
+  gaze.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    gazeActive = true;
+    gaze.setPointerCapture(event.pointerId);
+    if (state.auto) disableAuto();
+    gazeMove(event);
+  });
+
+  gaze.addEventListener("pointermove", event => {
+    if (gazeActive) gazeMove(event);
+  });
+
+  ["pointerup", "pointercancel", "lostpointercapture"].forEach(name => {
+    gaze.addEventListener(name, () => { gazeActive = false; });
+  });
+
+  const modeSelect = $("#overlayMode");
+  const posSelect = $("#overlayPos");
+  let overlayBusy = false;
+
+  async function sendOverlay() {
+    if (overlayBusy) return;
+    overlayBusy = true;
+    try {
+      await post("overlay", {
+        mode: Number(modeSelect.value),
+        position: Number(posSelect.value)
+      });
+      toast("HUD updated");
+    } catch (error) {
+      toast("HUD update failed", true);
+    } finally {
+      overlayBusy = false;
+    }
+  }
+
+  modeSelect.addEventListener("change", sendOverlay);
+  posSelect.addEventListener("change", sendOverlay);
+
+  const brightness = $("#brightness");
+  let brightnessTimer = 0;
+  brightness.addEventListener("input", () => {
+    $("#brightVal").textContent = brightness.value;
+    clearTimeout(brightnessTimer);
+    brightnessTimer = setTimeout(() => {
+      post("display", {value: Number(brightness.value)}).catch(() => {
+        toast("Brightness update failed", true);
+      });
+    }, 140);
+  });
+
+  $("#blinkBtn").addEventListener("click", () => {
+    post("action", {type: "blink"}).catch(() => toast("Blink command failed", true));
+  });
+
+  $("#winkBtn").addEventListener("click", async () => {
+    state.emotionHold = Date.now() + 2000;
+    setFace(6);
+    try {
+      if (state.auto) await disableAuto();
+      await post("action", {type: "wink"});
+    } catch (error) {
+      toast("Wink command failed", true);
+    }
+  });
+
+  $("#nextBtn").addEventListener("click", async () => {
+    const next = (state.emotion + 1) % emotions.length;
+    state.emotionHold = Date.now() + 2000;
+    setFace(next);
+    try {
+      if (state.auto) await disableAuto();
+      await post("action", {type: "next"});
+    } catch (error) {
+      toast("Next-face command failed", true);
+    }
+  });
+
+  function setBar(element, value, label) {
+    value = Number(value) || 0;
+    const percent = Math.min(100, Math.abs(value) * 100);
+    element.style.width = percent + "%";
+    element.style.left = (value >= 0 ? 50 : 50 - percent) + "%";
+    element.style.background = value >= 0 ? "var(--p)" : "var(--red)";
+    element.style.boxShadow = "0 0 9px " + (value >= 0 ? "var(--p)" : "var(--red)");
+    label.textContent = signed(value);
+  }
+
+  function applyStatus(data) {
+    state.fail = 0;
+    setLink(true);
+    $("#wifiPill").classList.toggle("on", !!data.wifi.connected);
+    $("#wifiText").textContent = data.wifi.connected ?
+      (data.wifi.rssi + " dBm") : "NO LINK";
+    $("#ipText").textContent = data.wifi.ip || "0.0.0.0";
+    $("#footIp").textContent = data.wifi.ip || "0.0.0.0";
+    $("#uptime").textContent = fmtTime(data.uptime);
+
+    $("#fps").textContent = Number(data.perf.fps).toFixed(1);
+    $("#cpu0").textContent = Number(data.perf.c1).toFixed(0) + "%";
+    $("#cpu1").textContent = Number(data.perf.c2).toFixed(0) + "%";
+    $("#heap").textContent = Math.round(Number(data.perf.heap) / 1024) + "K";
+
+    setBar($("#leftBar"), data.motors.left, $("#leftVal"));
+    setBar($("#rightBar"), data.motors.right, $("#rightVal"));
+    const braking = !!data.motors.braking;
+    const brake = $("#brakeState");
+    brake.textContent = braking ? "BRAKE ENGAGED" :
+      (data.motors.moving ? "MOTORS ACTIVE" : "COAST / IDLE");
+    brake.classList.toggle("on", braking);
+
+    if (Date.now() > state.autoHold) {
+      state.auto = !!data.auto;
+      updateAutoUI();
+    }
+    if (Date.now() > state.emotionHold) setFace(data.emotion);
+
+    if (document.activeElement !== modeSelect) {
+      modeSelect.value = String(data.overlay.mode);
+    }
+    if (document.activeElement !== posSelect) {
+      posSelect.value = String(data.overlay.position);
+    }
+    if (document.activeElement !== brightness) {
+      brightness.value = String(data.display.brightness);
+      $("#brightVal").textContent = data.display.brightness;
+    }
+
+    if (!state.wasDriving && !state.joyActive && state.keys.size === 0) {
+      $("#driveMode").textContent = !state.link ? "DISARMED" :
+        (data.web.driving ? "REMOTE" : "IDLE");
+    }
+  }
+
+  async function poll() {
+    if (state.polling) return;
+    state.polling = true;
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 2500);
+      const response = await fetch("/api/status", {
+        cache: "no-store",
+        signal: controller.signal
+      });
+      clearTimeout(timer);
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      applyStatus(await response.json());
+    } catch (error) {
+      state.fail++;
+      if (state.fail >= 2 && state.link) {
+        setLink(false);
+        disarmLocal();
+        post("stop").catch(() => {});
+        toast("Link lost - controls disarmed", true);
+      }
+    } finally {
+      state.polling = false;
+      setTimeout(poll, 700);
+    }
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopDrive(false);
+  });
+
+  window.addEventListener("pagehide", () => {
+    if (navigator.sendBeacon) navigator.sendBeacon("/api/stop");
+  });
+
+  window.addEventListener("offline", () => {
+    setLink(false);
+    disarmLocal();
+  });
+
+  setFace(9);
+  updateAutoUI();
+  setKnob(0, 0);
+  updateReadout({throttle: 0, steering: 0});
+  poll();
+  setInterval(driveTick, 100);
+})();
+</script>
+</body>
+</html>
