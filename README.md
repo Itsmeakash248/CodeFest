@@ -1,258 +1,190 @@
-# ViewPilot
+# ViewPilot Pro
 
-**Your AI-powered interview coach.** ViewPilot turns realistic mock interviews into structured growth: role-specific questions, a visible rubric, evidence-backed feedback, and a targeted re-practice plan.
+**Rehearse the interview. Own the feedback.**
 
-**CodeFest 2026 · Team Mooncraft · 24 October 2026**<br />
-**Domain 2 — Job Readiness · AI-Powered Web Applications**
+ViewPilot Pro is a job-readiness cockpit built for CodeFest 2026 (Domain 2). It combines five specialist AI agents, a drag-and-drop preparation workflow, and a voice-enabled mock interview that scores your answers against a transparent four-part rubric — then turns the gaps into a practice plan.
 
-> [!IMPORTANT]
-> The ESP32-S3 robot is an **optional backup interviewer**. Every interview, evaluation and report works with no robot, no API key and no network call. Unplug the robot and the product is unchanged.
+Built by **Team Mooncraft**. Works with **zero API keys** and **no robot**.
 
 ---
 
-## Why ViewPilot
+## Why it wins
 
-Early-career applicants rarely get realistic, role-specific practice before the interview that matters. Generic question banks do not adapt, real mock interviews need a willing expert, and post-interview feedback is usually just “rejected” or “not a fit.”
+Most interview tools give a score and stop. ViewPilot Pro shows the evidence behind the score, adapts with a follow-up when an answer is thin, and leaves the candidate with a concrete next action.
 
-ViewPilot closes that feedback loop:
-
-```text
-Prepare  →  Answer  →  Understand  →  Improve
-```
-
-1. Pick a target role, experience level, interview type and difficulty.
-2. Answer five realistic questions. A thin answer can earn one evidence-seeking follow-up.
-3. Read a report with four rubric scores, quotes from your own answers, strengths, gaps and an improved-answer blueprint.
-4. Re-practice immediately with a specific target.
-
-It is **text-first**. Voice input and the robot are optional extras, not dependencies.
+- **Local-first by design.** Gemini, OpenRouter, ElevenLabs and the robot are optional accelerators. With no keys, a deterministic local engine still runs every agent, the full interview, the rubric, the report and the workflow.
+- **Evidence, not vibes.** Every dimension score quotes the candidate's own words (or states plainly that no evidence was found).
+- **A visible rubric.** Communication, Role Knowledge, Problem Solving and Answer Quality — each with a weight, a note and an evidence line.
+- **A real workflow builder.** Chain nine preparation nodes into a custom pipeline and watch each node stream its status and output.
+- **Voice without lock-in.** ElevenLabs TTS when configured; the browser voice when it is not. Speech-to-text uses the Web Speech API.
 
 ---
 
-## What is working today
+## Demo path (90 seconds)
 
-| Area | Implementation |
-| :--- | :--- |
-| **Landing page** | Product story aligned with the pitch deck: problem, coaching loop, rubric, report preview, architecture, reliability, ethics, FAQ. |
-| **Interview flow** | `/interview` — setup, five-question session, evaluating state, report. Fully functional. |
-| **Evaluation** | Four dimensions: Communication, Role knowledge, Problem solving, Answer quality. Overall score is labelled a **practice estimate**. |
-| **Evidence** | Every dimension quotes exact sentences from the candidate's transcript. |
-| **Next practice** | Three micro-actions plus a Situation → Task → Action → Result blueprint. |
-| **Zero-key path** | Deterministic question bank and rubric engine ship with the app. No external API required. |
-| **Optional AI** | Server-side Gemini (`GEMINI_API_KEY`) generates adaptive questions and richer reports. Any failure falls back to local. |
-| **Optional robot** | ESP32-S3 backup presence via `ROBOT_BASE_URL`. Offline by default; never blocks the session. |
-| **Output** | Print / Save PDF, JSON export, copy summary, local practice history. |
-| **Accessibility** | Keyboard-friendly controls, visible rubric, read-aloud questions, browser dictation. |
+1. **Landing** — the hero console shows a live interview snippet; the agent grid and workflow preview explain the product.
+2. **Launch demo** — one click signs in with an httpOnly demo cookie. No OAuth, no email.
+3. **Dashboard** — talk to any of the five agents, or switch to the workflow builder and run a template.
+4. **Interview** — choose role, level, type and difficulty, then answer five adaptive questions by text or microphone.
+5. **Report** — four rubric scores, per-question feedback, evidence quotes, strengths, improvements, a STAR blueprint and a minute-by-minute practice plan.
+6. **Print / save** — the report has a print stylesheet for a clean PDF.
+
+The app remains fully usable if every external provider is offline.
 
 ---
 
-## 60-second demo (no keys, no robot)
+## Quick start
 
 ```bash
-git clone https://github.com/Itsmeakash248/CodeFest.git
-cd CodeFest/Codefest-Practice
 npm install
-npm run dev
+cp .env.example .env.local   # optional keys
+npm run dev -- --port 3000
 ```
 
-Open <http://localhost:3000>, press **Start practice**, keep the default Frontend Engineer / Entry / Mixed / Standard setup, and answer the five questions. The report is generated locally and immediately.
+Open <http://localhost:3000>. Then click **Launch demo** (or sign in at `/login` with any email).
 
-Then show the optional layers:
+### Production build
 
-- Add `GEMINI_API_KEY` to `.env.local` for AI-adaptive questions and feedback.
-- Add `ROBOT_BASE_URL` to the server environment and open `/robot` to test the physical backup.
+```bash
+npx tsc --noEmit
+npm run build
+npm run start
+```
+
+---
+
+## Configuration
+
+All keys are read **server-side only** and never shipped to the browser.
+
+| Variable | Required | Purpose |
+| :--- | :--- | :--- |
+| `GEMINI_API_KEY` | No | Primary chat model (`gemini-3.5-flash` by default) |
+| `OPENROUTER_API_KEY` | No | Fallback chat model if Gemini is unavailable |
+| `ELEVENLABS_API_KEY` | No | Natural interview voice; browser TTS is the fallback |
+| `ELEVENLABS_VOICE_ID` | No | Voice selection (default `XrExE9yKIg1WjnnlVkGX`) |
+| `GEMINI_MODEL` | No | Override the Gemini model |
+| `OPENROUTER_MODEL` | No | Override the OpenRouter model |
+| `ROBOT_BASE_URL` | No | Optional LAN robot bridge for expressions |
+| `NEXTAUTH_URL` | No | Base URL used in metadata |
+| `WORKFLOW_FAST` | No | Set to `1` to shorten simulated workflow steps |
+
+### Fallback order
+
+```text
+Chat:      Gemini -> OpenRouter -> local persona engine
+Interview: deterministic rubric engine (always), Gemini only for optional chat
+Voice:     ElevenLabs -> browser speechSynthesis
+Robot:     configured bridge -> graceful offline state
+```
+
+---
+
+## API
+
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/api/agents/chat` | POST | SSE chat: `meta`, `delta`, `done`, `error` |
+| `/api/interview/session` | POST | `start`, `answer`, or `finalize` a mock interview |
+| `/api/workflow/run` | POST | SSE workflow execution with per-node status |
+| `/api/voice/tts` | POST | ElevenLabs MP3 proxy with in-memory cache |
+| `/api/status` | GET | Provider availability and active engine |
+| `/api/robot` | GET/POST | Optional robot bridge; offline-safe |
+| `/api/auth/login` | POST | Demo session cookie |
+| `/api/auth/logout` | POST | Clear the demo session |
+| `/api/auth/session` | GET | Current demo user |
+
+Request and response types live in [`src/lib/types.ts`](src/lib/types.ts). Client helpers live in [`src/lib/client/api.ts`](src/lib/client/api.ts).
+
+### Interview protocol
+
+```jsonc
+// start
+{ "action": "start", "setup": { "role": "Frontend Engineer", "level": "Entry level", "type": "Mixed", "difficulty": "Standard" } }
+
+// answer
+{ "action": "answer", "sessionId": "...", "setup": { ... }, "turns": [ ... ], "answer": "...", "questionId": "q1" }
+
+// finalize
+{ "action": "finalize", "sessionId": "...", "setup": { ... }, "turns": [ ... ] }
+```
+
+The engine asks five role-specific questions and inserts at most one adaptive follow-up when an answer is thin. Question sets are deterministic per session, so a refresh cannot reshuffle the interview.
+
+---
+
+## How the rubric works
+
+| Dimension | What it measures | Typical signals |
+| :--- | :--- | :--- |
+| **Communication** | Structure and clarity | STAR language, sequencing, concision |
+| **Role Knowledge** | Role-specific depth | Tools, trade-offs, domain vocabulary |
+| **Problem Solving** | Reasoning quality | Diagnosis, constraints, decision rationale |
+| **Answer Quality** | Specificity and evidence | Metrics, ownership, outcomes, reflection |
+
+The overall score is a weighted blend. Each dimension includes a quoted evidence line and a coaching note. The report also produces:
+
+- per-question scores and notes,
+- three strengths and three improvements,
+- a STAR blueprint built from the strongest answer,
+- a prioritized practice plan with time estimates.
 
 ---
 
 ## Architecture
 
 ```text
-┌──────────────────────────── Browser ────────────────────────────┐
-│  /interview                                                     │
-│  setup · timer · text/voice answer · report · print/export      │
-└───────────────┬─────────────────────────────────────────────────┘
-                │ POST /api/interview
-                ▼
-┌────────────────────────── Next.js server ───────────────────────┐
-│  validate setup + turns                                         │
-│  ┌──────────────────────┐        ┌───────────────────────────┐  │
-│  │ Gemini (optional)    │  ───►  │ schema-checked response   │  │
-│  │ 22 s timeout         │        └───────────────────────────┘  │
-│  └──────────┬───────────┘                                       │
-│             │ failure / no key                                  │
-│             ▼                                                   │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │ Deterministic local engine                                │  │
-│  │ question bank · adaptive follow-up · heuristic rubric      │  │
-│  └───────────────────────────────────────────────────────────┘  │
-└───────────────┬─────────────────────────────────────────────────┘
-                │ GET/POST /api/robot (optional, 1.8 s timeout)
-                ▼
-       ESP32-S3 robot on the local network
+src/
+  app/
+    page.tsx                 landing
+    login/                   demo auth
+    dashboard/               agents + workflow
+    interview/               setup -> session -> report
+    settings/                voice, providers, robot, data
+    api/
+      agents/chat/           SSE chat orchestration
+      interview/session/     deterministic interview engine
+      workflow/run/          SSE pipeline executor
+      voice/tts/             ElevenLabs proxy + cache
+      auth/                  demo cookie session
+      robot/                 optional bridge
+      status/                provider health
+  components/                UI system (Obsidian Glass)
+  lib/
+    ai/                      Gemini -> OpenRouter -> local
+    agents/                  personas + prompts
+    interview/               questions, rubric, service
+    workflow/                node registry, templates, executor
+    voice/                   browser speech helpers
+    client/                  fetch + SSE helpers
+    store/                   Zustand stores
+    data/roles.ts            12 role profiles
 ```
 
-- API keys stay on the server; the browser never receives one.
-- The response includes `source: "ai" | "local"` and the report labels the engine.
-- Resume text is optional and treated as untrusted input, never as instructions.
+The only stateful external dependency is the optional robot. Workflow runs are held in memory for the demo; reports are persisted in `localStorage` for the dashboard.
 
 ---
 
-## Evaluation rubric
+## Tech stack
 
-| Dimension | What it checks | Example coaching tip |
-| :--- | :--- | :--- |
-| **Communication** | Conciseness, structure, STAR clarity | Lead with the result before the background. |
-| **Role knowledge** | Technical depth and role vocabulary | Name one trade-off, not just a tool. |
-| **Problem solving** | Constraints, assumptions, edge cases | State the constraint before the solution. |
-| **Answer quality** | Relevance, specificity, measurable evidence | Replace hypotheticals with one metric. |
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Zustand · Framer Motion · dnd-kit · React Markdown · Gemini · OpenRouter · ElevenLabs.
 
-Scores are **practice estimates**, not hiring decisions or employability predictions. The rubric is visible before, during and after the session.
+No database, no OAuth provider, no paid infrastructure required for the demo.
 
 ---
 
-## Repository layout
+## Security notes
 
-```text
-CodeFest/
-├── Codefest-Practice/                 # ViewPilot web app
-│   ├── src/app/                       # /, /interview, /how, /stack, /robot
-│   ├── src/app/api/                   # /api/interview, /api/robot
-│   ├── src/components/vp/             # UI + interview client
-│   ├── src/lib/                       # content, question bank, local engine, AI
-│   └── README.md                      # detailed app documentation
-├── FlowPilot-esp32s3/                 # Optional robot firmware
-│   ├── main/                          # face, motors, LEDs, telemetry, Wi-Fi
-│   └── docs/MOTOR_DRIVER.md           # motor wiring and API guide
-├── docs/
-│   ├── MoonCraft-Codefest.pptx        # CodeFest pitch deck
-│   ├── ViewPilot_CodeFest_2026_Team_Playbook (1).pdf
-│   └── CodeFest 2026 Ps.pdf           # official problem statements
-├── esp8266-st7735-test/               # standalone display/Wi-Fi bench test
-├── wifi_min_test/                     # minimal ESP32-S3 Wi-Fi bring-up
-├── MIC-SPEAKER.jpg                    # robot audio add-on reference
-├── CodeFest-Paid-Screenshot-Mooncraft.jpeg
-└── README.md
-```
-
-The web app and firmware now live directly in this repository — no submodules, no extra clone step.
-
----
-
-## Quick start
-
-### Web app
-
-Requires **Node.js 20.9+**.
-
-```bash
-cd Codefest-Practice
-npm install
-npm run dev
-```
-
-Production build:
-
-```bash
-npm run build
-npm start
-```
-
-No environment variables are required. See [`Codefest-Practice/README.md`](Codefest-Practice/README.md) for the API contract and optional layers.
-
-### Optional AI
-
-```bash
-cd Codefest-Practice
-cp .env.example .env.local
-# set GEMINI_API_KEY (or GOOGLE_API_KEY / GOOGLE_GENERATIVE_AI_API_KEY)
-npm run dev
-```
-
-If the key is missing or the model is slow, the local engine answers the same request. The UI continues without a dead end.
-
-### Optional robot
-
-```bash
-# .env.local
-ROBOT_BASE_URL=http://192.168.1.42
-```
-
-Flash the ESP32-S3 firmware and connect it to the same trusted LAN:
-
-```bash
-. $HOME/esp/esp-idf/export.sh
-cd FlowPilot-esp32s3
-idf.py set-target esp32s3
-idf.py build
-idf.py -p /dev/ttyACM0 flash monitor
-```
-
-Open `/robot` to see the live bridge status. The robot currently adds a physical face and a preloaded backup script; it does **not** generate questions or score answers. See [`FlowPilot-esp32s3/README.md`](FlowPilot-esp32s3/README.md).
-
-> [!WARNING]
-> The robot API is an unauthenticated LAN service. Do not expose it to the public internet. Power the motors from a separate pack, connect all grounds, and keep the robot on a stand during motor tests.
-
----
-
-## Reliability ladder
-
-The demo degrades in layers instead of showing a spinner:
-
-1. **Gemini** — adaptive questions and richer feedback.
-2. **Local rubric engine** — full session and report, no network, no key.
-3. **Robot presence + preloaded script** — physical backup if the laptop fails.
-4. **Recorded backup video** — last resort for the pitch.
-
-The first two are fully implemented. The robot layer is optional by design.
-
----
-
-## Why this fits Domain 2
-
-The official brief asks for an AI-powered web application that improves **Job Readiness**. ViewPilot addresses the interview-preparation gap directly:
-
-- role-specific practice instead of a static question list;
-- transparent, rubric-based feedback instead of a mystery score;
-- evidence and next actions instead of generic encouragement;
-- privacy-preserving defaults and no protected-trait scoring;
-- a working product that judges can use in the browser without setup.
-
-It also avoids the common failure mode of AI demo projects: the product still works when the model does not.
-
----
-
-## Safety, privacy and limits
-
-- No account, no upload and no database are required.
-- With AI disabled, answers stay in the browser session and `localStorage` history.
-- API keys live only in server environment variables.
-- No scoring of accent, appearance, pitch, age, gender, disability or other protected traits.
-- The report is coaching guidance, not a hiring recommendation.
-- Voice input depends on browser Web Speech support; text always works.
-- The robot is LAN-only and optional.
-
----
-
-## Documentation
-
-| Document | Contents |
-| :--- | :--- |
-| [`Codefest-Practice/README.md`](Codefest-Practice/README.md) | App routes, session flow, API contract, environment, fallback design, robot bridge. |
-| [`FlowPilot-esp32s3/README.md`](FlowPilot-esp32s3/README.md) | Firmware features, pinout, build/flash, local REST API. |
-| [`FlowPilot-esp32s3/docs/MOTOR_DRIVER.md`](FlowPilot-esp32s3/docs/MOTOR_DRIVER.md) | Motor driver wiring and control modes. |
-| [`docs/ViewPilot_CodeFest_2026_Team_Playbook (1).pdf`](docs/ViewPilot_CodeFest_2026_Team_Playbook%20%281%29.pdf) | Product playbook. |
-| [`docs/MoonCraft-Codefest.pptx`](docs/MoonCraft-Codefest.pptx) | Pitch deck. |
-| [`docs/CodeFest 2026 Ps.pdf`](docs/CodeFest%202026%20Ps.pdf) | Official problem statements. |
-
----
-
-## A note on FlowPilot
-
-This repository previously told the **FlowPilot** robot-workflow story. The web product has now migrated to ViewPilot, and the robot is retained in `FlowPilot-esp32s3` as an optional backup interviewer and physical demo presence, never as a dependency. Earlier FlowPilot revisions remain recoverable from the preserved submodule backup; the current tree is a single, self-contained repository.
+- API keys stay in `.env.local` (git-ignored, server-side routes only).
+- The demo session is an httpOnly, same-site cookie for the hackathon. It is **not** production authentication.
+- The robot bridge is intentionally unauthenticated and should only be exposed on a trusted LAN.
+- The TTS route caps input length and caches repeated prompts in memory.
 
 ---
 
 ## Team
 
-**Team Mooncraft** · CodeFest 2026<br />
-Built with Next.js 16, React 19, Tailwind CSS 4, and an optional ESP32-S3 companion.
+- **Dev A** — product design, UI system, landing, dashboard, interview and settings.
+- **Dev B** — AI orchestration, interview engine, workflow runtime, voice, auth and API.
+
+Built for **CodeFest 2026**, Domain 2: job readiness.

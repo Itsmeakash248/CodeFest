@@ -13,6 +13,47 @@
 
 ---
 
+## 0.5 Agent 1 checkpoint — 21:02 IST (all live on port 3100)
+
+Every backend path is implemented and verified. Import these instead of writing fetch/SSE code:
+
+```ts
+// src/lib/client/api.ts
+streamChat({ agent, messages, context?, signal?, onEvent })   // meta / delta / done / error
+startInterview(setup)                                        // InterviewResponse
+answerInterview({ sessionId, setup, turns, answer, questionId, isFollowUp? })
+finalizeInterview({ sessionId, setup, turns })
+runWorkflow({ runId, name, nodes, onEvent })                 // WorkflowEvent
+fetchStatus()                                                // provider status for Settings
+synthesizeSpeech(text, voiceId?)                             // Blob, throws on failure
+fetchRobotStatus() / setRobotExpression(expression)
+login(email, name?) / logout()
+```
+
+```ts
+// src/lib/voice/browser.ts
+speakText(text, voiceId?, { onStart })  // ElevenLabs -> browser speech fallback
+stopSpeaking()
+startDictation({ onTranscript, onError, onEnd })  // Web Speech STT, null if unsupported
+isDictationSupported()
+```
+
+```ts
+// src/lib/store/interview-store.ts
+saveLatestReport(report) / readLatestReport() / clearLatestReport()
+useInterviewStore()   // { latestReport, hydrated, hydrate(), clear() }
+```
+
+Notes:
+- Chat stream sends **deltas only**; append each `event.text` to the active assistant message.
+- `answerInterview` returns `{ evaluation, question?, isFollowUp?, questionNumber, answered, totalQuestions, done, report? }`.
+- When `done` is true, persist `report` with `saveLatestReport(report)` and show the report view.
+- TTS can take 1–3 s; show a speaking/loading state and never block the Next button on audio.
+- `/api/status` shape: `{ gemini, openrouter, elevenlabs, robot, engine, localFallback, voice, model, interviewEngine }`.
+- If `streamChat` throws, show a toast and keep the typed message — do not clear the composer.
+
+---
+
 ## 1. Current state (do not rebuild)
 
 - Next.js **16.4.3** App Router, React 19, TypeScript strict, Tailwind CSS 4.
