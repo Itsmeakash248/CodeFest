@@ -60,7 +60,13 @@ async function callGemini(
           role: message.role === "assistant" ? "model" : "user",
           parts: [{ text: message.content }],
         })),
-        generationConfig: { temperature: 0.65, topP: 0.92, maxOutputTokens: 900 },
+        generationConfig: {
+          temperature: 0.65,
+          topP: 0.92,
+          maxOutputTokens: 1200,
+          // Gemini 3.x spends most of the budget on hidden thinking by default.
+          thinkingConfig: { thinkingBudget: 0 },
+        },
       }),
       signal: AbortSignal.timeout(18_000),
     },
@@ -188,7 +194,13 @@ async function* streamGeminiText(
           role: message.role === "assistant" ? "model" : "user",
           parts: [{ text: message.content }],
         })),
-        generationConfig: { temperature: 0.65, topP: 0.92, maxOutputTokens: 900 },
+        generationConfig: {
+          temperature: 0.65,
+          topP: 0.92,
+          maxOutputTokens: 1200,
+          // Gemini 3.x spends most of the budget on hidden thinking by default.
+          thinkingConfig: { thinkingBudget: 0 },
+        },
       }),
       signal: mergeTimeout(signal),
     },
