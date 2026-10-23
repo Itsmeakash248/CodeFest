@@ -42,3 +42,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .vercel
+
+# Next.js generated agent rules
+/AGENTS.md
