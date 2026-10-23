@@ -1,0 +1,31 @@
+# Build outputs & temporary artifacts
+build/
+**/build/
+.pio/
+**/.pio/
+
+# Toolchain & Language Server caches
+.cache/
+**/.cache/
+.ccls-cache/
+**/.ccls-cache/
+compile_commands.json
+**/compile_commands.json
+
+# ESP-IDF specific artifacts
+sdkconfig.old
+**/sdkconfig.old
+flasher_args.json
+**/flasher_args.json
+
+# Operating System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
+*.swp
+*.swo
+
+# Local archives & backups
+Archive/

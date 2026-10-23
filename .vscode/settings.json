@@ -1,0 +1,9 @@
+{
+    "idf.currentSetup": "/home/akash/.espressif/v6.0.2/esp-idf",
+    "clangd.path": "/home/akash/.espressif/tools/esp-clang/esp-20.1.1_20250829/esp-clang/bin/clangd",
+    "clangd.arguments": [
+      "--background-index",
+      "--query-driver=**",
+      "--compile-commands-dir=/home/akash/Documents/CodeFest/build"
+    ]
+}

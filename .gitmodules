@@ -1,0 +1,7 @@
+[submodule "FlowPilot-esp32s3"]
+	path = FlowPilot-esp32s3
+	url = https://github.com/Itsmeakash248/FlowPilot-esp32s3.git
+[submodule "Codefest-Practice"]
+	path = Codefest-Practice
+	url = https://github.com/Itsmeakash248/Codefest-Practice
+	branch = main
