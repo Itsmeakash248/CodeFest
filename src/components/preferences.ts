@@ -43,9 +43,9 @@ export function writeStoredFlag(key: string, value: boolean): void {
 }
 
 export function getStoredTheme(): "light" | "dark" {
-  if (typeof window === "undefined") return "light";
+  if (typeof window === "undefined") return "dark";
   const stored = readPreference(PREF_KEYS.theme);
-  return stored === "dark" ? "dark" : "light";
+  return stored === "light" ? "light" : "dark";
 }
 
 export function applyTheme(theme: "light" | "dark"): void {
@@ -53,8 +53,10 @@ export function applyTheme(theme: "light" | "dark"): void {
   document.documentElement.setAttribute("data-theme", theme);
   if (theme === "dark") {
     document.documentElement.classList.add("dark");
+    document.documentElement.classList.remove("light");
   } else {
     document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
   }
   writePreference(PREF_KEYS.theme, theme);
 }

@@ -56,20 +56,21 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#F7F3EC",
+  themeColor: "#191A17",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${inter.variable} ${jetbrains.variable}`}
+      data-theme="dark"
+      className={`dark ${outfit.variable} ${inter.variable} ${jetbrains.variable}`}
       suppressHydrationWarning
     >
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("viewpilot.theme")||"light";document.documentElement.setAttribute("data-theme",t);if(t==="dark")document.documentElement.classList.add("dark");else document.documentElement.classList.remove("dark");}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem("viewpilot.theme")||"dark";document.documentElement.setAttribute("data-theme",t);if(t==="light"){document.documentElement.classList.remove("dark");document.documentElement.classList.add("light");}else{document.documentElement.classList.add("dark");document.documentElement.classList.remove("light");}}catch(e){}})();`,
           }}
         />
       </head>

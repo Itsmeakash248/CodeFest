@@ -121,15 +121,17 @@ export default function StatusPanel({
     <aside
       aria-label="Run status, latest report and robot"
       className={cn(
-        "fixed inset-y-0 right-0 z-50 flex w-[min(360px,92vw)] shrink-0 flex-col border-l border-white/[0.06] bg-[#0b0b11] transition-transform duration-300 ease-out xl:static xl:z-auto xl:w-[332px] xl:translate-x-0",
-        open ? "translate-x-0" : "translate-x-full",
+        "fixed inset-y-0 right-0 z-50 flex shrink-0 flex-col border-l border-[var(--color-outline)] bg-[var(--color-surface)] transition-all duration-300 ease-out",
+        open
+          ? "w-[min(360px,92vw)] translate-x-0 opacity-100 xl:static xl:z-auto xl:w-[332px]"
+          : "w-0 translate-x-full opacity-0 pointer-events-none overflow-hidden xl:static xl:z-auto xl:w-0 xl:border-l-0 xl:translate-x-0",
       )}
     >
-      <div className="flex h-[64px] shrink-0 items-center gap-2 border-b border-white/[0.06] px-3.5">
-        <CircleDot size={12} className="text-[#00d9ff]" />
+      <div className="flex h-[64px] shrink-0 items-center gap-2 border-b border-[var(--color-outline)] px-3.5">
+        <CircleDot size={12} className="text-[var(--color-primary)]" />
         <div className="min-w-0 flex-1">
-          <p className="font-display text-[13px] font-semibold leading-tight text-white">Run console</p>
-          <p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#6f7284]">
+          <p className="font-display text-[13px] font-semibold leading-tight text-[var(--color-text-primary)]">Run console</p>
+          <p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[var(--color-text-secondary)]">
             {run ? `${run.workflowName} · ${run.status}` : "Nothing running"}
           </p>
         </div>
@@ -137,7 +139,8 @@ export default function StatusPanel({
           type="button"
           onClick={onClose}
           aria-label="Close run panel"
-          className="flex h-7 w-7 items-center justify-center rounded-lg text-[#8b8ba3] hover:bg-white/[0.05] hover:text-white xl:hidden"
+          title="Close run panel"
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container)] hover:text-[var(--color-text-primary)]"
         >
           <X size={14} />
         </button>

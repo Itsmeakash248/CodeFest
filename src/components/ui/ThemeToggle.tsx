@@ -6,7 +6,7 @@ import { applyTheme, getStoredTheme } from "@/components/preferences";
 import { cn } from "@/components/ui/cn";
 
 export default function ThemeToggle({ className }: { className?: string }) {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

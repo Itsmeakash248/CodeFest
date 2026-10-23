@@ -28,8 +28,48 @@
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 }
 
-/* Claude × Material 3 Expressive Tokens */
+/* Claude × Material 3 Expressive Tokens: Default is Dark Mode */
 :root {
+  --color-background: #191A17;
+  --color-surface: #20211D;
+  --color-surface-container: #292A25;
+  --color-surface-container-high: #34352F;
+  --color-text-primary: #F1EDE4;
+  --color-text-secondary: #C2BBAF;
+  --color-text-faint: #7A756D;
+  --color-outline: #514F47;
+  --color-primary: #F0A18A;
+  --color-on-primary: #482316;
+  --color-primary-container: #713B2B;
+  --color-on-primary-container: #FFDAD0;
+  --color-secondary: #C9CAA7;
+  --color-secondary-container: #414332;
+  --color-tertiary: #C9BDF7;
+  --color-tertiary-container: #494365;
+  --color-success: #9BD0A6;
+  --color-warning: #F0C078;
+  --color-error: #F2B8B5;
+
+  /* Semantic Aliases */
+  --bg-primary: #191A17;
+  --bg-surface: #20211D;
+  --bg-glass: rgba(32, 33, 29, 0.9);
+  --border-glass: #514F47;
+  --border-strong: #6E6B60;
+  --accent-primary: #F0A18A;
+  --accent-secondary: #C9CAA7;
+  --accent-success: #9BD0A6;
+  --accent-warning: #F0C078;
+  --accent-error: #F2B8B5;
+  --text-primary: #F1EDE4;
+  --text-secondary: #C2BBAF;
+  --text-muted: #7A756D;
+  color-scheme: dark;
+}
+
+/* Light / White Mode Overrides */
+[data-theme="light"],
+.light {
   --color-background: #F7F3EC;
   --color-surface: #FFFCF7;
   --color-surface-container: #EEE8DF;
@@ -53,7 +93,7 @@
   /* Semantic Aliases */
   --bg-primary: #F7F3EC;
   --bg-surface: #FFFCF7;
-  --bg-glass: rgba(255, 252, 247, 0.92);
+  --bg-glass: rgba(255, 252, 247, 0.94);
   --border-glass: #C9C0B5;
   --border-strong: #A89F93;
   --accent-primary: #B9573D;
@@ -139,17 +179,102 @@ body {
 }
 
 ::selection {
-  background: rgba(185, 87, 61, 0.25);
+  background: rgba(240, 161, 138, 0.28);
   color: var(--color-primary);
+}
+
+[data-theme="light"] ::selection,
+.light ::selection {
+  background: rgba(185, 87, 61, 0.25);
+  color: #B9573D;
 }
 
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-outfit), Georgia, serif;
   letter-spacing: -0.025em;
+  color: var(--color-text-primary);
 }
 
 .font-editorial {
   font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+/* Fix font & text color matching in white / light mode */
+[data-theme="light"] .text-white,
+.light .text-white {
+  color: var(--color-text-primary) !important;
+}
+
+/* Explicitly keep white text for solid-accent buttons & badges */
+.btn-primary,
+.btn-primary *,
+[data-theme="light"] .btn-primary,
+[data-theme="light"] .btn-primary *,
+.bg-\[\#B9573D\],
+.bg-\[\#B9573D\] *,
+.bg-\[\#F0A18A\],
+.bg-\[\#F0A18A\] *,
+.keep-white {
+  color: #FFFFFF !important;
+}
+
+[data-theme="light"] .btn-primary,
+[data-theme="light"] .btn-primary * {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .btn-primary,
+.dark .btn-primary {
+  color: #482316 !important;
+}
+
+/* Harmonize muted text classes in light mode */
+[data-theme="light"] .text-\[\#b5b5c9\],
+[data-theme="light"] .text-\[\#b8b8c9\],
+[data-theme="light"] .text-\[\#c0c0d4\],
+[data-theme="light"] .text-\[\#dedee9\],
+[data-theme="light"] .text-\[\#d4d4e0\],
+[data-theme="light"] .text-\[\#9b9cae\],
+[data-theme="light"] .text-\[\#8d8d9f\],
+[data-theme="light"] .text-\[\#8b8ba3\],
+[data-theme="light"] .text-\[\#6f7284\],
+[data-theme="light"] .text-\[\#565969\],
+.light .text-\[\#b5b5c9\],
+.light .text-\[\#b8b8c9\],
+.light .text-\[\#c0c0d4\],
+.light .text-\[\#dedee9\],
+.light .text-\[\#d4d4e0\],
+.light .text-\[\#9b9cae\],
+.light .text-\[\#8d8d9f\],
+.light .text-\[\#8b8ba3\],
+.light .text-\[\#6f7284\],
+.light .text-\[\#565969\] {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Harmonize container surfaces in light mode */
+[data-theme="light"] .bg-\[\#0a0a0f\],
+[data-theme="light"] .bg-\[\#0c0c13\],
+[data-theme="light"] .bg-\[\#101018\],
+[data-theme="light"] .bg-\[\#12121b\],
+[data-theme="light"] .bg-\[\#0d0d14\],
+.light .bg-\[\#0a0a0f\],
+.light .bg-\[\#0c0c13\],
+.light .bg-\[\#101018\],
+.light .bg-\[\#12121b\],
+.light .bg-\[\#0d0d14\] {
+  background-color: var(--color-surface-container) !important;
+}
+
+/* Harmonize border opacities in light mode */
+[data-theme="light"] [class*="border-white\/"],
+.light [class*="border-white\/"] {
+  border-color: var(--color-outline) !important;
+}
+
+[data-theme="light"] [class*="bg-white\/0\."],
+.light [class*="bg-white\/0\."] {
+  background-color: var(--color-surface-container) !important;
 }
 
 /* ---------- Material 3 Expressive surfaces & cards ---------- */

@@ -40,7 +40,7 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
   const router = useRouter();
   const { toasts, push, dismiss } = useToasts();
   const [mode, setMode] = useState<Mode>(initialMode === "workflow" ? "workflow" : "chat");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [rightOpen, setRightOpen] = useState(false);
   const [voiceReplies, setVoiceReplies] = useState(false);
@@ -250,9 +250,16 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
 
               <button
                 type="button"
-                onClick={() => setRightOpen(true)}
-                aria-label="Open runs and report panel"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-[#b8b8c9] transition-colors hover:text-white xl:hidden"
+                onClick={() => setRightOpen((v) => !v)}
+                aria-label={rightOpen ? "Collapse console panel" : "Open console panel"}
+                title={rightOpen ? "Collapse console panel" : "Open console panel"}
+                aria-pressed={rightOpen}
+                className={cn(
+                  "flex h-8 w-8 items-center justify-center rounded-lg border transition-colors",
+                  rightOpen
+                    ? "border-[var(--color-primary)] bg-[var(--color-primary-container)] text-[var(--color-on-primary-container)]"
+                    : "border-[var(--color-outline)] bg-[var(--color-surface-container)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]",
+                )}
               >
                 <PanelRight size={14} />
               </button>
