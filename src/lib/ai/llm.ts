@@ -1,5 +1,6 @@
 import { agentSystemPrompt } from "@/lib/agents/prompts";
 import { localAgentReply } from "@/lib/agents/local-engine";
+import { chunksOf, sleep } from "@/lib/sse";
 import type { AgentId, ChatContext } from "@/lib/types";
 
 export type LlmSource = "gemini" | "openrouter" | "local";
@@ -129,12 +130,14 @@ export async function generateAgentReply(args: {
   agent: AgentId;
   messages: Pick<{ role: string; content: string }, "role" | "content">[];
   context?: ChatContext;
+  /** Demo / offline switch: skip every remote provider. */
+  forceLocal?: boolean;
 }): Promise<LlmResult> {
   const startedAt = performance.now();
   const messages = normalizeMessages(args.messages);
   const system = agentSystemPrompt(args.agent, args.context);
 
-  if (!messages.length) {
+  if (!messages.length || args.forceLocal) {
     return {
       content: localAgentReply(args.agent, args.messages, args.context),
       source: "local",

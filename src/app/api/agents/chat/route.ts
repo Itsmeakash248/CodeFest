@@ -10,6 +10,7 @@ interface ChatBody {
   agent?: unknown;
   messages?: unknown;
   context?: unknown;
+  engine?: unknown;
 }
 
 function parseContext(raw: unknown): ChatContext | undefined {
@@ -55,7 +56,8 @@ export async function POST(request: Request) {
   }
 
   const context = parseContext(body.context);
-  const result = await generateAgentReply({ agent, messages, context });
+  const forceLocal = body.engine === "local";
+  const result = await generateAgentReply({ agent, messages, context, forceLocal });
 
   return createSseResponse(async (send) => {
     send({

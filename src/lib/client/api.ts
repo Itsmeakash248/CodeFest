@@ -25,6 +25,8 @@ export async function streamChat(args: {
   agent: AgentId;
   messages: ChatRequestMessage[];
   context?: ChatContext;
+  /** "local" demonstrates the zero-key engine even when keys are configured. */
+  engine?: "auto" | "local";
   signal?: AbortSignal;
   onEvent: (event: ChatStreamEvent) => void;
 }): Promise<void> {
@@ -35,6 +37,7 @@ export async function streamChat(args: {
       agent: args.agent,
       messages: args.messages,
       context: args.context,
+      engine: args.engine,
     }),
     signal: args.signal,
   });
@@ -102,8 +105,10 @@ export interface ProviderStatus {
   interviewEngine: string;
 }
 
-export async function fetchStatus(): Promise<ProviderStatus> {
-  const response = await fetch("/api/status", { cache: "no-store" });
+export async function fetchStatus(options?: { forceLocal?: boolean }): Promise<ProviderStatus> {
+  const response = await fetch(`/api/status${options?.forceLocal ? "?engine=local" : ""}`, {
+    cache: "no-store",
+  });
   if (!response.ok) throw new Error("Could not read provider status.");
   return (await response.json()) as ProviderStatus;
 }
