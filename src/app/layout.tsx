@@ -56,8 +56,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0a0a0f",
-  colorScheme: "dark",
+  themeColor: "#F7F3EC",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -67,6 +66,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${outfit.variable} ${inter.variable} ${jetbrains.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("viewpilot.theme")||"light";document.documentElement.setAttribute("data-theme",t);if(t==="dark")document.documentElement.classList.add("dark");else document.documentElement.classList.remove("dark");}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="noise min-h-dvh bg-bg font-sans text-ink antialiased">{children}</body>
     </html>
   );

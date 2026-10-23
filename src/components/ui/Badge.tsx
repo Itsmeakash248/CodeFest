@@ -30,14 +30,14 @@ export default function Badge({ children, tone = "neutral", dot = false, classNa
 
 export function scoreTone(score: number): Tone {
   if (score >= 80) return "success";
-  if (score >= 65) return "cyan";
+  if (score >= 65) return "accent";
   if (score >= 50) return "warning";
   return "danger";
 }
 
 export function scoreColor(score: number): string {
-  if (score >= 80) return "#22C55E";
-  if (score >= 65) return "#00D9FF";
-  if (score >= 50) return "#F59E0B";
-  return "#EF4444";
+  if (score >= 80) return "#386A4A";
+  if (score >= 65) return "#B9573D";
+  if (score >= 50) return "#8A5B16";
+  return "#B3261E";
 }

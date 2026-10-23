@@ -17,14 +17,14 @@ const variantClass: Record<Variant, string> = {
   primary: "btn-primary",
   ghost: "btn-ghost",
   soft: "btn-soft",
-  danger: "border border-rose-400/25 bg-rose-500/10 text-rose-200 hover:bg-rose-500/16",
-  plain: "border-transparent bg-transparent text-[#b9b9c9] hover:bg-white/[0.05] hover:text-white",
+  danger: "border border-[var(--color-error)]/30 bg-[var(--color-error)]/12 text-[var(--color-error)] hover:bg-[var(--color-error)]/20",
+  plain: "border-transparent bg-transparent text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container)] hover:text-[var(--color-text-primary)]",
 };
 
 const sizeStyle: Record<Size, { padding: string; fontSize: string; borderRadius?: string }> = {
-  sm: { padding: "0.5rem 0.72rem", fontSize: "12.5px", borderRadius: "9px" },
-  md: { padding: "0.8rem 1.15rem", fontSize: "13.5px" },
-  lg: { padding: "0.95rem 1.4rem", fontSize: "14.5px" },
+  sm: { padding: "0.5rem 1rem", fontSize: "12.5px", borderRadius: "9999px" },
+  md: { padding: "0.75rem 1.4rem", fontSize: "14px", borderRadius: "9999px" },
+  lg: { padding: "0.95rem 1.75rem", fontSize: "15px", borderRadius: "9999px" },
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(

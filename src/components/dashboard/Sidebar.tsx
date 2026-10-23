@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import Logo, { LogoMark } from "@/components/ui/Logo";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import { AgentGlyph } from "@/components/ui/AgentIcon";
 import { AGENTS, AGENT_MAP } from "@/lib/agents/agents";
 import { useChatStore } from "@/lib/store/chat-store";
@@ -327,11 +328,12 @@ export default function Sidebar({
                 {user.email}
               </p>
             </div>
+            <ThemeToggle className="!h-6 !w-6 !border-transparent !bg-transparent hover:!bg-[var(--color-surface-container)]" />
             <Link
               href="/settings"
               aria-label="Settings"
               className={cn(
-                "flex h-6 w-6 items-center justify-center rounded text-[#6f7284] transition-colors hover:bg-white/[0.05] hover:text-white",
+                "flex h-6 w-6 items-center justify-center rounded text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-surface-container)] hover:text-[var(--color-text-primary)]",
                 collapsed && "lg:mt-1",
               )}
             >

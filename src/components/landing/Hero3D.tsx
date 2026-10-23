@@ -79,7 +79,7 @@ export default function Hero3D() {
       {/* ambience */}
       <div
         aria-hidden="true"
-        className="absolute left-1/2 top-1/2 h-[540px] w-[660px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(108,99,255,0.2),rgba(0,217,255,0.05)_42%,transparent_68%)] blur-2xl"
+        className="absolute left-1/2 top-1/2 h-[540px] w-[660px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(185,87,61,0.18),rgba(104,107,78,0.08)_45%,transparent_70%)] blur-2xl"
       />
 
       {/* orbit rings */}
@@ -87,27 +87,27 @@ export default function Hero3D() {
         <span className="orbit-ring left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 opacity-70" />
         <span className="orbit-ring left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 border-dashed opacity-50 [transform:translate(-50%,-50%)_rotateX(68deg)]" />
         <span className="orbit-ring left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 opacity-80 [transform:translate(-50%,-50%)_rotateX(72deg)_rotateZ(-18deg)]" />
-        <span className="absolute left-[12%] top-[16%] h-1.5 w-1.5 rounded-full bg-[#00d9ff]/80 shadow-[0_0_14px_rgba(0,217,255,0.9)]" />
-        <span className="absolute right-[8%] top-[62%] h-1 w-1 rounded-full bg-[#a8a2ff]/80 shadow-[0_0_12px_rgba(168,162,255,0.9)]" />
-        <span className="absolute right-[19%] top-[12%] h-1 w-1 rounded-full bg-white/50" />
+        <span className="absolute left-[12%] top-[16%] h-2 w-2 rounded-full bg-[var(--color-primary)] shadow-[0_0_14px_rgba(185,87,61,0.6)]" />
+        <span className="absolute right-[8%] top-[62%] h-1.5 w-1.5 rounded-full bg-[var(--color-secondary)] shadow-[0_0_12px_rgba(104,107,78,0.6)]" />
+        <span className="absolute right-[19%] top-[12%] h-1.5 w-1.5 rounded-full bg-[var(--color-outline)]" />
       </div>
 
       {/* floor grid */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-[-12%] bottom-[-12%] h-[300px] opacity-45 [background-image:linear-gradient(rgba(255,255,255,0.065)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.065)_1px,transparent_1px)] [background-size:44px_44px] [mask-image:linear-gradient(to_top,black,transparent_86%)] [transform:perspective(700px)_rotateX(62deg)]"
+        className="pointer-events-none absolute inset-x-[-12%] bottom-[-12%] h-[300px] opacity-35 [background-image:linear-gradient(var(--color-outline)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline)_1px,transparent_1px)] [background-size:44px_44px] [mask-image:linear-gradient(to_top,black,transparent_86%)] [transform:perspective(700px)_rotateX(62deg)]"
       />
 
       {/* console */}
       <div className="relative z-10 px-2 [transform-style:preserve-3d] sm:px-5">
         <div
           aria-hidden="true"
-          className="absolute inset-x-10 top-8 h-full rounded-[26px] border border-white/[0.05] bg-[#101018]/60 blur-[1px]"
+          className="absolute inset-x-10 top-8 h-full rounded-[28px] border border-[var(--color-outline)]/50 bg-[var(--color-surface-container)]/80 blur-[1px]"
           style={{ transform: "translateZ(-44px) translateY(18px) scale(0.975)" }}
         />
         <div
           aria-hidden="true"
-          className="absolute inset-x-14 top-12 h-full rounded-[26px] border border-white/[0.04] bg-[#0c0c13]/40 blur-[1.5px]"
+          className="absolute inset-x-14 top-12 h-full rounded-[28px] border border-[var(--color-outline)]/40 bg-[var(--color-surface-container-high)]/60 blur-[1.5px]"
           style={{ transform: "translateZ(-78px) translateY(44px) scale(0.95)" }}
         />
 

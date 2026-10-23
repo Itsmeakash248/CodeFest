@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import Logo from "@/components/ui/Logo";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import { cn } from "@/components/ui/cn";
 
 interface LandingNavProps {
@@ -77,16 +78,16 @@ export default function LandingNav({ user }: LandingNavProps) {
       className={cn(
         "sticky top-0 z-50 w-full border-b transition-all duration-300",
         scrolled
-          ? "border-white/[0.07] bg-[#0a0a0f]/80 backdrop-blur-2xl"
+          ? "border-[var(--color-outline)] bg-[var(--color-surface)]/90 shadow-sm backdrop-blur-2xl"
           : "border-transparent bg-transparent",
       )}
     >
-      <div className="mx-auto flex h-[68px] w-full max-w-[1320px] items-center gap-4 px-5 sm:px-8">
+      <div className="mx-auto flex h-[70px] w-full max-w-[1360px] items-center gap-4 px-5 sm:px-8">
         <Link href="/" aria-label="ViewPilot Pro home" className="shrink-0">
-          <Logo size={26} />
+          <Logo size={28} />
         </Link>
 
-        <nav className="ml-2 hidden items-center gap-0.5 lg:flex" aria-label="Landing sections">
+        <nav className="ml-3 hidden items-center gap-1.5 rounded-full border border-[var(--color-outline)]/60 bg-[var(--color-surface-container)]/70 p-1 lg:flex" aria-label="Landing sections">
           {links.map((link) => {
             const current = active === link.href;
             return (
@@ -96,41 +97,36 @@ export default function LandingNav({ user }: LandingNavProps) {
                 onClick={() => setActive(link.href)}
                 aria-current={current ? "location" : undefined}
                 className={cn(
-                  "relative rounded-lg px-3.5 py-2 text-[14px] font-medium transition-colors",
+                  "rounded-full px-4 py-1.5 text-[13.5px] font-medium transition-all duration-200",
                   current
-                    ? "bg-white/[0.08] text-white"
-                    : "text-[#b2b3c4] hover:bg-white/[0.05] hover:text-white",
+                    ? "bg-[var(--color-primary-container)] text-[var(--color-on-primary-container)] shadow-sm font-semibold"
+                    : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container-high)] hover:text-[var(--color-text-primary)]",
                 )}
               >
                 {link.label}
-                {current ? (
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-x-2.5 -bottom-[1px] h-px bg-gradient-to-r from-transparent via-[#a8a2ff] to-transparent"
-                  />
-                ) : null}
               </a>
             );
           })}
         </nav>
 
-        <div className="ml-auto hidden items-center gap-2.5 sm:flex">
+        <div className="ml-auto hidden items-center gap-3 sm:flex">
+          <ThemeToggle />
           {user ? (
             <>
-              <Link href="/settings" className="btn btn-ghost !px-4 !py-2.5 !text-[13.5px]">
+              <Link href="/settings" className="btn btn-ghost !px-4.5 !py-2.5 !text-[13.5px]">
                 Settings
               </Link>
-              <Link href="/dashboard" className="btn btn-primary !px-4.5 !py-2.5 !text-[13.5px]">
+              <Link href="/dashboard" className="btn btn-primary !px-5 !py-2.5 !text-[13.5px]">
                 Open workspace
                 <ArrowUpRight size={14} />
               </Link>
             </>
           ) : (
             <>
-              <Link href="/login" className="btn btn-ghost !px-4 !py-2.5 !text-[13.5px]">
+              <Link href="/login" className="btn btn-ghost !px-4.5 !py-2.5 !text-[13.5px]">
                 Log in
               </Link>
-              <Link href="/interview" className="btn btn-primary !px-4.5 !py-2.5 !text-[13.5px]">
+              <Link href="/interview" className="btn btn-primary !px-5 !py-2.5 !text-[13.5px]">
                 Start practicing
                 <ArrowUpRight size={14} />
               </Link>
@@ -138,7 +134,8 @@ export default function LandingNav({ user }: LandingNavProps) {
           )}
         </div>
 
-        <div className="ml-auto sm:hidden">
+        <div className="ml-auto flex items-center gap-2 sm:hidden">
+          <ThemeToggle />
           <Link href="/interview" className="btn btn-primary !px-3.5 !py-2 !text-[12.5px]">
             Practice
           </Link>
@@ -150,15 +147,15 @@ export default function LandingNav({ user }: LandingNavProps) {
           aria-expanded={open}
           aria-controls="landing-mobile-menu"
           aria-label={open ? "Close menu" : "Open menu"}
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-[#c5c5d4] transition-colors hover:text-white lg:hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-outline)] bg-[var(--color-surface-container)] text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-container-high)] lg:hidden"
         >
           {open ? <X size={16} /> : <Menu size={16} />}
         </button>
       </div>
 
-      <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px bg-white/[0.035]">
+      <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[2px] bg-[var(--color-outline)]/40">
         <span
-          className="block h-full origin-left bg-gradient-to-r from-[#6c63ff] via-[#8d86ff] to-[#00d9ff] transition-[width] duration-150 ease-out"
+          className="block h-full origin-left bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-tertiary)] to-[var(--color-secondary)] transition-[width] duration-150 ease-out"
           style={{ width: `${Math.max(0, Math.min(100, progress * 100))}%` }}
         />
       </span>
@@ -166,7 +163,7 @@ export default function LandingNav({ user }: LandingNavProps) {
       {open ? (
         <div
           id="landing-mobile-menu"
-          className="animate-rise border-t border-white/[0.06] bg-[#0a0a0f]/96 px-5 py-4 backdrop-blur-2xl lg:hidden"
+          className="animate-rise border-t border-[var(--color-outline)] bg-[var(--color-surface)] px-5 py-4 shadow-lg backdrop-blur-2xl lg:hidden"
         >
           <nav className="grid gap-1" aria-label="Mobile landing sections">
             {links.map((link, index) => (
@@ -178,21 +175,21 @@ export default function LandingNav({ user }: LandingNavProps) {
                   setOpen(false);
                 }}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] transition-colors",
+                  "flex items-center gap-3 rounded-full px-4 py-2.5 text-[13.5px] transition-colors",
                   active === link.href
-                    ? "bg-white/[0.055] text-white"
-                    : "text-[#c5c5d4] hover:bg-white/[0.05] hover:text-white",
+                    ? "bg-[var(--color-primary-container)] text-[var(--color-on-primary-container)] font-semibold"
+                    : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container)] hover:text-[var(--color-text-primary)]",
                 )}
               >
-                <span className="font-mono text-[7.5px] text-[#565969]">
+                <span className="font-mono text-[9px] text-[var(--color-text-secondary)]">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 {link.label}
-                <ArrowUpRight size={11} className="ml-auto text-[#5f6273]" />
+                <ArrowUpRight size={13} className="ml-auto text-[var(--color-text-secondary)]" />
               </a>
             ))}
           </nav>
-          <div className="mt-3 grid grid-cols-2 gap-2 border-t border-white/[0.06] pt-3">
+          <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[var(--color-outline)] pt-3">
             {user ? (
               <>
                 <Link href="/settings" className="btn btn-ghost w-full !text-[12px]">
@@ -213,7 +210,7 @@ export default function LandingNav({ user }: LandingNavProps) {
               </>
             )}
           </div>
-          <p className="mt-3 text-center font-mono text-[7px] uppercase tracking-[0.12em] text-[#565969]">
+          <p className="mt-3 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
             Demo auth · no password stored
           </p>
         </div>

@@ -78,7 +78,7 @@ const reliability = [
     title: "Gemini 2.5 Flash",
     body: "Adaptive questions and deeper scoring with a key.",
     icon: Sparkles,
-    tone: "text-[#b3adff] border-[#6c63ff]/25 bg-[#6c63ff]/10",
+    tone: "text-[#625B8A] dark:text-[#C9BDF7] border-[#625B8A]/30 bg-[#625B8A]/10",
     status: "When available",
   },
   {
@@ -86,7 +86,7 @@ const reliability = [
     title: "Local rubric engine",
     body: "Deterministic signal, structure, evidence and role scoring.",
     icon: ShieldCheck,
-    tone: "text-emerald-300 border-emerald-400/25 bg-emerald-500/10",
+    tone: "text-[#386A4A] dark:text-[#9BD0A6] border-[#386A4A]/30 bg-[#386A4A]/10",
     status: "Zero-key",
   },
   {
@@ -94,7 +94,7 @@ const reliability = [
     title: "Robot presence",
     body: "Listening, thinking, encouraging. LAN only. Never required.",
     icon: Bot,
-    tone: "text-[#7fe8ff] border-[#00d9ff]/25 bg-[#00d9ff]/10",
+    tone: "text-[#B9573D] dark:text-[#F0A18A] border-[#B9573D]/30 bg-[#B9573D]/10",
     status: "LAN only",
   },
 ];
@@ -129,7 +129,7 @@ export default async function LandingPage() {
     <div className="landing-page relative min-h-dvh overflow-x-clip">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-[#15151f] focus:px-4 focus:py-2.5 focus:text-[12px] focus:text-white focus:outline-none focus:ring-2 focus:ring-[#6c63ff]/60"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-[var(--color-surface)] focus:px-5 focus:py-3 focus:text-[13px] focus:text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
       >
         Skip to content
       </a>
@@ -140,29 +140,29 @@ export default async function LandingPage() {
         {/* ---------------------------------------------------------------- hero */}
         <section className="relative overflow-hidden pb-14 pt-8 sm:pt-12 lg:pb-20 lg:pt-14">
           <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-            <div className="absolute inset-0 grid-bg opacity-60" />
-            <div className="aurora left-[-12%] top-[-6%] h-[560px] w-[560px] bg-[#6c63ff]/25" />
-            <div className="aurora right-[-10%] top-[18%] h-[520px] w-[520px] bg-[#00d9ff]/[0.13]" />
-            <div className="absolute left-1/2 top-0 h-[720px] w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-white/[0.06] to-transparent" />
+            <div className="absolute inset-0 grid-bg opacity-40" />
+            <div className="aurora left-[-12%] top-[-6%] h-[560px] w-[560px] bg-[var(--color-primary)]/15" />
+            <div className="aurora right-[-10%] top-[18%] h-[520px] w-[520px] bg-[var(--color-secondary)]/15" />
+            <div className="absolute left-1/2 top-0 h-[720px] w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-[var(--color-outline)]/40 to-transparent" />
           </div>
 
           <div className={`${container} relative`}>
             <div className="grid items-center gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:gap-10 xl:gap-14">
               <div className="relative z-10 max-w-[620px]">
                 <Reveal>
-                  <div className="inline-flex items-center gap-2.5 rounded-full border border-white/[0.12] bg-white/[0.04] px-4 py-2">
+                  <div className="inline-flex items-center gap-2.5 rounded-full border border-[var(--color-outline)] bg-[var(--color-surface-container)] px-4 py-2">
                     <span className="relative flex h-2 w-2" aria-hidden="true">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00d9ff] opacity-60" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00d9ff]" />
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-primary)] opacity-60" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-primary)]" />
                     </span>
-                    <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#c0c0d4]">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-text-secondary)]">
                       CodeFest 2026 · Job readiness
                     </span>
                   </div>
                 </Reveal>
 
                 <Reveal delay={90}>
-                  <h1 className="mt-6 font-display text-[56px] font-semibold leading-[0.94] tracking-[-0.055em] text-white sm:text-[70px] xl:text-[84px]">
+                  <h1 className="mt-6 font-display text-[56px] font-semibold leading-[0.94] tracking-[-0.055em] text-[var(--color-text-primary)] sm:text-[70px] xl:text-[84px]">
                     Rehearse the
                     <br />
                     interview.
@@ -172,7 +172,7 @@ export default async function LandingPage() {
                 </Reveal>
 
                 <Reveal delay={160}>
-                  <p className="mt-6 max-w-[480px] text-[16px] leading-relaxed text-[#b5b5c9] sm:text-[17.5px]">
+                  <p className="mt-6 max-w-[480px] text-[16.5px] leading-relaxed text-[var(--color-text-secondary)] sm:text-[18px]">
                     Five specialists. Adaptive interviews. One scorecard from your words.
                   </p>
                 </Reveal>
@@ -192,33 +192,33 @@ export default async function LandingPage() {
 
                 <Reveal delay={300}>
                   <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
-                    <span className="flex items-center gap-1.5 text-[11px] text-[#8d8d9f]">
-                      <Check size={12} className="text-emerald-400" />
+                    <span className="flex items-center gap-1.5 text-[11.5px] text-[var(--color-text-secondary)]">
+                      <Check size={13} className="text-[var(--color-success)]" />
                       Demo sign-in
                     </span>
-                    <span className="h-1 w-1 rounded-full bg-white/20" aria-hidden="true" />
-                    <span className="flex items-center gap-1.5 text-[11px] text-[#8d8d9f]">
-                      <Check size={12} className="text-emerald-400" />
+                    <span className="h-1 w-1 rounded-full bg-[var(--color-outline)]" aria-hidden="true" />
+                    <span className="flex items-center gap-1.5 text-[11.5px] text-[var(--color-text-secondary)]">
+                      <Check size={13} className="text-[var(--color-success)]" />
                       Voice optional
                     </span>
-                    <span className="h-1 w-1 rounded-full bg-white/20" aria-hidden="true" />
-                    <span className="flex items-center gap-1.5 text-[11px] text-[#8d8d9f]">
-                      <Check size={12} className="text-emerald-400" />
+                    <span className="h-1 w-1 rounded-full bg-[var(--color-outline)]" aria-hidden="true" />
+                    <span className="flex items-center gap-1.5 text-[11.5px] text-[var(--color-text-secondary)]">
+                      <Check size={13} className="text-[var(--color-success)]" />
                       Runs locally
                     </span>
                   </div>
                 </Reveal>
 
                 <Reveal delay={360}>
-                  <div className="mt-8 grid max-w-[400px] grid-cols-3 divide-x divide-white/[0.07] rounded-2xl border border-white/[0.07] bg-white/[0.02] py-3.5">
+                  <div className="mt-8 grid max-w-[420px] grid-cols-3 divide-x divide-[var(--color-outline)] rounded-3xl border border-[var(--color-outline)] bg-[var(--color-surface-container)] py-3.5 shadow-sm">
                     {[
                       { value: "5", label: "Specialists" },
                       { value: "4", label: "Rubric scores" },
                       { value: "<60s", label: "Report" },
                     ].map((stat) => (
-                      <div key={stat.label} className="px-4">
-                        <p className="font-display text-[21px] font-semibold leading-none text-white">{stat.value}</p>
-                        <p className="mt-1.5 font-mono text-[7.5px] uppercase tracking-[0.12em] text-[#6f7284]">
+                      <div key={stat.label} className="px-4 text-center">
+                        <p className="font-display text-[22px] font-semibold leading-none text-[var(--color-text-primary)]">{stat.value}</p>
+                        <p className="mt-1.5 font-mono text-[8.5px] uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
                           {stat.label}
                         </p>
                       </div>

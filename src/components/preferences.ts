@@ -4,6 +4,7 @@ export const PREF_KEYS = {
   chatVoice: "viewpilot.voiceReplies",
   lastSetup: "viewpilot.lastSetup",
   latestReport: "viewpilot.latestReport",
+  theme: "viewpilot.theme",
 } as const;
 
 export function readPreference(key: string): string | null {
@@ -40,3 +41,21 @@ export function readStoredFlag(key: string): boolean {
 export function writeStoredFlag(key: string, value: boolean): void {
   writePreference(key, value ? "1" : "0");
 }
+
+export function getStoredTheme(): "light" | "dark" {
+  if (typeof window === "undefined") return "light";
+  const stored = readPreference(PREF_KEYS.theme);
+  return stored === "dark" ? "dark" : "light";
+}
+
+export function applyTheme(theme: "light" | "dark"): void {
+  if (typeof window === "undefined") return;
+  document.documentElement.setAttribute("data-theme", theme);
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+  writePreference(PREF_KEYS.theme, theme);
+}
+
