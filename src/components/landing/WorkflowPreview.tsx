@@ -213,7 +213,7 @@ export default function WorkflowPreview() {
           <div className="animate-rise mt-3 flex items-start gap-2 rounded-xl border border-emerald-400/15 bg-emerald-500/[0.06] px-3 py-2.5">
             <Check size={13} className="mt-0.5 shrink-0 text-emerald-300" aria-hidden="true" />
             <p className="text-[10.5px] leading-relaxed text-[#b7d9c6]">
-              Preview complete. In the workspace, every node streams its status and output into the run console.
+              Preview complete. In the workspace, each node streams live output.
             </p>
           </div>
         ) : null}

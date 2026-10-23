@@ -1,8 +1,8 @@
-import { ArrowUpRight, Clock3, Quote, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Clock3, FileDown, Quote, Sparkles } from "lucide-react";
 import ScoreRing from "@/components/ui/ScoreRing";
 import ScoreBar from "@/components/ui/ScoreBar";
 
-const DIMENSIONS = [
+const dimensions = [
   { label: "Communication", score: 78, weight: 0.25 },
   { label: "Role knowledge", score: 71, weight: 0.3 },
   { label: "Problem solving", score: 66, weight: 0.25 },
@@ -14,94 +14,118 @@ export default function ReportPreview() {
     <div className="relative">
       <div
         aria-hidden="true"
-        className="absolute -inset-6 rounded-[32px] bg-[radial-gradient(ellipse_at_40%_30%,rgba(0,217,255,0.09),transparent_66%)] blur-2xl"
+        className="absolute -inset-6 rounded-[32px] bg-[radial-gradient(ellipse_at_30%_20%,rgba(108,99,255,0.14),transparent_62%)] blur-xl"
       />
 
-      <div className="glass relative overflow-hidden rounded-[20px]">
-        <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.07] bg-black/20 px-4 py-3">
-          <span className="chip chip-success">
-            <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
-            Session complete
+      <div className="glass relative overflow-hidden rounded-[26px]">
+        <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.07] bg-black/20 px-5 py-3">
+          <span className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#8b8ba3]">
+            <Sparkles size={11} className="text-[#a8a2ff]" />
+            Sample report
           </span>
-          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#777a8e]">
-            Frontend Engineer · Entry level · Mixed
+          <span className="chip chip-accent" style={{ fontSize: "8.5px" }}>Frontend Engineer</span>
+          <span className="chip" style={{ fontSize: "8.5px" }}>Entry level</span>
+          <span className="chip" style={{ fontSize: "8.5px" }}>Mixed</span>
+          <span className="ml-auto flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.1em] text-[#6f7284]">
+            <Clock3 size={9} /> Generated in 48s
           </span>
-          <span className="ml-auto font-mono text-[9px] text-[#8b8ba3]">sample report</span>
         </div>
 
-        <div className="p-4 sm:p-5">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-4">
-              <ScoreRing score={73} size={104} label="overall" />
-              <div>
-                <p className="font-display text-[19px] font-semibold text-white">Strong foundation</p>
-                <p className="mt-1 max-w-[190px] text-[11.5px] leading-relaxed text-[#9ca3af]">
-                  Clear structure. The evidence gets thin when the answer turns technical.
+        <div className="grid gap-0 md:grid-cols-[0.9fr_1.1fr]">
+          <div className="border-b border-white/[0.06] p-5 md:border-b-0 md:border-r md:p-6">
+            <div className="flex items-start gap-4">
+              <ScoreRing score={74} size={104} stroke={7} label="overall" />
+              <div className="min-w-0 pt-1">
+                <p className="font-mono text-[8.5px] uppercase tracking-[0.14em] text-[#7fe8ff]">Strong foundation</p>
+                <p className="mt-1.5 font-display text-[20px] font-semibold leading-tight text-white">
+                  Clear structure.
+                  <br />
+                  Thin on trade-offs.
                 </p>
-                <span className="mt-2.5 inline-flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#7fe8ff]">
-                  <Clock3 size={11} aria-hidden="true" />
-                  42s to report
-                </span>
+                <p className="mt-2 text-[11.5px] leading-relaxed text-[#9b9cae]">
+                  You hold the thread and land the result. Next: name the trade-off.
+                </p>
               </div>
             </div>
 
-            <div className="min-w-0 flex-1 space-y-2.5 sm:border-l sm:border-white/[0.07] sm:pl-5">
-              {DIMENSIONS.map((dimension) => (
+            <div className="mt-5 space-y-3 border-t border-white/[0.06] pt-4">
+              {dimensions.map((dimension) => (
                 <ScoreBar
                   key={dimension.label}
                   label={dimension.label}
                   score={dimension.score}
                   weight={dimension.weight}
-                  compact
                 />
               ))}
             </div>
           </div>
 
-          <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3.5">
-            <div className="flex items-start gap-2.5">
-              <Quote size={14} className="mt-0.5 shrink-0 text-[#8b85ff]" aria-hidden="true" />
-              <div>
-                <p className="text-[12.5px] leading-relaxed text-[#dcdce8]">
-                  “I rebuilt the checkout summary as a server component and cut first render from 1.9s to
-                  0.8s — support tickets about missing totals stopped the following week.”
-                </p>
-                <p className="mt-2 font-mono text-[8.5px] uppercase tracking-[0.12em] text-[#6f7284]">
-                  Evidence · answer quality · Q2
-                </p>
+          <div className="p-5 md:p-6">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[8.5px] uppercase tracking-[0.14em] text-[#6f7284]">
+                Evidence from your answer
+              </span>
+              <Quote size={14} className="text-[#4f5262]" />
+            </div>
+            <blockquote className="mt-3 rounded-xl border border-[#6c63ff]/20 bg-[#6c63ff]/[0.06] p-4">
+              <p className="text-[12.5px] leading-relaxed text-[#dedee9]">
+                &ldquo;I proposed a single reducer with explicit checkout events because the
+                three-team handoff kept losing state between payment and confirmation.&rdquo;
+              </p>
+              <p className="mt-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-[#7d7f92]">
+                Question 2 · Problem solving · quoted verbatim
+              </p>
+            </blockquote>
+
+            <div className="mt-4 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3.5">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 font-mono text-[8.5px] uppercase tracking-[0.12em] text-[#8b8ba3]">
+                  <Sparkles size={10} className="text-amber-300" />
+                  Next practice
+                </span>
+                <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#6f7284]">3 actions · 25 min</span>
+              </div>
+              <div className="mt-2.5 space-y-2">
+                {[
+                  { title: "Rebuild one answer around a constraint", minutes: "8 min" },
+                  { title: "Say the trade-off before the outcome", minutes: "7 min" },
+                  { title: "Re-run the same five questions", minutes: "10 min" },
+                ].map((action) => (
+                  <div key={action.title} className="flex items-center gap-2.5">
+                    <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-500/10 text-emerald-300">
+                      <Check size={9} strokeWidth={2.5} />
+                    </span>
+                    <p className="flex-1 text-[11.5px] text-[#c5c5d4]">{action.title}</p>
+                    <span className="font-mono text-[8px] text-[#6f7284]">{action.minutes}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
 
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            <div className="rounded-xl border border-emerald-400/15 bg-emerald-500/[0.05] p-3">
-              <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-emerald-300/80">
-                Keep doing
-              </p>
-              <p className="mt-1.5 text-[11.5px] leading-snug text-[#c5e5d2]">
-                Naming the constraint before the solution.
-              </p>
-            </div>
-            <div className="rounded-xl border border-amber-400/15 bg-amber-500/[0.05] p-3">
-              <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-amber-300/80">
-                Next practice
-              </p>
-              <p className="mt-1.5 text-[11.5px] leading-snug text-[#e9d6ac]">
-                One project story with a measurable result.
-              </p>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <span className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 font-mono text-[8.5px] uppercase tracking-[0.08em] text-[#b8b8c8]">
+                <FileDown size={10} /> Print / PDF
+              </span>
+              <span className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 font-mono text-[8.5px] uppercase tracking-[0.08em] text-[#b8b8c8]">
+                Export JSON
+              </span>
+              <span className="ml-auto flex items-center gap-1 font-mono text-[8px] uppercase tracking-[0.08em] text-[#7fe8ff]">
+                Practice again <ArrowRight size={9} />
+              </span>
             </div>
           </div>
+        </div>
 
-          <div className="mt-3 flex items-center justify-between border-t border-white/[0.06] pt-3">
-            <span className="flex items-center gap-1.5 font-mono text-[8.5px] uppercase tracking-[0.1em] text-[#6f7284]">
-              <Sparkles size={10} className="text-[#9d95ff]" aria-hidden="true" />
-              3 strengths · 3 fixes · STAR blueprint
-            </span>
-            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#b3adff]">
-              Full report
-              <ArrowUpRight size={12} aria-hidden="true" />
-            </span>
-          </div>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-white/[0.06] bg-black/15 px-5 py-2.5">
+          <p className="font-mono text-[7.5px] uppercase tracking-[0.1em] text-[#565969]">
+            Practice estimate — not a hiring decision
+          </p>
+          <p className="font-mono text-[7.5px] uppercase tracking-[0.1em] text-[#565969]">
+            No protected traits scored
+          </p>
+          <p className="ml-auto font-mono text-[7.5px] uppercase tracking-[0.1em] text-[#565969]">
+            128 words analysed · local rubric
+          </p>
         </div>
       </div>
     </div>
