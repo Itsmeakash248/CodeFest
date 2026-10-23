@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     "Five specialist agents, adaptive mock interviews, a visible four-part rubric and a practice plan built from your own answers. Built by Team Mooncraft for CodeFest 2026.",
 };
 
-const container = "mx-auto w-full max-w-[1320px] px-5 sm:px-8";
+const container = "mx-auto w-full max-w-[1480px] px-6 sm:px-10";
 
 const marqueeRoles = ROLES.slice(0, 9).map((role) => role.label);
 
@@ -147,22 +147,22 @@ export default async function LandingPage() {
           </div>
 
           <div className={`${container} relative`}>
-            <div className="grid items-center gap-12 lg:grid-cols-[0.84fr_1.16fr] lg:gap-8 xl:gap-12">
-              <div className="relative z-10 max-w-[560px]">
+            <div className="grid items-center gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:gap-10 xl:gap-14">
+              <div className="relative z-10 max-w-[620px]">
                 <Reveal>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.09] bg-white/[0.03] px-3 py-1.5">
-                    <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
+                  <div className="inline-flex items-center gap-2.5 rounded-full border border-white/[0.12] bg-white/[0.04] px-4 py-2">
+                    <span className="relative flex h-2 w-2" aria-hidden="true">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00d9ff] opacity-60" />
-                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#00d9ff]" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00d9ff]" />
                     </span>
-                    <span className="font-mono text-[8.5px] uppercase tracking-[0.17em] text-[#a9a9ba]">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#c0c0d4]">
                       CodeFest 2026 · Job readiness
                     </span>
                   </div>
                 </Reveal>
 
                 <Reveal delay={90}>
-                  <h1 className="mt-6 font-display text-[52px] font-semibold leading-[0.94] tracking-[-0.055em] text-white sm:text-[66px] xl:text-[78px]">
+                  <h1 className="mt-6 font-display text-[56px] font-semibold leading-[0.94] tracking-[-0.055em] text-white sm:text-[70px] xl:text-[84px]">
                     Rehearse the
                     <br />
                     interview.
@@ -172,20 +172,20 @@ export default async function LandingPage() {
                 </Reveal>
 
                 <Reveal delay={160}>
-                  <p className="mt-5 max-w-[430px] text-[14px] leading-relaxed text-[#a9a9ba] sm:text-[15px]">
+                  <p className="mt-6 max-w-[480px] text-[16px] leading-relaxed text-[#b5b5c9] sm:text-[17.5px]">
                     Five specialists. Adaptive interviews. One scorecard from your words.
                   </p>
                 </Reveal>
 
                 <Reveal delay={230}>
-                  <div className="mt-7 flex flex-wrap items-center gap-3">
-                    <Link href="/interview" className="btn btn-primary !px-5 !py-3.5 !text-[13.5px]">
+                  <div className="mt-8 flex flex-wrap items-center gap-3.5">
+                    <Link href="/interview" className="btn btn-primary !px-6 !py-4 !text-[15px]">
                       Run a mock interview
-                      <ArrowUpRight size={16} />
+                      <ArrowUpRight size={18} />
                     </Link>
-                    <Link href={workspaceHref} className="btn btn-ghost !px-5 !py-3.5 !text-[13.5px]">
+                    <Link href={workspaceHref} className="btn btn-ghost !px-6 !py-4 !text-[15px]">
                       Explore the workspace
-                      <ArrowRight size={15} />
+                      <ArrowRight size={17} />
                     </Link>
                   </div>
                 </Reveal>

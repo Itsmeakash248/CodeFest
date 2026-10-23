@@ -74,7 +74,7 @@ export default function Hero3D() {
   return (
     <div
       ref={sceneRef}
-      className="hero-scene relative mx-auto w-full max-w-[760px] [perspective:1900px]"
+      className="hero-scene relative mx-auto w-full max-w-[880px] [perspective:1900px]"
     >
       {/* ambience */}
       <div

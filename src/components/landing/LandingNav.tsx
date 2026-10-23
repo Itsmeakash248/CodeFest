@@ -96,10 +96,10 @@ export default function LandingNav({ user }: LandingNavProps) {
                 onClick={() => setActive(link.href)}
                 aria-current={current ? "location" : undefined}
                 className={cn(
-                  "relative rounded-lg px-2.5 py-2 text-[12px] transition-colors",
+                  "relative rounded-lg px-3.5 py-2 text-[14px] font-medium transition-colors",
                   current
-                    ? "bg-white/[0.055] text-white"
-                    : "text-[#9b9cae] hover:bg-white/[0.035] hover:text-white",
+                    ? "bg-white/[0.08] text-white"
+                    : "text-[#b2b3c4] hover:bg-white/[0.05] hover:text-white",
                 )}
               >
                 {link.label}
@@ -114,32 +114,32 @@ export default function LandingNav({ user }: LandingNavProps) {
           })}
         </nav>
 
-        <div className="ml-auto hidden items-center gap-2 sm:flex">
+        <div className="ml-auto hidden items-center gap-2.5 sm:flex">
           {user ? (
             <>
-              <Link href="/settings" className="btn btn-ghost !px-3 !py-2 !text-[11.5px]">
+              <Link href="/settings" className="btn btn-ghost !px-4 !py-2.5 !text-[13.5px]">
                 Settings
               </Link>
-              <Link href="/dashboard" className="btn btn-primary !px-3.5 !py-2 !text-[11.5px]">
+              <Link href="/dashboard" className="btn btn-primary !px-4.5 !py-2.5 !text-[13.5px]">
                 Open workspace
-                <ArrowUpRight size={12} />
+                <ArrowUpRight size={14} />
               </Link>
             </>
           ) : (
             <>
-              <Link href="/login" className="btn btn-ghost !px-3.5 !py-2 !text-[11.5px]">
+              <Link href="/login" className="btn btn-ghost !px-4 !py-2.5 !text-[13.5px]">
                 Log in
               </Link>
-              <Link href="/interview" className="btn btn-primary !px-3.5 !py-2 !text-[11.5px]">
+              <Link href="/interview" className="btn btn-primary !px-4.5 !py-2.5 !text-[13.5px]">
                 Start practicing
-                <ArrowUpRight size={12} />
+                <ArrowUpRight size={14} />
               </Link>
             </>
           )}
         </div>
 
         <div className="ml-auto sm:hidden">
-          <Link href="/interview" className="btn btn-primary !px-3 !py-2 !text-[11px]">
+          <Link href="/interview" className="btn btn-primary !px-3.5 !py-2 !text-[12.5px]">
             Practice
           </Link>
         </div>

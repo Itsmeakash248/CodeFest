@@ -43,17 +43,17 @@ export function LogoMark({ size = 30, className }: { size?: number; className?: 
   );
 }
 
-export default function Logo({ size = 30, wordmark = true, pro = true, className }: LogoProps) {
+export default function Logo({ size = 34, wordmark = true, pro = true, className }: LogoProps) {
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <LogoMark size={size} />
       {wordmark ? (
         <span className="flex items-center gap-1.5">
-          <span className="font-display text-[19px] font-semibold tracking-[-0.03em] text-white">
+          <span className="font-display text-[22px] font-semibold tracking-[-0.03em] text-white">
             ViewPilot
           </span>
           {pro ? (
-            <span className="rounded-[5px] border border-white/[0.12] bg-white/[0.05] px-1.5 py-[3px] font-mono text-[8.5px] font-semibold tracking-[0.18em] text-[#b9b3ff]">
+            <span className="rounded-[5px] border border-white/[0.12] bg-white/[0.05] px-1.5 py-[3px] font-mono text-[10px] font-semibold tracking-[0.18em] text-[#b9b3ff]">
               PRO
             </span>
           ) : null}
