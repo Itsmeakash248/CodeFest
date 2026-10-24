@@ -25,8 +25,12 @@ export async function POST(request: Request) {
   const text = typeof body.text === "string" ? body.text.trim().slice(0, 900) : "";
   if (!text) return Response.json({ error: "text is required." }, { status: 400 });
 
-  const apiKey = process.env.ELEVENLABS_API_KEY;
-  if (!apiKey) {
+  const apiKeys = (process.env.ELEVENLABS_API_KEY || "")
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean);
+
+  if (apiKeys.length === 0) {
     return Response.json(
       {
         error: "ElevenLabs is not configured on this server.",
@@ -50,66 +54,67 @@ export async function POST(request: Request) {
     });
   }
 
-  try {
-    const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voiceId)}?output_format=mp3_44100_128`,
-      {
-        method: "POST",
-        headers: {
-          "xi-api-key": apiKey,
-          "Content-Type": "application/json",
-          Accept: "audio/mpeg",
-        },
-        body: JSON.stringify({
-          text,
-          model_id: modelId,
-          voice_settings: {
-            stability: 0.45,
-            similarity_boost: 0.75,
-            style: 0.12,
-            use_speaker_boost: true,
-          },
-        }),
-        signal: AbortSignal.timeout(25_000),
-      },
-    );
+  let lastStatus = 502;
+  let lastErrorMsg = "Voice synthesis is unavailable.";
 
-    if (!response.ok) {
-      const detail = await response.text().catch(() => "");
-      console.warn(`[tts] ElevenLabs ${response.status}: ${detail.slice(0, 200)}`);
-      const status = response.status === 401 || response.status === 429 ? response.status : 502;
-      return Response.json(
+  for (const apiKey of apiKeys) {
+    try {
+      const response = await fetch(
+        `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voiceId)}?output_format=mp3_44100_128`,
         {
-          error:
-            response.status === 429
-              ? "Voice quota reached. Using browser speech instead."
-              : "Voice synthesis is unavailable. Using browser speech instead.",
-          fallback: "browser-speech",
+          method: "POST",
+          headers: {
+            "xi-api-key": apiKey,
+            "Content-Type": "application/json",
+            Accept: "audio/mpeg",
+          },
+          body: JSON.stringify({
+            text,
+            model_id: modelId,
+            voice_settings: {
+              stability: 0.45,
+              similarity_boost: 0.75,
+              style: 0.12,
+              use_speaker_boost: true,
+            },
+          }),
+          signal: AbortSignal.timeout(25_000),
         },
-        { status },
       );
+
+      if (!response.ok) {
+        const detail = await response.text().catch(() => "");
+        console.warn(`[tts] ElevenLabs key error (${response.status}): ${detail.slice(0, 100)}, trying next key...`);
+        lastStatus = response.status === 401 || response.status === 429 ? response.status : 502;
+        lastErrorMsg =
+          response.status === 429
+            ? "Voice quota reached. Using browser speech instead."
+            : "Voice synthesis is unavailable. Using browser speech instead.";
+        continue;
+      }
+
+      const contentType = response.headers.get("content-type") ?? "audio/mpeg";
+      const audio = await response.arrayBuffer();
+      if (audio.byteLength === 0) continue;
+      remember(cacheKey, { audio, contentType });
+
+      return new Response(audio, {
+        headers: {
+          "Content-Type": contentType,
+          "Cache-Control": "private, max-age=3600",
+          "X-Voice-Id": voiceId,
+          "X-Voice-Cache": "miss",
+        },
+      });
+    } catch (error) {
+      console.warn("[tts] key attempt failed:", (error as Error).message);
     }
-
-    const contentType = response.headers.get("content-type") ?? "audio/mpeg";
-    const audio = await response.arrayBuffer();
-    if (audio.byteLength === 0) throw new Error("Empty audio response");
-    remember(cacheKey, { audio, contentType });
-
-    return new Response(audio, {
-      headers: {
-        "Content-Type": contentType,
-        "Cache-Control": "private, max-age=3600",
-        "X-Voice-Id": voiceId,
-        "X-Voice-Cache": "miss",
-      },
-    });
-  } catch (error) {
-    console.warn("[tts] failed:", (error as Error).message);
-    return Response.json(
-      { error: "Voice synthesis timed out. Using browser speech instead.", fallback: "browser-speech" },
-      { status: 502 },
-    );
   }
+
+  return Response.json(
+    { error: lastErrorMsg, fallback: "browser-speech" },
+    { status: lastStatus },
+  );
 }
 
 export async function GET() {
