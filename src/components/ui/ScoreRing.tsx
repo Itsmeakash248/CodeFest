@@ -68,13 +68,13 @@ export default function ScoreRing({
       </svg>
       <span className="absolute inset-0 flex flex-col items-center justify-center">
         <span
-          className="font-display font-semibold leading-none tracking-[-0.04em] text-white"
+          className="font-display font-semibold leading-none tracking-[-0.04em] text-[var(--color-text-primary)]"
           style={{ fontSize }}
         >
           {clamped}
         </span>
         {label ? (
-          <span className="mt-1.5 font-mono text-[8.5px] uppercase tracking-[0.14em] text-[#8b8ba3]">
+          <span className="mt-1.5 font-mono text-[8.5px] uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">
             {label}
           </span>
         ) : null}

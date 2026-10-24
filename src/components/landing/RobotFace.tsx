@@ -67,7 +67,7 @@ export default function RobotFace({
               <span className="font-mono text-[7px] uppercase tracking-[0.18em] text-cyan-200/50">
                 M-01
               </span>
-              <span className="flex items-center gap-1 font-mono text-[6.5px] uppercase tracking-[0.14em] text-[#5f7286]">
+              <span className="flex items-center gap-1 font-mono text-[6.5px] uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">
                 <span
                   className={cn(
                     "h-1 w-1 rounded-full",
@@ -151,8 +151,8 @@ export default function RobotFace({
         </div>
 
         {/* neck + base */}
-        <div className="mx-auto h-2 w-[22%] rounded-b-md border-x border-b border-white/[0.08] bg-[#15151d]" />
-        <div className="mx-auto h-1.5 w-[42%] rounded-[999px] bg-gradient-to-b from-[#22222c] to-[#0b0b10] shadow-[0_14px_26px_rgba(0,0,0,0.6)]" />
+        <div className="mx-auto h-2 w-[22%] rounded-b-md border-x border-b border-white/[0.08] bg-[var(--color-surface-container)]" />
+        <div className="mx-auto h-1.5 w-[42%] rounded-[999px] bg-gradient-to-b from-[var(--color-surface-container-high)] to-[var(--color-background)] shadow-[0_14px_26px_rgba(0,0,0,0.6)]" />
       </div>
     </div>
   );

@@ -82,13 +82,13 @@ export default function RubricCube({ className }: RubricCubeProps) {
               )}
               style={{ transform: face.transform }}
             >
-              <span className="font-mono text-[6.5px] uppercase leading-tight tracking-[0.12em] text-[#8b8ba3]">
+              <span className="font-mono text-[6.5px] uppercase leading-tight tracking-[0.12em] text-[var(--color-text-secondary)]">
                 {face.label}
               </span>
               <span
                 className={cn(
                   "font-display text-[30px] font-semibold leading-none tracking-[-0.05em]",
-                  face.accent ? "text-gradient" : "text-[#dedee9]",
+                  face.accent ? "text-gradient" : "text-[var(--color-text-primary)]",
                 )}
               >
                 {face.value}

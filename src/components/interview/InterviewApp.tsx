@@ -7,8 +7,16 @@ import type {
   InterviewReport,
   InterviewSetup,
   InterviewTurn,
+  ProctoringViolation,
 } from "@/lib/types";
-import { answerInterview, finalizeInterview, startInterview } from "@/lib/client/api";
+import {
+  answerInterview,
+  finalizeInterview,
+  saveCloudReport,
+  startInterview,
+} from "@/lib/client/api";
+import { useVideoProctor } from "@/lib/interview/useVideoProctor";
+import { createProctorSession, type ProctorSession } from "@/lib/interview/proctorEngine";
 import {
   readLastSetup,
   readLatestReport,
@@ -38,6 +46,8 @@ const DEFAULT_SETUP: InterviewSetup = {
   type: "Mixed",
   difficulty: "Standard",
   resume: "",
+  videoEnabled: true,
+  conversationalMode: true,
 };
 
 interface InterviewAppProps {
@@ -67,6 +77,12 @@ export default function InterviewApp({ user, initialReport }: InterviewAppProps)
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const speechToken = useRef(0);
+
+  const videoProctor = useVideoProctor(screen === "room" && (setup.videoEnabled ?? true));
+  const proctorRef = useRef<ProctorSession | null>(null);
+  const [integrityScore, setIntegrityScore] = useState(100);
+  const [violations, setViolations] = useState<ProctoringViolation[]>([]);
+  const [proctorToast, setProctorToast] = useState<string | null>(null);
 
   const stopVoice = useCallback(() => {
     speechToken.current += 1;
@@ -142,10 +158,45 @@ export default function InterviewApp({ user, initialReport }: InterviewAppProps)
     if (!next) stopVoice();
   }
 
+  useEffect(() => {
+    if (screen === "room") {
+      setIntegrityScore(100);
+      setViolations([]);
+      const session = createProctorSession({
+        onViolation: (v) => {
+          setViolations((prev) => [...prev, v]);
+          setProctorToast(`⚠️ ${v.message}`);
+          window.setTimeout(() => setProctorToast((curr) => (curr?.includes(v.message) ? null : curr)), 3800);
+        },
+        onScoreChange: (s) => setIntegrityScore(s),
+      });
+      proctorRef.current = session;
+      return () => {
+        session.destroy();
+        proctorRef.current = null;
+      };
+    }
+  }, [screen]);
+
+  useEffect(() => {
+    if (screen === "room" && videoProctor.faceStatus !== "centered") {
+      proctorRef.current?.recordFaceAnomaly(videoProctor.faceStatus);
+    }
+  }, [screen, videoProctor.faceStatus]);
+
   function finishReport(nextReport: InterviewReport) {
-    saveLatestReport(nextReport);
-    setLatestReport(nextReport);
-    setReport(nextReport);
+    const proctorReport = proctorRef.current?.generateReport(
+      videoProctor.inFramePct,
+      videoProctor.eyeContactPct,
+    );
+    const enrichedReport: InterviewReport = {
+      ...nextReport,
+      integrity: proctorReport,
+    };
+    saveLatestReport(enrichedReport);
+    setLatestReport(enrichedReport);
+    setReport(enrichedReport);
+    void saveCloudReport(enrichedReport).catch(() => {});
     setScreen("report");
     setStartedAt(null);
     setConfirmEnd(false);
@@ -257,7 +308,11 @@ export default function InterviewApp({ user, initialReport }: InterviewAppProps)
     setBusy("finalize");
     setError(null);
     try {
-      const response = await finalizeInterview({ sessionId, setup, turns });
+      const integrity = proctorRef.current?.generateReport(
+        videoProctor.inFramePct,
+        videoProctor.eyeContactPct,
+      );
+      const response = await finalizeInterview({ sessionId, setup, turns, integrity });
       if (!response.report) throw new Error("The report could not be built from the answers so far.");
       finishReport(response.report);
     } catch (cause) {
@@ -304,11 +359,11 @@ export default function InterviewApp({ user, initialReport }: InterviewAppProps)
   const answeredMain = turns.filter((turn) => !turn.isFollowUp).length;
 
   return (
-    <div className="relative min-h-dvh overflow-x-hidden bg-[#0a0a0f]">
+    <div className="relative min-h-dvh overflow-x-hidden bg-[var(--color-background)]">
       <div aria-hidden="true" className="pointer-events-none fixed inset-0">
         <div className="absolute inset-0 grid-bg opacity-25" />
         <div className="aurora left-[-8%] top-[-10%] h-[520px] w-[520px] bg-[#6c63ff]/[0.13]" />
-        <div className="aurora bottom-[-18%] right-[-8%] h-[460px] w-[460px] bg-[#00d9ff]/[0.07]" />
+        <div className="aurora bottom-[-18%] right-[-8%] h-[460px] w-[460px] bg-[var(--color-info-strong)]/[0.07]" />
       </div>
 
       <InterviewTopBar screen={screen} user={user} />
@@ -340,6 +395,12 @@ export default function InterviewApp({ user, initialReport }: InterviewAppProps)
             }}
             onStopVoice={stopVoice}
             onEnd={() => setConfirmEnd(true)}
+            videoProctor={videoProctor}
+            integrityScore={integrityScore}
+            violations={violations}
+            proctorToast={proctorToast}
+            onPasteDetected={(len) => proctorRef.current?.recordPaste(len)}
+            conversationalMode={setup.conversationalMode ?? true}
           />
         ) : (
           <InterviewSetupPanel

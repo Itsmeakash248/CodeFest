@@ -6,6 +6,7 @@ export const SESSION_COOKIE = "vp_session";
 export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 
 export interface SessionUser {
+  id?: string;
   email: string;
   name: string;
   demo: boolean;

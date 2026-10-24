@@ -48,15 +48,17 @@ import {
 import { speakText, stopSpeaking } from "@/lib/voice/browser";
 import { DEFAULT_VOICE, VOICES, type VoiceOption } from "@/lib/voice/voices";
 import {
+  fetchCloudReports,
   fetchRobotStatus,
   fetchStatus,
   login,
   logout,
+  saveCloudReport,
   setRobotExpression,
   type ProviderStatus,
   type RobotState,
 } from "@/lib/client/api";
-import { clearLatestReport } from "@/lib/store/interview-store";
+import { clearLatestReport, saveLatestReport } from "@/lib/store/interview-store";
 import { useChatStore } from "@/lib/store/chat-store";
 import { useWorkflowStore } from "@/lib/store/workflow-store";
 import { initials } from "@/components/dashboard/utils";
@@ -410,6 +412,52 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
     push("All local practice data has been reset.", "success");
   }
 
+  const [syncingCloud, setSyncingCloud] = useState(false);
+  const [pullingCloud, setPullingCloud] = useState(false);
+
+  async function syncLocalToCloud() {
+    if (!report) {
+      push("No local interview report found to sync.", "info");
+      return;
+    }
+    setSyncingCloud(true);
+    try {
+      const res = await saveCloudReport(report);
+      if (res.ok) {
+        push(
+          res.source === "supabase"
+            ? "Report successfully synced to Supabase Cloud!"
+            : "Report cached locally (Demo mode).",
+          "success",
+        );
+      } else {
+        push("Could not sync report to cloud.", "error");
+      }
+    } catch (err) {
+      push(err instanceof Error ? err.message : "Sync failed.", "error");
+    } finally {
+      setSyncingCloud(false);
+    }
+  }
+
+  async function pullFromCloud() {
+    setPullingCloud(true);
+    try {
+      const reports = await fetchCloudReports();
+      if (reports.length > 0) {
+        saveLatestReport(reports[0]);
+        refreshLocalData();
+        push(`Pulled latest report from Supabase Cloud (${reports.length} available).`, "success");
+      } else {
+        push("No cloud reports found for your account.", "info");
+      }
+    } catch (err) {
+      push(err instanceof Error ? err.message : "Could not fetch cloud reports.", "error");
+    } finally {
+      setPullingCloud(false);
+    }
+  }
+
   const selectedVoiceId = voiceId || DEFAULT_VOICE.voiceId;
   const robotOnline = Boolean(robot?.configured && robot.online);
   const elevenLabsReady = provider?.elevenlabs === true;
@@ -434,22 +482,22 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
           };
 
   return (
-    <div id="top" className="relative min-h-dvh overflow-x-hidden bg-[#0a0a0f]">
+    <div id="top" className="relative min-h-dvh overflow-x-hidden bg-[var(--color-background)]">
       <div aria-hidden="true" className="pointer-events-none fixed inset-0">
         <div className="absolute inset-0 grid-bg opacity-25" />
         <div className="aurora left-[-8%] top-[-12%] h-[520px] w-[520px] bg-[#6c63ff]/[0.12]" />
-        <div className="aurora bottom-[-16%] right-[-10%] h-[480px] w-[480px] bg-[#00d9ff]/[0.07]" />
+        <div className="aurora bottom-[-16%] right-[-10%] h-[480px] w-[480px] bg-[var(--color-info-strong)]/[0.07]" />
       </div>
 
-      <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[#0a0a0f]/85 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[var(--color-background)] backdrop-blur-xl">
         <div className="mx-auto flex h-16 w-full max-w-[1220px] items-center gap-3 px-5 sm:px-8">
           <Link href="/" aria-label="ViewPilot Pro home" className="shrink-0">
             <Logo size={24} />
           </Link>
-          <span aria-hidden="true" className="hidden h-5 w-px bg-white/[0.09] sm:block" />
+          <span aria-hidden="true" className="hidden h-5 w-px bg-[var(--color-surface-container-high)] sm:block" />
           <div className="hidden sm:block">
-            <p className="font-display text-[12.5px] font-semibold leading-tight text-white">Settings</p>
-            <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-[#6f7284]">
+            <p className="font-display text-[12.5px] font-semibold leading-tight text-[var(--color-text-primary)]">Settings</p>
+            <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-[var(--color-text-faint)]">
               Local-first preferences
             </p>
           </div>
@@ -457,7 +505,7 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
           <div className="ml-auto flex items-center gap-1.5">
             <Link
               href="/interview"
-              className="hidden h-8 items-center gap-1.5 rounded-lg border border-white/[0.07] bg-white/[0.025] px-2.5 text-[11px] text-[#b8b8c9] transition-colors hover:bg-white/[0.06] hover:text-white sm:flex"
+              className="hidden h-8 items-center gap-1.5 rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] px-2.5 text-[11px] text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-container-high)] hover:text-[var(--color-text-primary)] sm:flex"
             >
               <Mic size={12} />
               New interview
@@ -468,7 +516,7 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
             </Link>
             <span
               title={`${name} · ${user.email}`}
-              className="ml-1 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#7c74ff] to-[#3c34a8] text-[9px] font-bold text-white"
+              className="ml-1 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#7c74ff] to-[#3c34a8] text-[9px] font-bold text-[var(--color-text-primary)]"
             >
               {initials(name)}
             </span>
@@ -480,10 +528,10 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <span className="label">Preferences</span>
-            <h1 className="mt-3 font-display text-[40px] font-semibold leading-[0.96] tracking-[-0.05em] text-white sm:text-[52px]">
+            <h1 className="mt-3 font-display text-[40px] font-semibold leading-[0.96] tracking-[-0.05em] text-[var(--color-text-primary)] sm:text-[52px]">
               Set up your <span className="text-gradient">room.</span>
             </h1>
-            <p className="mt-3 max-w-[520px] text-[13px] leading-relaxed text-[#9b9cae]">
+            <p className="mt-3 max-w-[520px] text-[13px] leading-relaxed text-[var(--color-text-secondary)]">
               Voice, workspace and local data. Everything here stays in this browser.
             </p>
           </div>
@@ -515,17 +563,17 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                     className={cn(
                       "group flex shrink-0 items-center gap-2 rounded-lg border px-3 py-2 text-[11.5px] transition-colors lg:mb-0.5 lg:w-full",
                       active
-                        ? "border-[#6c63ff]/25 bg-[#6c63ff]/10 text-white"
-                        : "border-transparent text-[#8b8ba3] hover:bg-white/[0.035] hover:text-white",
+                        ? "border-[#6c63ff]/25 bg-[#6c63ff]/10 text-[var(--color-text-primary)]"
+                        : "border-transparent text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container)] hover:text-[var(--color-text-primary)]",
                     )}
                   >
-                    <Icon size={13} className={active ? "text-[#b3adff]" : "text-[#5f6273]"} />
+                    <Icon size={13} className={active ? "text-[var(--color-tertiary)]" : "text-[var(--color-text-faint)]"} />
                     <span className="whitespace-nowrap">{item.label}</span>
                     <ChevronRight
                       size={11}
                       className={cn(
                         "ml-auto hidden lg:block",
-                        active ? "text-[#a8a2ff]" : "text-[#3d3f4e]",
+                        active ? "text-[var(--color-tertiary)]" : "text-[var(--color-text-faint)]",
                       )}
                     />
                   </a>
@@ -533,11 +581,11 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
               })}
             </nav>
 
-            <div className="mt-5 hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3.5 lg:block">
+            <div className="mt-5 hidden rounded-2xl border border-white/[0.06] bg-[var(--color-surface-container)] p-3.5 lg:block">
               <p className="flex items-center gap-1.5 font-mono text-[7.5px] uppercase tracking-[0.12em] text-emerald-300">
                 <ShieldCheck size={10} /> Private by default
               </p>
-              <p className="mt-2 text-[10.5px] leading-relaxed text-[#7d7f92]">
+              <p className="mt-2 text-[10.5px] leading-relaxed text-[var(--color-text-faint)]">
                 Reports, conversations and preferences live in localStorage. Nothing here is uploaded.
               </p>
             </div>
@@ -552,13 +600,13 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
               title="Profile"
               description="The identity used in the workspace and on exported reports."
             >
-              <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3.5">
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#7c74ff] to-[#3c34a8] text-[14px] font-bold text-white">
+              <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/[0.06] bg-[var(--color-surface-container)] p-3.5">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#7c74ff] to-[#3c34a8] text-[14px] font-bold text-[var(--color-text-primary)]">
                   {initials(name)}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] font-medium text-white">{name}</p>
-                  <p className="truncate font-mono text-[8px] uppercase tracking-[0.08em] text-[#6f7284]">
+                  <p className="truncate text-[13px] font-medium text-[var(--color-text-primary)]">{name}</p>
+                  <p className="truncate font-mono text-[8px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">
                     {user.email}
                   </p>
                 </div>
@@ -570,7 +618,7 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
 
               <form onSubmit={saveProfile} className="mt-4 grid gap-3.5 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="settings-name" className="mb-1.5 block text-[11px] font-medium text-[#c5c5d4]">
+                  <label htmlFor="settings-name" className="mb-1.5 block text-[11px] font-medium text-[var(--color-text-primary)]">
                     Display name
                   </label>
                   <input
@@ -584,7 +632,7 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                   />
                 </div>
                 <div>
-                  <label htmlFor="settings-email" className="mb-1.5 block text-[11px] font-medium text-[#c5c5d4]">
+                  <label htmlFor="settings-email" className="mb-1.5 block text-[11px] font-medium text-[var(--color-text-primary)]">
                     Email
                   </label>
                   <input
@@ -592,10 +640,10 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                     type="email"
                     value={user.email}
                     readOnly
-                    className="input cursor-not-allowed !text-[#7d7f92]"
+                    className="input cursor-not-allowed !text-[var(--color-text-faint)]"
                     aria-describedby="settings-email-note"
                   />
-                  <p id="settings-email-note" className="mt-1.5 text-[10px] text-[#6f7284]">
+                  <p id="settings-email-note" className="mt-1.5 text-[10px] text-[var(--color-text-faint)]">
                     Demo identity. Switch accounts from the sign-out action.
                   </p>
                 </div>
@@ -613,7 +661,7 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                     <LogOut size={12} />
                     Sign out
                   </Button>
-                  <span className="text-[10px] text-[#6f7284]">
+                  <span className="text-[10px] text-[var(--color-text-faint)]">
                     An unsigned, httpOnly demo cookie keeps the session.
                   </span>
                 </div>
@@ -644,10 +692,10 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
               />
 
               <div className="mt-4 flex items-center justify-between px-0.5">
-                <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#7d7f92]">
+                <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[var(--color-text-faint)]">
                   Voice profile
                 </p>
-                <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#565969]">
+                <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
                   {VOICES.length} voices
                 </span>
               </div>
@@ -676,17 +724,17 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                           className={cn(
                             "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[9px] font-semibold",
                             selected
-                              ? "border-[#6c63ff]/35 bg-[#6c63ff]/20 text-[#d4d0ff]"
-                              : "border-white/[0.07] bg-white/[0.03] text-[#7d7f92]",
+                              ? "border-[#6c63ff]/35 bg-[#6c63ff]/20 text-[var(--color-tertiary)]"
+                              : "border-white/[0.07] bg-[var(--color-surface-container)] text-[var(--color-text-faint)]",
                           )}
                         >
                           {selected ? <Check size={11} /> : voice.name.slice(0, 1)}
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-[11.5px] font-medium text-[#dedee9]">
+                          <span className="block truncate text-[11.5px] font-medium text-[var(--color-text-primary)]">
                             {voice.name}
                           </span>
-                          <span className="block truncate text-[9.5px] text-[#6f7284]">
+                          <span className="block truncate text-[9.5px] text-[var(--color-text-faint)]">
                             {voice.description}
                           </span>
                         </span>
@@ -699,8 +747,8 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                         className={cn(
                           "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6c63ff]/50",
                           playing
-                            ? "border-[#00d9ff]/30 bg-[#00d9ff]/12 text-[#7fe8ff]"
-                            : "border-white/[0.06] bg-white/[0.025] text-[#6f7284] hover:text-white",
+                            ? "border-[var(--color-info-strong)]/30 bg-[var(--color-info-strong)]/12 text-[var(--color-info)]"
+                            : "border-white/[0.06] bg-[var(--color-surface-container)] text-[var(--color-text-faint)] hover:text-[var(--color-text-primary)]",
                         )}
                       >
                         {playing ? <Square size={8} /> : <Play size={10} />}
@@ -710,7 +758,7 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                 })}
               </div>
 
-              <p className="mt-3 flex items-start gap-2 text-[10px] leading-relaxed text-[#6f7284]">
+              <p className="mt-3 flex items-start gap-2 text-[10px] leading-relaxed text-[var(--color-text-faint)]">
                 <ShieldCheck size={11} className="mt-0.5 shrink-0 text-emerald-300/70" />
                 Voice choice and the read-aloud flag stay in localStorage. Browser speech takes over if
                 ElevenLabs is unavailable.
@@ -747,7 +795,7 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                 <QuickLink href="/interview" icon={Mic} title="Interview" detail="Five questions" />
               </div>
 
-              <p className="mt-3 text-[10px] leading-relaxed text-[#6f7284]">
+              <p className="mt-3 text-[10px] leading-relaxed text-[var(--color-text-faint)]">
                 Conversation history is local. Clearing it below cannot be undone.
               </p>
             </Panel>
@@ -758,7 +806,7 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
               icon={Cpu}
               eyebrow="Runtime"
               title="Engine status"
-              description="AI when a key exists, local rubric always, robot optional."
+              description="AI API connection required for agents, robot optional."
               action={
                 <Button
                   type="button"
@@ -776,48 +824,60 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
               {statusError ? (
                 <div
                   role="status"
-                  className="flex items-start gap-2 rounded-xl border border-amber-400/20 bg-amber-500/[0.06] px-3 py-2.5 text-[11px] leading-relaxed text-amber-200"
+                  className="flex items-start gap-2 rounded-xl border border-rose-400/20 bg-rose-500/[0.06] px-3 py-2.5 text-[11px] leading-relaxed text-rose-200"
                 >
-                  <Info size={12} className="mt-0.5 shrink-0" />
-                  Provider status is unavailable. The local interview engine still works.
+                  <Info size={12} className="mt-0.5 shrink-0 text-rose-300" />
+                  Provider status is unavailable. Could not verify API connection.
                 </div>
               ) : (
                 <div className="grid gap-1.5 sm:grid-cols-2">
                   <StatusTile
                     icon={Sparkles}
-                    label="Question engine"
+                    label="AI Agent API"
                     value={
                       !provider
                         ? "Checking…"
-                        : provider.engine === "ai"
-                          ? "AI path · local fallback"
-                          : "Local fallback"
+                        : provider.connected
+                          ? "Connected"
+                          : "Not connected (Error)"
                     }
-                    tone={provider?.engine === "ai" ? "violet" : "emerald"}
+                    tone={provider?.connected ? "violet" : "rose"}
                   />
                   <StatusTile
                     icon={ShieldCheck}
                     label="Interview rubric"
-                    value={provider ? "Deterministic · always on" : "Checking…"}
+                    value={provider ? "Deterministic · active" : "Checking…"}
                     tone="emerald"
                   />
                   <StatusTile
                     icon={Sparkles}
                     label="Gemini"
-                    value={!provider ? "Checking…" : provider.gemini ? "Key detected" : "No key"}
-                    tone={provider?.gemini ? "violet" : "muted"}
+                    value={!provider ? "Checking…" : provider.gemini ? "Connected" : "Not connected"}
+                    tone={provider?.gemini ? "violet" : "rose"}
                   />
                   <StatusTile
                     icon={Cloud}
                     label="OpenRouter"
-                    value={!provider ? "Checking…" : provider.openrouter ? "Key detected" : "No key"}
+                    value={!provider ? "Checking…" : provider.openrouter ? "Connected" : "Not connected"}
                     tone={provider?.openrouter ? "cyan" : "muted"}
                   />
                   <StatusTile
                     icon={Volume2}
                     label="ElevenLabs"
-                    value={!provider ? "Checking…" : elevenLabsReady ? "Voice ready" : "Browser fallback"}
+                    value={!provider ? "Checking…" : elevenLabsReady ? "Voice ready" : "Not connected"}
                     tone={elevenLabsReady ? "cyan" : "muted"}
+                  />
+                  <StatusTile
+                    icon={Database}
+                    label="Supabase Cloud"
+                    value={
+                      !provider
+                        ? "Checking…"
+                        : provider.supabase
+                          ? "Connected · RLS active"
+                          : "Demo mode · Local-first"
+                    }
+                    tone={provider?.supabase ? "emerald" : "muted"}
                   />
                   <StatusTile
                     icon={Bot}
@@ -836,7 +896,7 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                 </div>
               )}
 
-              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl border border-white/[0.05] bg-black/20 px-3 py-2 font-mono text-[7.5px] uppercase tracking-[0.08em] text-[#5f6273]">
+              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl border border-white/[0.05] bg-[var(--color-surface-container)] px-3 py-2 font-mono text-[7.5px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">
                 <span className="flex items-center gap-1">
                   <Cpu size={9} /> {provider?.model ?? "Model pending"}
                 </span>
@@ -848,21 +908,21 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
               <div className="mt-4 border-t border-white/[0.06] pt-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <p className="text-[11.5px] font-medium text-[#dedee9]">Test the presence robot</p>
-                    <p className="mt-0.5 text-[10px] text-[#6f7284]">
+                    <p className="text-[11.5px] font-medium text-[var(--color-text-primary)]">Test the presence robot</p>
+                    <p className="mt-0.5 text-[10px] text-[var(--color-text-faint)]">
                       Sends one expression over the local network. Never required.
                     </p>
                   </div>
                   <span
                     className={cn(
                       "flex items-center gap-1.5 font-mono text-[7.5px] uppercase tracking-[0.08em]",
-                      robotOnline ? "text-emerald-300" : "text-[#6f7284]",
+                      robotOnline ? "text-emerald-300" : "text-[var(--color-text-faint)]",
                     )}
                   >
                     <span
                       className={cn(
                         "h-1.5 w-1.5 rounded-full",
-                        robotOnline ? "animate-pulse-soft bg-emerald-400" : "bg-[#4f5262]",
+                        robotOnline ? "animate-pulse-soft bg-emerald-400" : "bg-[var(--color-text-faint)]",
                       )}
                     />
                     {robotOnline ? "Online" : "Offline"}
@@ -875,7 +935,7 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                       type="button"
                       onClick={() => void sendRobot(option.id)}
                       disabled={robotSending !== null}
-                      className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.025] px-2.5 py-1.5 text-[10.5px] text-[#b8b8c9] transition-colors hover:border-white/[0.16] hover:text-white disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00d9ff]/40"
+                      className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-[var(--color-surface-container)] px-2.5 py-1.5 text-[10.5px] text-[var(--color-text-primary)] transition-colors hover:border-white/[0.16] hover:text-[var(--color-text-primary)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-info-strong)]/40"
                     >
                       {robotSending === option.id ? (
                         <Loader2 size={10} className="animate-spin" />
@@ -887,8 +947,8 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                   ))}
                 </div>
                 {robotNote ? (
-                  <p className="animate-rise mt-2 flex items-start gap-1.5 text-[10px] leading-relaxed text-[#8d8d9f]">
-                    <Check size={10} className="mt-0.5 shrink-0 text-[#7fe8ff]" />
+                  <p className="animate-rise mt-2 flex items-start gap-1.5 text-[10px] leading-relaxed text-[var(--color-text-secondary)]">
+                    <Check size={10} className="mt-0.5 shrink-0 text-[var(--color-info)]" />
                     {robotNote}
                   </p>
                 ) : null}
@@ -904,15 +964,15 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
               description="Reports, conversations and workflow state never leave this browser."
             >
               <div className="grid gap-2 lg:grid-cols-[1.12fr_0.88fr]">
-                <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3.5">
+                <div className="rounded-2xl border border-white/[0.06] bg-[var(--color-surface-container)] p-3.5">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#7d7f92]">
+                    <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[var(--color-text-faint)]">
                       Latest report
                     </span>
                     {report ? (
                       <Link
                         href="/interview?report=latest"
-                        className="flex items-center gap-1 text-[10.5px] font-medium text-[#c9c5ff] transition-colors hover:text-white"
+                        className="flex items-center gap-1 text-[10.5px] font-medium text-[var(--color-tertiary)] transition-colors hover:text-[var(--color-text-primary)]"
                       >
                         Open report <ArrowRight size={10} />
                       </Link>
@@ -922,21 +982,21 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                     <div className="mt-2.5 flex items-center gap-3">
                       <ScoreRing score={report.overall} size={58} stroke={5} />
                       <div className="min-w-0">
-                        <p className="truncate text-[12px] font-medium text-white">{report.setup.role}</p>
-                        <p className="mt-0.5 truncate font-mono text-[7.5px] uppercase tracking-[0.07em] text-[#6f7284]">
+                        <p className="truncate text-[12px] font-medium text-[var(--color-text-primary)]">{report.setup.role}</p>
+                        <p className="mt-0.5 truncate font-mono text-[7.5px] uppercase tracking-[0.07em] text-[var(--color-text-faint)]">
                           {report.band} · {formatDate(report.generatedAt)}
                         </p>
-                        <p className="mt-1 line-clamp-2 text-[10px] leading-relaxed text-[#8d8d9f]">
+                        <p className="mt-1 line-clamp-2 text-[10px] leading-relaxed text-[var(--color-text-secondary)]">
                           {report.summary}
                         </p>
                       </div>
                     </div>
                   ) : (
                     <div className="mt-2.5 rounded-xl border border-dashed border-white/[0.08] px-3 py-3">
-                      <p className="text-[11px] text-[#9b9cae]">No report saved on this browser.</p>
+                      <p className="text-[11px] text-[var(--color-text-secondary)]">No report saved on this browser.</p>
                       <Link
                         href="/interview"
-                        className="mt-1.5 inline-flex items-center gap-1 text-[10.5px] font-medium text-[#c9c5ff] hover:text-white"
+                        className="mt-1.5 inline-flex items-center gap-1 text-[10.5px] font-medium text-[var(--color-tertiary)] hover:text-[var(--color-text-primary)]"
                       >
                         Run the first interview <ArrowRight size={10} />
                       </Link>
@@ -952,8 +1012,8 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                   ) : null}
                 </div>
 
-                <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3.5">
-                  <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#7d7f92]">
+                <div className="rounded-2xl border border-white/[0.06] bg-[var(--color-surface-container)] p-3.5">
+                  <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[var(--color-text-faint)]">
                     On this device
                   </p>
                   <div className="mt-2.5 space-y-1.5">
@@ -964,10 +1024,10 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                     ].map((item) => (
                       <div
                         key={item.label}
-                        className="flex items-center justify-between rounded-lg border border-white/[0.05] bg-black/15 px-2.5 py-1.5"
+                        className="flex items-center justify-between rounded-lg border border-white/[0.05] bg-[var(--color-surface-container)] px-2.5 py-1.5"
                       >
-                        <span className="text-[10.5px] text-[#9b9cae]">{item.label}</span>
-                        <span className="font-mono text-[10px] tabular-nums text-[#dedee9]">
+                        <span className="text-[10.5px] text-[var(--color-text-secondary)]">{item.label}</span>
+                        <span className="font-mono text-[10px] tabular-nums text-[var(--color-text-primary)]">
                           {item.value}
                         </span>
                       </div>
@@ -976,7 +1036,29 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                 </div>
               </div>
 
-              <div className="mt-3 flex flex-wrap gap-1.5">
+              <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-white/[0.06] pt-3">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => void syncLocalToCloud()}
+                  loading={syncingCloud}
+                  className="!text-[11px]"
+                >
+                  <Cloud size={12} className="text-emerald-400" />
+                  Sync to Cloud
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => void pullFromCloud()}
+                  loading={pullingCloud}
+                  className="!text-[11px]"
+                >
+                  <RefreshCw size={12} className="text-cyan-400" />
+                  Pull Cloud Reports
+                </Button>
                 <Button type="button" variant="ghost" size="sm" onClick={exportLocalData}>
                   <Download size={12} />
                   Export JSON
@@ -1001,7 +1083,7 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                 </Button>
               </div>
 
-              <p className="mt-2.5 flex items-start gap-2 text-[10px] leading-relaxed text-[#6f7284]">
+              <p className="mt-2.5 flex items-start gap-2 text-[10px] leading-relaxed text-[var(--color-text-faint)]">
                 <ShieldCheck size={11} className="mt-0.5 shrink-0 text-emerald-300/70" />
                 Clearing local data is immediate. Export a JSON copy first if you want a record.
               </p>
@@ -1021,11 +1103,11 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                   { label: "Built for", value: "CodeFest 2026" },
                   { label: "Engine", value: "Local-first" },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5">
-                    <p className="font-mono text-[7.5px] uppercase tracking-[0.1em] text-[#5f6273]">
+                  <div key={item.label} className="rounded-xl border border-white/[0.06] bg-[var(--color-surface-container)] px-3 py-2.5">
+                    <p className="font-mono text-[7.5px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
                       {item.label}
                     </p>
-                    <p className="mt-1 text-[11.5px] font-medium text-[#dedee9]">{item.value}</p>
+                    <p className="mt-1 text-[11.5px] font-medium text-[var(--color-text-primary)]">{item.value}</p>
                   </div>
                 ))}
               </div>
@@ -1041,7 +1123,7 @@ export default function SettingsPanel({ user }: SettingsPanelProps) {
                   <Mic size={11} /> Start practicing
                 </Link>
               </div>
-              <p className="mt-3 text-[10px] leading-relaxed text-[#6f7284]">
+              <p className="mt-3 text-[10px] leading-relaxed text-[var(--color-text-faint)]">
                 Scores are a practice estimate, not a hiring decision. No protected traits are scored.
               </p>
             </Panel>
@@ -1090,15 +1172,15 @@ function Panel({
     <section id={id} className="glass scroll-mt-24 rounded-[22px] p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#6c63ff]/25 bg-[#6c63ff]/10 text-[#b3adff]">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#6c63ff]/25 bg-[#6c63ff]/10 text-[var(--color-tertiary)]">
             <Icon size={15} strokeWidth={1.7} />
           </span>
           <div className="min-w-0">
-            <p className="font-mono text-[7.5px] uppercase tracking-[0.14em] text-[#6f7284]">{eyebrow}</p>
-            <h2 className="mt-0.5 font-display text-[19px] font-semibold tracking-[-0.02em] text-white">
+            <p className="font-mono text-[7.5px] uppercase tracking-[0.14em] text-[var(--color-text-faint)]">{eyebrow}</p>
+            <h2 className="mt-0.5 font-display text-[19px] font-semibold tracking-[-0.02em] text-[var(--color-text-primary)]">
               {title}
             </h2>
-            <p className="mt-1 max-w-[520px] text-[11px] leading-relaxed text-[#8d8d9f]">{description}</p>
+            <p className="mt-1 max-w-[520px] text-[11px] leading-relaxed text-[var(--color-text-secondary)]">{description}</p>
           </div>
         </div>
         {action ? <div className="shrink-0">{action}</div> : null}
@@ -1124,13 +1206,13 @@ function ToggleRow({
   label: string;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.07] bg-white/[0.03] text-[#9b9cae]">
+    <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[var(--color-surface-container)] p-3">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] text-[var(--color-text-secondary)]">
         <Icon size={14} />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-[11.5px] font-medium text-[#dedee9]">{title}</p>
-        <p className="mt-0.5 text-[10px] leading-relaxed text-[#6f7284]">{description}</p>
+        <p className="text-[11.5px] font-medium text-[var(--color-text-primary)]">{title}</p>
+        <p className="mt-0.5 text-[10px] leading-relaxed text-[var(--color-text-faint)]">{description}</p>
       </div>
       <button
         type="button"
@@ -1140,7 +1222,7 @@ function ToggleRow({
         onClick={onChange}
         className={cn(
           "relative h-6 w-11 shrink-0 rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6c63ff]/50",
-          checked ? "border-[#6c63ff]/40 bg-[#6c63ff]/40" : "border-white/[0.09] bg-white/[0.05]",
+          checked ? "border-[#6c63ff]/40 bg-[#6c63ff]/40" : "border-white/[0.09] bg-[var(--color-surface-container-high)]",
         )}
       >
         <span
@@ -1171,20 +1253,20 @@ function QuickLink({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 transition-colors hover:border-white/[0.13] hover:bg-white/[0.04]"
+      className="group flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-[var(--color-surface-container)] p-2.5 transition-colors hover:border-white/[0.13] hover:bg-[var(--color-surface-container)]"
     >
-      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/[0.07] bg-white/[0.03] text-[#b3adff]">
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] text-[var(--color-tertiary)]">
         <Icon size={12} />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-[11px] font-medium text-[#dedee9]">{title}</span>
-        <span className="block truncate font-mono text-[7px] uppercase tracking-[0.07em] text-[#5f6273]">
+        <span className="block truncate text-[11px] font-medium text-[var(--color-text-primary)]">{title}</span>
+        <span className="block truncate font-mono text-[7px] uppercase tracking-[0.07em] text-[var(--color-text-faint)]">
           {detail}
         </span>
       </span>
       <ArrowUpRight
         size={11}
-        className="shrink-0 text-[#4f5262] transition-colors group-hover:text-[#c9c5ff]"
+        className="shrink-0 text-[var(--color-text-faint)] transition-colors group-hover:text-[var(--color-tertiary)]"
       />
     </Link>
   );
@@ -1199,22 +1281,23 @@ function StatusTile({
   icon: typeof Sparkles;
   label: string;
   value: string;
-  tone: "emerald" | "violet" | "cyan" | "muted";
+  tone: "emerald" | "violet" | "cyan" | "muted" | "rose";
 }) {
   const tones = {
     emerald: "text-emerald-300 border-emerald-400/15 bg-emerald-500/[0.06]",
-    violet: "text-[#b3adff] border-[#6c63ff]/20 bg-[#6c63ff]/[0.08]",
-    cyan: "text-[#7fe8ff] border-[#00d9ff]/20 bg-[#00d9ff]/[0.07]",
-    muted: "text-[#8b8ba3] border-white/[0.06] bg-white/[0.02]",
+    violet: "text-[var(--color-tertiary)] border-[#6c63ff]/20 bg-[#6c63ff]/[0.08]",
+    cyan: "text-[var(--color-info)] border-[var(--color-info-strong)]/20 bg-[var(--color-info-strong)]/[0.07]",
+    muted: "text-[var(--color-text-secondary)] border-white/[0.06] bg-[var(--color-surface-container)]",
+    rose: "text-rose-300 border-rose-400/20 bg-rose-500/[0.08]",
   } as const;
   return (
-    <div className="flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+    <div className="flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-[var(--color-surface-container)] p-2.5">
       <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border", tones[tone])}>
         <Icon size={12} />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#5f6273]">{label}</p>
-        <p className="mt-0.5 truncate text-[10.5px] text-[#c5c5d4]">{value}</p>
+        <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">{label}</p>
+        <p className="mt-0.5 truncate text-[10.5px] text-[var(--color-text-primary)]">{value}</p>
       </div>
       <span
         className={cn(
@@ -1222,10 +1305,12 @@ function StatusTile({
           tone === "emerald"
             ? "bg-emerald-400"
             : tone === "violet"
-              ? "bg-[#8d86ff]"
+              ? "bg-[var(--color-tertiary)]"
               : tone === "cyan"
-                ? "bg-[#00d9ff]"
-                : "bg-[#4f5262]",
+                ? "bg-[var(--color-info-strong)]"
+                : tone === "rose"
+                  ? "bg-rose-400"
+                  : "bg-[var(--color-text-faint)]",
         )}
       />
     </div>

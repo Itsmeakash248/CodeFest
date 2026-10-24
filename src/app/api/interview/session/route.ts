@@ -17,10 +17,10 @@ export async function POST(request: Request) {
       return Response.json(startInterview(body));
     }
     if (action === "answer") {
-      return Response.json(answerInterview(body));
+      return Response.json(await answerInterview(body));
     }
     if (action === "finalize") {
-      return Response.json(finalizeInterview(body));
+      return Response.json(await finalizeInterview(body));
     }
     return Response.json(
       { error: "action must be one of: start, answer, finalize." },

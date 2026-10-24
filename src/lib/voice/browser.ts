@@ -1,4 +1,5 @@
 import { synthesizeSpeech } from "@/lib/client/api";
+import { stripMarkdown } from "@/lib/text";
 
 export interface SpeechHandle {
   mode: "elevenlabs" | "browser";
@@ -7,11 +8,53 @@ export interface SpeechHandle {
 }
 
 let currentAudio: HTMLAudioElement | null = null;
+/**
+ * Incremented every time playback is stopped or superseded. Async work checks
+ * it before it is allowed to produce sound, so a slow request can never start
+ * talking over a newer one.
+ */
+let generation = 0;
+/** The line that is currently loading or playing, used to ignore duplicates. */
+let activeText: string | null = null;
+let activeRequest: Promise<SpeechHandle> | null = null;
+
+const NOOP_HANDLE: SpeechHandle = {
+  mode: "browser",
+  stop: () => {},
+  finished: Promise.resolve(),
+};
+
+function noopHandle(): SpeechHandle {
+  return { ...NOOP_HANDLE, finished: Promise.resolve() };
+}
+
+function disposeAudio(audio: HTMLAudioElement): void {
+  try {
+    audio.pause();
+  } catch {
+    // already stopped
+  }
+  try {
+    audio.removeAttribute("src");
+    audio.load();
+  } catch {
+    // detached element
+  }
+}
+
+function clearActive(text: string): void {
+  if (activeText === text) {
+    activeText = null;
+    activeRequest = null;
+  }
+}
 
 export function stopSpeaking(): void {
+  generation += 1;
+  activeText = null;
+  activeRequest = null;
   if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.src = "";
+    disposeAudio(currentAudio);
     currentAudio = null;
   }
   if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -23,87 +66,159 @@ export function isSpeechSynthesisSupported(): boolean {
   return typeof window !== "undefined" && "speechSynthesis" in window;
 }
 
-function speakWithBrowser(text: string): Promise<void> {
+function speakWithBrowser(text: string, requestedGeneration: number): Promise<void> {
   return new Promise((resolve) => {
-    if (!isSpeechSynthesisSupported()) {
+    if (!isSpeechSynthesisSupported() || requestedGeneration !== generation) {
       resolve();
       return;
     }
-    const utterance = new SpeechSynthesisUtterance(text);
-    const voices = window.speechSynthesis.getVoices();
-    const preferred = voices.find((voice) => /en-(US|GB)/i.test(voice.lang) && /female|samantha|aria|jenny/i.test(voice.name));
-    const fallback = voices.find((voice) => /^en/i.test(voice.lang));
-    if (preferred ?? fallback) utterance.voice = preferred ?? fallback ?? null;
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.volume = 1.0;
-    utterance.onend = () => resolve();
-    utterance.onerror = () => resolve();
-    window.speechSynthesis.speak(utterance);
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    // Chrome can queue the next utterance twice when speak() runs in the same
+    // task as cancel(). Let the cancel settle before speaking.
+    window.setTimeout(() => {
+      if (requestedGeneration !== generation) {
+        resolve();
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = synth.getVoices();
+      const preferred = voices.find(
+        (voice) => /en-(US|GB)/i.test(voice.lang) && /female|samantha|aria|jenny/i.test(voice.name),
+      );
+      const fallback = voices.find((voice) => /^en/i.test(voice.lang));
+      if (preferred ?? fallback) utterance.voice = preferred ?? fallback ?? null;
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      utterance.onend = () => resolve();
+      utterance.onerror = () => resolve();
+      synth.speak(utterance);
+    }, 120);
   });
 }
 
 /**
  * Speak a question or a sample. Prefers ElevenLabs server-side TTS and falls
- * back to the browser voice without ever blocking the interview.
+ * back to the browser voice without ever blocking the interview. Only one
+ * voice can be active at a time: duplicate calls for the same line share the
+ * existing playback instead of restarting it.
  */
-export async function speakText(
+export function speakText(
   text: string,
   voiceId?: string,
   options?: { onStart?: (mode: "elevenlabs" | "browser") => void },
 ): Promise<SpeechHandle> {
-  stopSpeaking();
-  const clean = text.trim();
+  const clean = stripMarkdown(text).slice(0, 900);
   if (!clean) {
-    return { mode: "browser", stop: () => {}, finished: Promise.resolve() };
+    stopSpeaking();
+    return Promise.resolve(noopHandle());
   }
 
-  try {
-    const blob = await synthesizeSpeech(clean.slice(0, 900), voiceId);
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    currentAudio = audio;
-    const finished = new Promise<void>((resolve) => {
-      audio.onended = () => {
-        URL.revokeObjectURL(url);
-        resolve();
-      };
-      audio.onerror = () => {
-        URL.revokeObjectURL(url);
-        resolve();
-      };
-    });
+  // The same line can be requested twice by an auto-read plus a click, or by
+  // React re-running an effect. Reuse the playback that is already in flight.
+  if (activeRequest && activeText === clean) return activeRequest;
+
+  stopSpeaking();
+  const requestedGeneration = generation;
+
+  const run = async (): Promise<SpeechHandle> => {
+    const releaseActive = () => {
+      if (activeText === clean) {
+        activeText = null;
+        activeRequest = null;
+      }
+    };
 
     try {
-      await audio.play();
-      options?.onStart?.("elevenlabs");
-      return {
+      const blob = await synthesizeSpeech(clean.slice(0, 900), voiceId);
+      if (requestedGeneration !== generation) return noopHandle();
+
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.preload = "auto";
+      currentAudio = audio;
+
+      let urlReleased = false;
+      const releaseUrl = () => {
+        if (urlReleased) return;
+        urlReleased = true;
+        URL.revokeObjectURL(url);
+      };
+      const finished = new Promise<void>((resolve) => {
+        audio.onended = () => {
+          releaseUrl();
+          if (currentAudio === audio) currentAudio = null;
+          releaseActive();
+          resolve();
+        };
+        audio.onerror = () => {
+          releaseUrl();
+          if (currentAudio === audio) currentAudio = null;
+          releaseActive();
+          resolve();
+        };
+      });
+
+      const elevenLabsHandle: SpeechHandle = {
         mode: "elevenlabs",
         stop: () => {
-          audio.pause();
-          URL.revokeObjectURL(url);
+          disposeAudio(audio);
+          releaseUrl();
+          if (currentAudio === audio) currentAudio = null;
+          releaseActive();
         },
         finished,
       };
+
+      try {
+        await audio.play();
+        if (requestedGeneration !== generation) {
+          disposeAudio(audio);
+          releaseUrl();
+          return noopHandle();
+        }
+        options?.onStart?.("elevenlabs");
+        return elevenLabsHandle;
+      } catch {
+        // Some browsers reject play() even though playback has started (for
+        // example when the promise is interrupted). Never layer the built-in
+        // voice on top of real audio: give the element a moment, then check.
+        await new Promise((resolve) => window.setTimeout(resolve, 120));
+        if (
+          requestedGeneration === generation &&
+          !audio.paused &&
+          audio.currentTime > 0
+        ) {
+          options?.onStart?.("elevenlabs");
+          return elevenLabsHandle;
+        }
+        disposeAudio(audio);
+        releaseUrl();
+        if (currentAudio === audio) currentAudio = null;
+        if (requestedGeneration !== generation) return noopHandle();
+        options?.onStart?.("browser");
+        return {
+          mode: "browser",
+          stop: () => stopSpeaking(),
+          finished: speakWithBrowser(clean, requestedGeneration).finally(releaseActive),
+        };
+      }
     } catch {
-      // Autoplay blocked or codec issue: fall back to the built-in voice.
-      URL.revokeObjectURL(url);
-      currentAudio = null;
+      if (requestedGeneration !== generation) return noopHandle();
       options?.onStart?.("browser");
       return {
         mode: "browser",
         stop: () => stopSpeaking(),
-        finished: speakWithBrowser(clean),
+        finished: speakWithBrowser(clean, requestedGeneration).finally(releaseActive),
       };
     }
-  } catch {
-    options?.onStart?.("browser");
-    return {
-      mode: "browser",
-      stop: () => stopSpeaking(),
-      finished: speakWithBrowser(clean),
-    };
-  }
+  };
+
+  const request = run();
+  activeText = clean;
+  activeRequest = request;
+  return request;
 }
 
 /* ------------------------- dictation (Web Speech STT) ------------------------- */

@@ -108,11 +108,11 @@ export default function Modal({
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 id={titleId} className="font-display text-[19px] font-semibold text-white">
+            <h2 id={titleId} className="font-display text-[19px] font-semibold text-[var(--color-text-primary)]">
               {title}
             </h2>
             {description ? (
-              <p id={descriptionId} className="mt-1.5 text-[12.5px] leading-relaxed text-[#9ca3af]">
+              <p id={descriptionId} className="mt-1.5 text-[12.5px] leading-relaxed text-[var(--color-text-secondary)]">
                 {description}
               </p>
             ) : null}
@@ -121,7 +121,7 @@ export default function Modal({
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.07] bg-white/[0.03] text-[#9ca3af] transition-colors hover:bg-white/[0.07] hover:text-white"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-surface-container-high)] hover:text-[var(--color-text-primary)]"
           >
             <X size={15} />
           </button>

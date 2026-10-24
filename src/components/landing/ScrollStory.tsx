@@ -175,7 +175,7 @@ export default function ScrollStory() {
           />
           <div
             aria-hidden="true"
-            className="aurora right-[-8%] top-[32%] h-[420px] w-[420px] bg-[#00d9ff]/[0.16]"
+            className="aurora right-[-8%] top-[32%] h-[420px] w-[420px] bg-[var(--color-info-strong)]/[0.16]"
             style={{ opacity: phase === 1 ? 0.55 : 0.2 }}
           />
           <div
@@ -188,12 +188,12 @@ export default function ScrollStory() {
             <div className="grid w-full grid-cols-[minmax(280px,0.78fr)_minmax(0,1.42fr)] items-center gap-10 xl:gap-16">
               {/* copy rail */}
               <div className="relative z-20">
-                <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.18em] text-[#8b8ba3]">
-                  <span className="flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-1">
-                    <CircleDot size={8} className="text-[#a8a2ff]" />
+                <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.18em] text-[var(--color-text-secondary)]">
+                  <span className="flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-[var(--color-surface-container)] px-2.5 py-1">
+                    <CircleDot size={8} className="text-[var(--color-tertiary)]" />
                     3D workspace tour
                   </span>
-                  <span className="text-[#565969]">/</span>
+                  <span className="text-[var(--color-text-faint)]">/</span>
                   <span>Scroll to explore</span>
                 </div>
 
@@ -213,26 +213,26 @@ export default function ScrollStory() {
                         )}
                       >
                         <div className="flex items-center gap-2.5">
-                          <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#6c63ff]/25 bg-[#6c63ff]/10 text-[#b3adff]">
+                          <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#6c63ff]/25 bg-[#6c63ff]/10 text-[var(--color-tertiary)]">
                             <Icon size={15} strokeWidth={1.7} />
                           </span>
-                          <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#8b8ba3]">
+                          <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[var(--color-text-secondary)]">
                             {item.kicker}
                           </span>
                         </div>
 
-                        <h2 className="mt-5 font-display text-[42px] font-semibold leading-[0.98] tracking-[-0.045em] text-white xl:text-[52px]">
+                        <h2 className="mt-5 font-display text-[42px] font-semibold leading-[0.98] tracking-[-0.045em] text-[var(--color-text-primary)] xl:text-[52px]">
                           {item.title}
                           <br />
                           <span className="text-gradient">{item.titleAccent}</span>
                         </h2>
-                        <p className="mt-5 max-w-[390px] text-[13.5px] leading-relaxed text-[#a9a9ba]">
+                        <p className="mt-5 max-w-[390px] text-[13.5px] leading-relaxed text-[var(--color-text-secondary)]">
                           {item.body}
                         </p>
 
                         <ul className="mt-5 space-y-2.5">
                           {item.points.map((point) => (
-                            <li key={point} className="flex items-start gap-2.5 text-[12px] leading-snug text-[#b8b8c8]">
+                            <li key={point} className="flex items-start gap-2.5 text-[12px] leading-snug text-[var(--color-text-primary)]">
                               <span className="mt-[2px] flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-500/10 text-emerald-300">
                                 <Check size={9} strokeWidth={2.5} />
                               </span>
@@ -243,7 +243,7 @@ export default function ScrollStory() {
 
                         <Link
                           href={item.href}
-                          className="group mt-6 inline-flex items-center gap-2 text-[12.5px] font-semibold text-white transition-colors hover:text-[#c9c5ff]"
+                          className="group mt-6 inline-flex items-center gap-2 text-[12.5px] font-semibold text-[var(--color-text-primary)] transition-colors hover:text-[var(--color-tertiary)]"
                         >
                           {item.cta}
                           <ArrowRight
@@ -266,13 +266,13 @@ export default function ScrollStory() {
                       aria-current={phase === index ? "true" : undefined}
                       className={cn(
                         "flex items-center gap-1.5 font-mono text-[8.5px] uppercase tracking-[0.14em] transition-colors",
-                        phase === index ? "text-white" : "text-[#5f6273] hover:text-[#9b9cae]",
+                        phase === index ? "text-[var(--color-text-primary)]" : "text-[var(--color-text-faint)] hover:text-[var(--color-text-secondary)]",
                       )}
                     >
                       <span
                         className={cn(
                           "h-1 rounded-full transition-all duration-300",
-                          phase === index ? "w-7 bg-[#a8a2ff]" : "w-3 bg-white/15",
+                          phase === index ? "w-7 bg-[var(--color-tertiary)]" : "w-3 bg-white/15",
                         )}
                       />
                       {item.label}
@@ -308,7 +308,7 @@ export default function ScrollStory() {
                 <div aria-hidden="true" className="pointer-events-none absolute inset-0 [transform-style:preserve-3d]">
                   <span className="orbit-ring left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 opacity-60" />
                   <span className="orbit-ring left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 border-dashed opacity-40 [transform:translate(-50%,-50%)_rotateX(70deg)]" />
-                  <span className="absolute left-[6%] top-[18%] h-1 w-1 rounded-full bg-[#a8a2ff] shadow-[0_0_12px_rgba(168,162,255,0.9)]" />
+                  <span className="absolute left-[6%] top-[18%] h-1 w-1 rounded-full bg-[var(--color-tertiary)] shadow-[0_0_12px_rgba(168,162,255,0.9)]" />
                   <span className="absolute bottom-[14%] right-[6%] h-1 w-1 rounded-full bg-[#7fe8ff] shadow-[0_0_12px_rgba(127,232,255,0.9)]" />
                 </div>
 
@@ -326,8 +326,8 @@ export default function ScrollStory() {
                     transition: "transform 120ms linear",
                   }}
                 >
-                  <div className="absolute inset-x-8 top-6 h-full rounded-[24px] border border-white/[0.05] bg-[#0f0f17]/60" style={{ transform: "translateZ(-50px) translateY(22px) scale(0.97)" }} />
-                  <div className="absolute inset-x-12 top-10 h-full rounded-[24px] border border-white/[0.035] bg-[#0b0b12]/50" style={{ transform: "translateZ(-94px) translateY(40px) scale(0.94)" }} />
+                  <div className="absolute inset-x-8 top-6 h-full rounded-[24px] border border-white/[0.05] bg-[var(--color-surface-container)]" style={{ transform: "translateZ(-50px) translateY(22px) scale(0.97)" }} />
+                  <div className="absolute inset-x-12 top-10 h-full rounded-[24px] border border-white/[0.035] bg-[var(--color-surface)]" style={{ transform: "translateZ(-94px) translateY(40px) scale(0.94)" }} />
 
                   <div className="overflow-hidden rounded-[20px] border border-white/[0.09] shadow-[0_50px_110px_rgba(0,0,0,0.62)]">
                     <WorkspaceMock view={phases[phase].view} grand />
@@ -348,15 +348,15 @@ export default function ScrollStory() {
                     )}
                     style={{ transform: "translateZ(130px)" }}
                   >
-                    <div className="rounded-2xl border border-[#6c63ff]/25 bg-[#14131f]/95 p-3 shadow-[0_24px_60px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+                    <div className="rounded-2xl border border-[#6c63ff]/25 bg-[var(--color-surface-container)] p-3 shadow-[0_24px_60px_rgba(0,0,0,0.5)] backdrop-blur-xl">
                       <div className="flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-[#8d86ff]" />
-                        <span className="font-mono text-[7px] uppercase tracking-[0.14em] text-[#a8a2ff]">Streaming</span>
+                        <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-[var(--color-tertiary)]" />
+                        <span className="font-mono text-[7px] uppercase tracking-[0.14em] text-[var(--color-tertiary)]">Streaming</span>
                       </div>
-                      <p className="mt-2 text-[10.5px] leading-relaxed text-[#dedee9]">
+                      <p className="mt-2 text-[10.5px] leading-relaxed text-[var(--color-text-primary)]">
                         &ldquo;Name the trade-off you owned, then the result.&rdquo;
                       </p>
-                      <p className="mt-1.5 font-mono text-[6.5px] uppercase tracking-[0.1em] text-[#6f7284]">
+                      <p className="mt-1.5 font-mono text-[6.5px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
                         Gemini · 820ms · caret
                       </p>
                     </div>
@@ -372,13 +372,13 @@ export default function ScrollStory() {
                     )}
                     style={{ transform: "translateZ(110px)" }}
                   >
-                    <div className="rounded-2xl border border-[#00d9ff]/20 bg-[#101820]/95 p-3 shadow-[0_24px_60px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+                    <div className="rounded-2xl border border-[var(--color-info-strong)]/20 bg-[var(--color-surface-container)] p-3 shadow-[0_24px_60px_rgba(0,0,0,0.5)] backdrop-blur-xl">
                       <div className="flex items-center gap-1.5">
-                        <GripVertical size={9} className="text-[#7fe8ff]" />
-                        <span className="font-mono text-[7px] uppercase tracking-[0.13em] text-[#7fe8ff]">Drag node</span>
+                        <GripVertical size={9} className="text-[var(--color-info)]" />
+                        <span className="font-mono text-[7px] uppercase tracking-[0.13em] text-[var(--color-info)]">Drag node</span>
                       </div>
-                      <p className="mt-2 text-[10.5px] font-medium text-white">Evaluate answers</p>
-                      <p className="mt-0.5 font-mono text-[6.5px] uppercase tracking-[0.08em] text-[#6f7284]">
+                      <p className="mt-2 text-[10.5px] font-medium text-[var(--color-text-primary)]">Evaluate answers</p>
+                      <p className="mt-0.5 font-mono text-[6.5px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">
                         4 scores · evidence
                       </p>
                     </div>
@@ -394,15 +394,15 @@ export default function ScrollStory() {
                     )}
                     style={{ transform: "translateZ(170px)" }}
                   >
-                    <div className="rounded-[24px] border border-white/[0.12] bg-[#0d0d15]/95 p-4 shadow-[0_30px_70px_rgba(0,0,0,0.6)] backdrop-blur-xl">
+                    <div className="rounded-[24px] border border-white/[0.12] bg-[var(--color-surface)] p-4 shadow-[0_30px_70px_rgba(0,0,0,0.6)] backdrop-blur-xl">
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-[6.5px] uppercase tracking-[0.14em] text-[#7fe8ff]">Presence</span>
+                        <span className="font-mono text-[6.5px] uppercase tracking-[0.14em] text-[var(--color-info)]">Presence</span>
                         <span className="flex items-center gap-1 font-mono text-[6px] uppercase tracking-[0.1em] text-emerald-300">
                           <span className="h-1 w-1 rounded-full bg-emerald-400" /> LAN
                         </span>
                       </div>
                       <RobotFace expression={phase === 2 ? "thinking" : "neutral"} compact className="mx-auto mt-2 w-[130px]" />
-                      <p className="mt-2 text-center font-mono text-[6.5px] uppercase tracking-[0.1em] text-[#6f7284]">
+                      <p className="mt-2 text-center font-mono text-[6.5px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
                         Evaluating your answer
                       </p>
                     </div>
@@ -410,11 +410,11 @@ export default function ScrollStory() {
                 </div>
 
                 <div className="relative z-20 mt-4 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#565969]">
+                  <span className="flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[var(--color-text-faint)]">
                     <MousePointer2 size={9} />
                     Move to orbit · arrows to switch
                   </span>
-                  <span className="flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#565969]">
+                  <span className="flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[var(--color-text-faint)]">
                     <span ref={pctRef}>00%</span>
                     <span className="flex h-4 w-4 items-center justify-center rounded-full border border-white/[0.08]">
                       <ChevronDown size={9} />
@@ -426,23 +426,23 @@ export default function ScrollStory() {
           </div>
 
           {/* progress rail */}
-          <div className="relative z-20 border-t border-white/[0.05] bg-black/10">
+          <div className="relative z-20 border-t border-white/[0.05] bg-[var(--color-surface-container)]">
             <div className="mx-auto flex w-full max-w-[1360px] items-center gap-4 px-8 py-3 xl:px-12">
-              <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-[#565969]">Tour</span>
-              <div className="relative h-[2px] flex-1 overflow-hidden rounded-full bg-white/[0.06]">
+              <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-[var(--color-text-faint)]">Tour</span>
+              <div className="relative h-[2px] flex-1 overflow-hidden rounded-full bg-[var(--color-surface-container-high)]">
                 <span
                   ref={fillRef}
                   className="block h-full w-0 rounded-full bg-gradient-to-r from-[#6c63ff] via-[#8d86ff] to-[#00d9ff]"
                 />
               </div>
               <div className="hidden items-center gap-4 sm:flex">
-                <span className="flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#6f7284]">
+                <span className="flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[var(--color-text-faint)]">
                   <Volume2 size={9} /> Voice ready
                 </span>
-                <span className="flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#6f7284]">
+                <span className="flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[var(--color-text-faint)]">
                   <Play size={9} /> Local engine
                 </span>
-                <span className="flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#6f7284]">
+                <span className="flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[var(--color-text-faint)]">
                   <Layers3 size={9} /> 9 nodes
                 </span>
               </div>
@@ -462,11 +462,11 @@ export default function ScrollStory() {
       <section aria-label="Workspace surfaces" className="relative px-5 py-16 sm:py-20 lg:hidden">
         <div className="mx-auto max-w-2xl">
           <span className="label">The workspace</span>
-          <h2 className="mt-4 font-display text-[34px] font-semibold leading-[1.02] tracking-[-0.04em] text-white sm:text-[42px]">
+          <h2 className="mt-4 font-display text-[34px] font-semibold leading-[1.02] tracking-[-0.04em] text-[var(--color-text-primary)] sm:text-[42px]">
             One workspace.{" "}
             <span className="text-gradient">Three surfaces.</span>
           </h2>
-          <p className="mt-3 max-w-[480px] text-[13px] leading-relaxed text-[#a9a9ba]">
+          <p className="mt-3 max-w-[480px] text-[13px] leading-relaxed text-[var(--color-text-secondary)]">
             One context across chat, workflow and rehearsal.
           </p>
 
@@ -476,25 +476,25 @@ export default function ScrollStory() {
               return (
                 <div key={item.id}>
                   <div className="mb-3 flex items-center gap-2.5">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#6c63ff]/25 bg-[#6c63ff]/10 text-[#b3adff]">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#6c63ff]/25 bg-[#6c63ff]/10 text-[var(--color-tertiary)]">
                       <Icon size={15} />
                     </span>
                     <div>
-                      <p className="font-mono text-[8px] uppercase tracking-[0.15em] text-[#6f7284]">{item.kicker}</p>
-                      <p className="font-display text-[16px] font-semibold text-white">{item.label} surface</p>
+                      <p className="font-mono text-[8px] uppercase tracking-[0.15em] text-[var(--color-text-faint)]">{item.kicker}</p>
+                      <p className="font-display text-[16px] font-semibold text-[var(--color-text-primary)]">{item.label} surface</p>
                     </div>
                   </div>
                   <div className="relative [perspective:1100px]">
                     <div
                       aria-hidden="true"
-                      className="absolute inset-x-4 top-3 h-full rounded-[18px] border border-white/[0.05] bg-[#0e0e16]/70"
+                      className="absolute inset-x-4 top-3 h-full rounded-[18px] border border-white/[0.05] bg-[var(--color-surface)]"
                       style={{ transform: "translateY(12px) scale(0.985)" }}
                     />
                     <div className="relative overflow-hidden rounded-[18px] [transform:rotateX(1.5deg)] [transform-style:preserve-3d]">
                       <WorkspaceMock view={item.view} className="shadow-2xl" />
                     </div>
                   </div>
-                  <p className="mt-2.5 text-[12px] leading-relaxed text-[#8d8d9f]">{item.body}</p>
+                  <p className="mt-2.5 text-[12px] leading-relaxed text-[var(--color-text-secondary)]">{item.body}</p>
                 </div>
               );
             })}

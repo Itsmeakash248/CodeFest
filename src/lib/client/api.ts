@@ -1,9 +1,11 @@
 import type {
   AgentId,
   ChatContext,
+  InterviewReport,
   InterviewResponse,
   InterviewSetup,
   InterviewTurn,
+  ProctoringReport,
   WorkflowEvent,
   WorkflowNode,
   WorkflowStatus,
@@ -11,9 +13,9 @@ import type {
 import { readSse } from "@/lib/client/sse";
 
 export type ChatStreamEvent =
-  | { type: "meta"; source: "gemini" | "openrouter" | "local"; agent: AgentId; model?: string | null; latencyMs?: number }
+  | { type: "meta"; source: "gemini" | "openrouter" | "local" | "error"; agent: AgentId; model?: string | null; latencyMs?: number }
   | { type: "delta"; text: string }
-  | { type: "done"; source: "gemini" | "openrouter" | "local"; latencyMs: number; characters?: number }
+  | { type: "done"; source: "gemini" | "openrouter" | "local" | "error"; latencyMs: number; characters?: number }
   | { type: "error"; message: string };
 
 export interface ChatRequestMessage {
@@ -66,6 +68,7 @@ export async function finalizeInterview(args: {
   sessionId: string;
   setup: InterviewSetup;
   turns: InterviewTurn[];
+  integrity?: ProctoringReport;
 }): Promise<InterviewResponse> {
   return postJson<InterviewResponse>("/api/interview/session", {
     action: "finalize",
@@ -97,8 +100,11 @@ export interface ProviderStatus {
   gemini: boolean;
   openrouter: boolean;
   elevenlabs: boolean;
+  supabase?: boolean;
+  authMode?: "supabase" | "demo";
   robot: boolean;
-  engine: "ai" | "local";
+  engine: "ai" | "local" | "none";
+  connected: boolean;
   localFallback: boolean;
   voice: string;
   model: string;
@@ -158,11 +164,36 @@ export async function setRobotExpression(expression: string): Promise<RobotState
 }
 
 export interface LoginResponse {
-  user: { email: string; name: string; demo: boolean; issuedAt: number };
+  user: { id?: string; email: string; name: string; demo: boolean; issuedAt: number };
+  needsEmailConfirmation?: boolean;
 }
 
-export async function login(email: string, name?: string): Promise<LoginResponse> {
-  return postJson<LoginResponse>("/api/auth/login", { email, name });
+export async function login(
+  email: string,
+  name?: string,
+  password?: string,
+  demo?: boolean,
+): Promise<LoginResponse> {
+  return postJson<LoginResponse>("/api/auth/login", { email, name, password, demo });
+}
+
+export async function signup(
+  email: string,
+  password?: string,
+  name?: string,
+): Promise<LoginResponse> {
+  return postJson<LoginResponse>("/api/auth/signup", { email, password, name });
+}
+
+export async function saveCloudReport(report: InterviewReport): Promise<{ ok: boolean; id?: string | null; source?: string }> {
+  return postJson<{ ok: boolean; id?: string | null; source?: string }>("/api/interview/reports", { report });
+}
+
+export async function fetchCloudReports(): Promise<InterviewReport[]> {
+  const response = await fetch("/api/interview/reports", { cache: "no-store" });
+  if (!response.ok) return [];
+  const data = (await response.json()) as { reports?: InterviewReport[] };
+  return data.reports || [];
 }
 
 export async function logout(): Promise<void> {

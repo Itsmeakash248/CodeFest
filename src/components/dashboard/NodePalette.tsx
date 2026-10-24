@@ -41,34 +41,34 @@ function PaletteItem({
       title={`Drag into the canvas, or click to add ${def.label}`}
       aria-label={`Add ${def.label} node`}
       className={cn(
-        "group flex cursor-grab touch-none items-center gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.025] px-2 py-1.5 text-left transition-colors hover:border-white/[0.14] hover:bg-white/[0.05] disabled:cursor-not-allowed disabled:opacity-40",
+        "group flex cursor-grab touch-none items-center gap-1.5 rounded-lg border border-white/[0.06] bg-[var(--color-surface-container)] px-2 py-1.5 text-left transition-colors hover:border-white/[0.14] hover:bg-[var(--color-surface-container-high)] disabled:cursor-not-allowed disabled:opacity-40",
         isDragging && "opacity-50",
       )}
     >
       <span className={cn("flex h-5 w-5 shrink-0 items-center justify-center rounded border", visual.border, visual.tint)}>
         <Icon size={10} strokeWidth={1.8} />
       </span>
-      <span className="truncate text-[9.5px] text-[#b8b8c9] transition-colors group-hover:text-white">
+      <span className="truncate text-[9.5px] text-[var(--color-text-primary)] transition-colors group-hover:text-[var(--color-text-primary)]">
         {def.label}
       </span>
-      <Plus size={9} className="ml-auto shrink-0 text-[#4f5262] transition-colors group-hover:text-[#c9c5ff]" />
+      <Plus size={9} className="ml-auto shrink-0 text-[var(--color-text-faint)] transition-colors group-hover:text-[var(--color-tertiary)]" />
     </button>
   );
 }
 
 export default function NodePalette({ onAdd, disabled }: NodePaletteProps) {
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-white/[0.06] bg-[#0b0b11]/50 px-3 py-2">
-      <span className="flex items-center gap-1 font-mono text-[7px] uppercase tracking-[0.14em] text-[#565969]">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-white/[0.06] bg-[var(--color-surface)] px-3 py-2">
+      <span className="flex items-center gap-1 font-mono text-[7px] uppercase tracking-[0.14em] text-[var(--color-text-faint)]">
         Palette
-        <span className="hidden font-sans text-[6px] normal-case tracking-normal text-[#3d3f4e] sm:inline">
+        <span className="hidden font-sans text-[6px] normal-case tracking-normal text-[var(--color-text-faint)] sm:inline">
           drag or click
         </span>
       </span>
       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
         {CATEGORY_GROUPS.map((group) => (
           <div key={group.id} className="flex items-center gap-1">
-            <span className="hidden font-mono text-[6px] uppercase tracking-[0.1em] text-[#4f5262] xl:inline">
+            <span className="hidden font-mono text-[6px] uppercase tracking-[0.1em] text-[var(--color-text-faint)] xl:inline">
               {group.label}
             </span>
             {group.types.map((type) => (

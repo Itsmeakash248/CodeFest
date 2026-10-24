@@ -56,30 +56,35 @@ export async function POST(request: Request) {
   }
 
   const context = parseContext(body.context);
-  const forceLocal = body.engine === "local";
-  const result = await generateAgentReply({ agent, messages, context, forceLocal });
 
-  return createSseResponse(async (send) => {
-    send({
-      type: "meta",
-      source: result.source,
-      agent,
-      model: result.model ?? null,
-      latencyMs: result.latencyMs,
+  try {
+    const result = await generateAgentReply({ agent, messages, context });
+
+    return createSseResponse(async (send) => {
+      send({
+        type: "meta",
+        source: result.source,
+        agent,
+        model: result.model ?? null,
+        latencyMs: result.latencyMs,
+      });
+
+      const chunks = chunksOf(result.content);
+      for (const chunk of chunks) {
+        if (request.signal.aborted) return;
+        send({ type: "delta", text: chunk });
+        await sleep(chunks.length > 80 ? 6 : 12);
+      }
+
+      send({
+        type: "done",
+        source: result.source,
+        latencyMs: result.latencyMs,
+        characters: result.content.length,
+      });
     });
-
-    const chunks = chunksOf(result.content);
-    for (const chunk of chunks) {
-      if (request.signal.aborted) return;
-      send({ type: "delta", text: chunk });
-      await sleep(chunks.length > 80 ? 6 : 12);
-    }
-
-    send({
-      type: "done",
-      source: result.source,
-      latencyMs: result.latencyMs,
-      characters: result.content.length,
-    });
-  });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "AI API request failed.";
+    return Response.json({ error: message }, { status: 503 });
+  }
 }

@@ -1,7 +1,22 @@
-import type { InterviewQuestion, InterviewResponse, InterviewSetup, InterviewTurn } from "@/lib/types";
+import type {
+  AnswerFeedback,
+  InterviewQuestion,
+  InterviewReport,
+  InterviewResponse,
+  InterviewSetup,
+  InterviewTurn,
+  ProctoringReport,
+} from "@/lib/types";
 import { DIFFICULTIES, INTERVIEW_TYPES, LEVELS, roleById } from "@/lib/data/roles";
 import { buildQuestionSetForSession, followUpFor } from "@/lib/interview/questions";
-import { buildReport, evaluateTurn, shouldFollowUp } from "@/lib/interview/engine";
+import {
+  buildReport,
+  buildReportAi,
+  evaluateTurn,
+  evaluateTurnAi,
+  shouldFollowUp,
+} from "@/lib/interview/engine";
+import { aiStatus } from "@/lib/ai/llm";
 import { uid } from "@/lib/text";
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -30,6 +45,8 @@ export function parseSetup(raw: unknown): InterviewSetup {
     type: pick(obj.type, INTERVIEW_TYPES, "Mixed"),
     difficulty: pick(obj.difficulty, DIFFICULTIES, "Standard"),
     resume: readString(obj.resume, "", 6000) || undefined,
+    videoEnabled: obj.videoEnabled !== false,
+    conversationalMode: obj.conversationalMode !== false,
   };
 }
 
@@ -114,7 +131,7 @@ export function startInterview(raw: unknown): InterviewResponse {
   };
 }
 
-export function answerInterview(raw: unknown): InterviewResponse {
+export async function answerInterview(raw: unknown): Promise<InterviewResponse> {
   const body = asRecord(raw);
   const setup = parseSetup(body.setup);
   const sessionId = parseSessionId(body.sessionId);
@@ -150,13 +167,53 @@ export function answerInterview(raw: unknown): InterviewResponse {
   const lastTurn = alreadyIncluded
     ? allTurns[allTurns.length - 1]
     : currentTurn;
-  const evaluation = evaluateTurn(lastTurn, setup);
+
   const answered = allTurns.filter((turn) => !turn.isFollowUp).length;
   const totalFollowUps = allTurns.filter((turn) => turn.isFollowUp).length;
   const sessionQuestions = questions;
 
+  const aiAvailable = aiStatus().connected;
+  let evaluation: AnswerFeedback | null = null;
+  let aiProbe: string | undefined = undefined;
+  let aiWantsFollowUp = false;
+  let turnSource: "ai" | "local" = "local";
+
+  if (aiAvailable) {
+    try {
+      const aiEval = await evaluateTurnAi(lastTurn, setup, totalFollowUps);
+      if (aiEval) {
+        evaluation = {
+          score: aiEval.score,
+          label: aiEval.label,
+          summary: aiEval.summary,
+          strengths: aiEval.strengths,
+          improve: aiEval.improve,
+        };
+        aiWantsFollowUp = aiEval.needsFollowUp;
+        aiProbe = aiEval.followUpProbe;
+        turnSource = "ai";
+      }
+    } catch (err) {
+      console.warn("[interview/service] evaluateTurnAi error:", (err as Error).message);
+    }
+  }
+
+  if (!evaluation) {
+    evaluation = evaluateTurn(lastTurn, setup);
+  }
+
   if (answered >= 5) {
-    const report = buildReport(sessionId, setup, allTurns);
+    let report: InterviewReport | null = null;
+    if (aiAvailable) {
+      try {
+        report = await buildReportAi(sessionId, setup, allTurns);
+      } catch (err) {
+        console.warn("[interview/service] buildReportAi error:", (err as Error).message);
+      }
+    }
+    if (!report) {
+      report = buildReport(sessionId, setup, allTurns);
+    }
     return {
       sessionId,
       isFollowUp,
@@ -166,7 +223,7 @@ export function answerInterview(raw: unknown): InterviewResponse {
       done: true,
       report,
       evaluation,
-      source: "local",
+      source: report.source,
     };
   }
 
@@ -179,11 +236,22 @@ export function answerInterview(raw: unknown): InterviewResponse {
     !alreadyIncluded &&
     !isFollowUp &&
     !followUpAlreadyUsed &&
-    shouldFollowUp(allTurns, currentTurn, totalFollowUps);
+    (aiWantsFollowUp || shouldFollowUp(allTurns, currentTurn, totalFollowUps));
 
-  const nextQuestion = takeFollowUp
-    ? followUpFor(question)
-    : sessionQuestions[Math.min(answered, sessionQuestions.length - 1)];
+  let nextQuestion: InterviewQuestion;
+  if (takeFollowUp) {
+    if (aiProbe && aiProbe.trim().length > 10) {
+      const baseFollowUp = followUpFor(question);
+      nextQuestion = {
+        ...baseFollowUp,
+        text: aiProbe,
+      };
+    } else {
+      nextQuestion = followUpFor(question);
+    }
+  } else {
+    nextQuestion = sessionQuestions[Math.min(answered, sessionQuestions.length - 1)];
+  }
 
   return {
     sessionId,
@@ -194,16 +262,33 @@ export function answerInterview(raw: unknown): InterviewResponse {
     answered,
     done: false,
     evaluation,
-    source: "local",
+    source: turnSource,
   };
 }
 
-export function finalizeInterview(raw: unknown): InterviewResponse {
+export async function finalizeInterview(raw: unknown): Promise<InterviewResponse> {
   const body = asRecord(raw);
   const setup = parseSetup(body.setup);
   const sessionId = parseSessionId(body.sessionId);
   const turns = hydrateTurns(parseTurns(body.turns), setup, sessionId);
-  const report = buildReport(sessionId, setup, turns);
+
+  const aiAvailable = aiStatus().connected;
+  let report: InterviewReport | null = null;
+  if (aiAvailable) {
+    try {
+      report = await buildReportAi(sessionId, setup, turns);
+    } catch (err) {
+      console.warn("[interview/service] finalize buildReportAi error:", (err as Error).message);
+    }
+  }
+  if (!report) {
+    report = buildReport(sessionId, setup, turns);
+  }
+
+  if (body.integrity && typeof body.integrity === "object") {
+    report.integrity = body.integrity as ProctoringReport;
+  }
+
   return {
     sessionId,
     questionNumber: Math.min(turns.filter((turn) => !turn.isFollowUp).length, 5),
@@ -211,6 +296,6 @@ export function finalizeInterview(raw: unknown): InterviewResponse {
     answered: turns.filter((turn) => !turn.isFollowUp).length,
     done: true,
     report,
-    source: "local",
+    source: report.source,
   };
 }

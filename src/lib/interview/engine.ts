@@ -2,6 +2,7 @@ import type {
   AnswerFeedback,
   DimensionKey,
   DimensionScore,
+  InterviewQuestion,
   InterviewReport,
   InterviewSetup,
   InterviewTurn,
@@ -10,6 +11,7 @@ import type {
   StarBlueprint,
 } from "@/lib/types";
 import { roleById } from "@/lib/data/roles";
+import { callLlmJson } from "@/lib/ai/llm";
 import {
   bandFor,
   clamp,
@@ -644,4 +646,274 @@ export function shouldFollowUp(turns: InterviewTurn[], current: InterviewTurn, t
     return !refusal;
   }
   return false;
+}
+
+export interface AiTurnEvaluation extends AnswerFeedback {
+  needsFollowUp: boolean;
+  followUpProbe?: string;
+}
+
+export async function evaluateTurnAi(
+  turn: InterviewTurn,
+  setup: InterviewSetup,
+  totalFollowUps: number,
+): Promise<AiTurnEvaluation | null> {
+  const role = setup.role || "Software Engineer";
+  const level = setup.level || "Mid level";
+  const question = turn.question;
+  const answer = turn.answer;
+
+  const prompt = `You are an elite technical & behavioral interview evaluator. Evaluate this candidate turn for a ${level} ${role} role.
+
+Question: "${question}"
+Candidate Answer: "${answer}"
+${turn.competency ? `Target Competency: ${turn.competency}` : ""}
+${turn.signals?.length ? `Key Signals to look for: ${turn.signals.join(", ")}` : ""}
+
+Evaluate the answer objectively on:
+1. Relevance to the question
+2. Depth of technical/behavioral reasoning
+3. STAR method structure & quantified impact
+4. Clarity and communication
+
+Decide if a follow-up probing question is warranted. A follow-up IS warranted if:
+- The answer is thin (< 40 words) or vague
+- The candidate made an unverified high-impact claim or technical assertion that needs depth
+- The candidate described a situation and action but omitted the quantifiable result
+(Note: Do NOT request a follow-up if candidate answered thoroughly or if they stated they do not know).
+
+Respond ONLY with valid JSON matching this schema:
+{
+  "score": <number 0-100>,
+  "label": <"Needs work" | "Fair start" | "Promising" | "Strong answer" | "Exceptional">,
+  "summary": <concise 1-2 sentence overall feedback>,
+  "strengths": [<2-3 specific bullet points praising what the candidate actually said>],
+  "improve": [<1-2 specific, actionable improvements for this answer>],
+  "needsFollowUp": <boolean>,
+  "followUpProbe": <string or null; a sharp, context-aware 1-sentence follow-up question probing their specific claim>
+}`;
+
+  try {
+    const res = await callLlmJson<{
+      score: number;
+      label: string;
+      summary: string;
+      strengths: string[];
+      improve: string[];
+      needsFollowUp: boolean;
+      followUpProbe?: string | null;
+    }>(prompt, "You are a senior hiring bar raiser. Respond only with valid JSON.", {
+      maxTokens: 500,
+      timeoutMs: 6500,
+      temperature: 0.2,
+    });
+
+    if (!res?.data) return null;
+
+    const data = res.data;
+    const score = clamp(Math.round(Number(data.score) || 60), 10, 98);
+    const label =
+      typeof data.label === "string" && data.label
+        ? data.label
+        : score >= 85
+          ? "Strong answer"
+          : score >= 70
+            ? "Promising"
+            : score >= 50
+              ? "Fair start"
+              : "Needs work";
+
+    const canFollowUp = !turn.isFollowUp && totalFollowUps < 2;
+
+    return {
+      score,
+      label,
+      summary: truncate(String(data.summary || ""), 240) || "Evaluated answer.",
+      strengths: Array.isArray(data.strengths)
+        ? data.strengths.slice(0, 3).map((s) => truncate(String(s), 140))
+        : ["Engaged with the question."],
+      improve: Array.isArray(data.improve)
+        ? data.improve.slice(0, 2).map((s) => truncate(String(s), 140))
+        : ["Provide more measurable outcomes."],
+      needsFollowUp: canFollowUp && Boolean(data.needsFollowUp),
+      followUpProbe:
+        canFollowUp && typeof data.followUpProbe === "string" && data.followUpProbe.trim().length > 10
+          ? truncate(data.followUpProbe.trim(), 200)
+          : undefined,
+    };
+  } catch (err) {
+    console.warn("[interview/engine] evaluateTurnAi failed:", (err as Error).message);
+    return null;
+  }
+}
+
+export async function buildReportAi(
+  sessionId: string,
+  setup: InterviewSetup,
+  turns: InterviewTurn[],
+): Promise<InterviewReport | null> {
+  const clean = turns.filter((turn) => turn.answer.trim().length > 0);
+  if (!clean.length) return null;
+
+  const role = setup.role || "Software Engineer";
+  const level = setup.level || "Mid level";
+
+  const transcript = clean
+    .map((turn, i) => `Q${i + 1} (${turn.isFollowUp ? "Follow-Up" : "Main"}): "${turn.question}"\nAnswer: "${turn.answer}"`)
+    .join("\n\n");
+
+  const prompt = `You are a principal hiring manager conducting an in-depth post-interview evaluation for a candidate interviewing for ${level} ${role}.
+
+Here is the complete interview transcript:
+${transcript}
+
+Evaluate the entire session across the 4 standard rubrics:
+1. Communication (weight 0.25)
+2. Role knowledge (weight 0.30)
+3. Problem solving (weight 0.25)
+4. Answer quality (weight 0.20)
+
+For each rubric dimension:
+- Provide an objective score (0-100).
+- Extract an EXACT VERBATIM quote from the candidate's answers as evidence (or empty if no evidence found).
+- Provide a concise note explaining the score.
+
+Also generate:
+- Overall score (0-100) and performance band ("Developing", "Emerging", "Proficient", "Advanced", or "Mastery")
+- 2-3 sentence executive summary
+- Per-question scores (0-100) and 1-sentence note for each question in the transcript
+- 3 overarching candidate strengths with specific references to what was said
+- 3 priority improvement areas
+- 3 actionable practice exercises (each with title, detail, minutes)
+- Reconstruct the STAR blueprint from the candidate's best story (situation, task, action, result)
+
+Respond ONLY with valid JSON matching this schema:
+{
+  "overall": <number 0-100>,
+  "band": <"Developing" | "Emerging" | "Proficient" | "Advanced" | "Mastery">,
+  "summary": <string>,
+  "dimensions": {
+    "communication": { "score": <0-100>, "evidence": <verbatim quote>, "note": <string> },
+    "roleKnowledge": { "score": <0-100>, "evidence": <verbatim quote>, "note": <string> },
+    "problemSolving": { "score": <0-100>, "evidence": <verbatim quote>, "note": <string> },
+    "answerQuality": { "score": <0-100>, "evidence": <verbatim quote>, "note": <string> }
+  },
+  "perQuestion": [
+    { "score": <0-100>, "note": <string> }
+  ],
+  "strengths": [<string>, <string>, <string>],
+  "improvements": [<string>, <string>, <string>],
+  "nextPractice": [
+    { "title": <string>, "detail": <string>, "minutes": <number> }
+  ],
+  "starBlueprint": {
+    "situation": <string>,
+    "task": <string>,
+    "action": <string>,
+    "result": <string>
+  }
+}`;
+
+  try {
+    const res = await callLlmJson<{
+      overall: number;
+      band: string;
+      summary: string;
+      dimensions: Record<DimensionKey, { score: number; evidence: string; note: string }>;
+      perQuestion: { score: number; note: string }[];
+      strengths: string[];
+      improvements: string[];
+      nextPractice: { title: string; detail: string; minutes: number }[];
+      starBlueprint: StarBlueprint;
+    }>(prompt, "You are an elite interview auditor. Respond only with valid JSON.", {
+      maxTokens: 1400,
+      timeoutMs: 14_000,
+      temperature: 0.25,
+    });
+
+    if (!res?.data) return null;
+    const data = res.data;
+
+    const weights: Record<DimensionKey, number> = {
+      communication: 0.25,
+      roleKnowledge: 0.3,
+      problemSolving: 0.25,
+      answerQuality: 0.2,
+    };
+
+    const labels: Record<DimensionKey, string> = {
+      communication: "Communication",
+      roleKnowledge: "Role knowledge",
+      problemSolving: "Problem solving",
+      answerQuality: "Answer quality",
+    };
+
+    const dimensions: DimensionScore[] = (Object.keys(weights) as DimensionKey[]).map((key) => {
+      const dim = data.dimensions?.[key];
+      const score = clamp(Math.round(Number(dim?.score) || 65), 10, 98);
+      return {
+        key,
+        label: labels[key],
+        score,
+        evidence: truncate(String(dim?.evidence || "Demonstrated in answers."), 240),
+        note: truncate(String(dim?.note || "Solid candidate performance."), 200),
+        weight: weights[key],
+      };
+    });
+
+    const calculatedOverall = Math.round(
+      dimensions.reduce((sum, d) => sum + d.score * d.weight, 0),
+    );
+    const overall = clamp(Math.round(Number(data.overall) || calculatedOverall), 10, 98);
+    const band = bandFor(overall);
+
+    const perQuestion: QuestionFeedback[] = clean.map((turn, i) => {
+      const qEval = data.perQuestion?.[i];
+      const score = clamp(Math.round(Number(qEval?.score) || 68), 10, 98);
+      const note = truncate(String(qEval?.note || "Addressed the prompt directly."), 200);
+      return {
+        question: turn.isFollowUp ? `Follow-up: ${turn.question}` : turn.question,
+        answer: turn.answer,
+        score,
+        note,
+      };
+    });
+
+    const answeredWords = clean.reduce((sum, turn) => sum + wordCount(turn.answer), 0);
+
+    return {
+      sessionId,
+      generatedAt: Date.now(),
+      setup,
+      overall,
+      band,
+      summary: truncate(String(data.summary || ""), 360),
+      dimensions,
+      perQuestion,
+      strengths: Array.isArray(data.strengths)
+        ? data.strengths.slice(0, 3).map((s) => truncate(String(s), 160))
+        : ["Clear articulation of technical concepts."],
+      improvements: Array.isArray(data.improvements)
+        ? data.improvements.slice(0, 3).map((s) => truncate(String(s), 160))
+        : ["Add more quantifiable results to story conclusions."],
+      nextPractice: Array.isArray(data.nextPractice) && data.nextPractice.length
+        ? data.nextPractice.slice(0, 3).map((p) => ({
+            title: truncate(String(p.title || "Practice drill"), 80),
+            detail: truncate(String(p.detail || "Refine your stories."), 180),
+            minutes: clamp(Math.round(Number(p.minutes) || 8), 2, 45),
+          }))
+        : buildPractice(dimensions, clean, setup),
+      starBlueprint: {
+        situation: truncate(String(data.starBlueprint?.situation || "Context established."), 200),
+        task: truncate(String(data.starBlueprint?.task || "Role and ownership stated."), 200),
+        action: truncate(String(data.starBlueprint?.action || "Key technical decisions explained."), 200),
+        result: truncate(String(data.starBlueprint?.result || "Measurable outcome achieved."), 200),
+      },
+      answeredWords,
+      source: "ai",
+    };
+  } catch (err) {
+    console.warn("[interview/engine] buildReportAi failed:", (err as Error).message);
+    return null;
+  }
 }

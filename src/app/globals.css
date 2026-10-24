@@ -30,6 +30,8 @@
 
 /* Claude × Material 3 Expressive Tokens: Default is Dark Mode */
 :root {
+  --color-info: #7FE8FF;
+  --color-info-strong: #00D9FF;
   --color-background: #191A17;
   --color-surface: #20211D;
   --color-surface-container: #292A25;
@@ -89,6 +91,8 @@
   --color-success: #386A4A;
   --color-warning: #8A5B16;
   --color-error: #B3261E;
+  --color-info: #0F6673;
+  --color-info-strong: #0B7C8C;
 
   /* Semantic Aliases */
   --bg-primary: #F7F3EC;
@@ -452,21 +456,24 @@ textarea.input { resize: none; line-height: 1.6; }
 }
 
 /* Global boost for micro-font classes so tiny labels remain sharp and readable */
-.landing-page [class*="text-[7"],
-.landing-page [class*="text-[7.5"],
+.landing-page [class*="text-[7px]"],
+.landing-page [class*="text-[7.5px]"],
 .landing-page [class*="text-[8px]"],
 .landing-page [class*="text-[8.5px]"] {
   font-size: 11px !important;
   line-height: 1.4 !important;
 }
 
-.landing-page [class*="text-[9"],
-.landing-page [class*="text-[10"] {
+.landing-page [class*="text-[9px]"],
+.landing-page [class*="text-[9.5px]"],
+.landing-page [class*="text-[10px]"],
+.landing-page [class*="text-[10.5px]"] {
   font-size: 12px !important;
   line-height: 1.45 !important;
 }
 
-.landing-page [class*="text-[11"] {
+.landing-page [class*="text-[11px]"],
+.landing-page [class*="text-[11.5px]"] {
   font-size: 13px !important;
   line-height: 1.5 !important;
 }

@@ -175,22 +175,22 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
     >
       <div className="flex h-full min-h-0 flex-col">
         {/* toolbar */}
-        <div className="shrink-0 border-b border-white/[0.06] bg-[#0a0a0f]/60">
+        <div className="shrink-0 border-b border-white/[0.06] bg-[var(--color-background)]">
           <div className="flex flex-wrap items-center gap-2 px-3 py-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#6c63ff]/25 bg-[#6c63ff]/10 text-[#b3adff]">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#6c63ff]/25 bg-[#6c63ff]/10 text-[var(--color-tertiary)]">
               <WorkflowIcon size={14} />
             </span>
             <div className="mr-2 min-w-0">
-              <p className="truncate font-display text-[13px] font-semibold leading-tight text-white">
+              <p className="truncate font-display text-[13px] font-semibold leading-tight text-[var(--color-text-primary)]">
                 {workflowName}
               </p>
-              <p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#6f7284]">
+              <p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">
                 {nodes.length} node{nodes.length === 1 ? "" : "s"} · local execution
               </p>
             </div>
 
             <div className="order-3 -mx-1 flex w-full items-center gap-1 overflow-x-auto px-1 pb-0.5 sm:order-none sm:mx-0 sm:w-auto sm:flex-1 sm:pb-0">
-              <span className="mr-1 hidden shrink-0 font-mono text-[7px] uppercase tracking-[0.1em] text-[#4f5262] lg:inline">
+              <span className="mr-1 hidden shrink-0 font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)] lg:inline">
                 Templates
               </span>
               {WORKFLOW_TEMPLATES.map((template) => (
@@ -206,8 +206,8 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
                   className={cn(
                     "shrink-0 rounded-full border px-2.5 py-1 font-mono text-[7.5px] uppercase tracking-[0.06em] transition-colors disabled:opacity-40",
                     workflowName === template.name
-                      ? "border-[#6c63ff]/35 bg-[#6c63ff]/12 text-[#c9c5ff]"
-                      : "border-white/[0.07] bg-white/[0.025] text-[#8b8ba3] hover:bg-white/[0.05] hover:text-white",
+                      ? "border-[#6c63ff]/35 bg-[#6c63ff]/12 text-[var(--color-tertiary)]"
+                      : "border-white/[0.07] bg-[var(--color-surface-container)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container-high)] hover:text-[var(--color-text-primary)]",
                   )}
                 >
                   {template.name}
@@ -221,7 +221,7 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
                 onClick={() => setConfirmClear(true)}
                 disabled={isRunning || nodes.length === 0}
                 title={nodes.length === 0 ? "Nothing to clear" : "Clear the canvas"}
-                className="flex h-8 items-center gap-1.5 rounded-lg border border-white/[0.07] bg-white/[0.025] px-2 font-mono text-[7px] uppercase tracking-[0.06em] text-[#8b8ba3] transition-colors hover:text-white disabled:opacity-35"
+                className="flex h-8 items-center gap-1.5 rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] px-2 font-mono text-[7px] uppercase tracking-[0.06em] text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)] disabled:opacity-35"
               >
                 <Trash2 size={11} />
                 <span className="hidden md:inline">Clear</span>
@@ -230,7 +230,7 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
                 type="button"
                 onClick={onOpenRight}
                 aria-label="Open run status panel"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-[#8b8ba3] transition-colors hover:text-white xl:hidden"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)] xl:hidden"
               >
                 <PanelRight size={13} />
               </button>
@@ -250,13 +250,13 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
 
           {latestRun ? (
             <div className="flex items-center gap-2 px-3 pb-2">
-              <span className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/[0.06]">
+              <span className="h-[3px] flex-1 overflow-hidden rounded-full bg-[var(--color-surface-container-high)]">
                 <span
                   className="block h-full rounded-full bg-gradient-to-r from-[#6c63ff] to-[#00d9ff] transition-[width] duration-500"
                   style={{ width: `${latestRun.progress}%` }}
                 />
               </span>
-              <span className="font-mono text-[7px] uppercase tracking-[0.06em] text-[#6f7284]">
+              <span className="font-mono text-[7px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
                 {latestRun.status === "complete"
                   ? "Last run complete"
                   : latestRun.status === "failed"
@@ -277,7 +277,7 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
               type="button"
               onClick={() => setError(null)}
               aria-label="Dismiss error"
-              className="text-rose-300/60 hover:text-white"
+              className="text-rose-300/60 hover:text-[var(--color-text-primary)]"
             >
               <X size={11} />
             </button>
@@ -294,13 +294,13 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
                   "relative rounded-2xl border border-dashed p-3 transition-colors sm:p-4",
                   isOver || (activeDrag?.kind === "palette" && !nodes.length)
                     ? "border-[#6c63ff]/50 bg-[#6c63ff]/[0.045]"
-                    : "border-white/[0.08] bg-black/15",
+                    : "border-white/[0.08] bg-[var(--color-surface-container)]",
                   nodes.length === 0 && "min-h-[330px]",
                 )}
               >
                 {activeDrag?.kind === "palette" ? (
-                  <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-2xl border border-[#6c63ff]/40 bg-[#0b0b11]/70 backdrop-blur-[2px]">
-                    <div className="flex items-center gap-2 rounded-xl border border-[#6c63ff]/35 bg-[#15131f] px-3 py-2 text-[11px] text-[#c9c5ff]">
+                  <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-2xl border border-[#6c63ff]/40 bg-[var(--color-surface)] backdrop-blur-[2px]">
+                    <div className="flex items-center gap-2 rounded-xl border border-[#6c63ff]/35 bg-[var(--color-surface-container)] px-3 py-2 text-[11px] text-[var(--color-tertiary)]">
                       <Plus size={13} /> Drop to add {WORKFLOW_NODE_DEFS[activeDrag.type].label}
                     </div>
                   </div>
@@ -308,11 +308,11 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
 
                 {nodes.length === 0 ? (
                   <div className="flex min-h-[300px] flex-col items-center justify-center px-4 text-center">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.03] text-[#8d86ff]">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-[var(--color-surface-container)] text-[#8d86ff]">
                       <Layers3 size={20} />
                     </span>
-                    <p className="mt-4 font-display text-[16px] font-semibold text-white">Build the prep loop</p>
-                    <p className="mt-1.5 max-w-[300px] text-[11.5px] leading-relaxed text-[#8d8d9f]">
+                    <p className="mt-4 font-display text-[16px] font-semibold text-[var(--color-text-primary)]">Build the prep loop</p>
+                    <p className="mt-1.5 max-w-[300px] text-[11.5px] leading-relaxed text-[var(--color-text-secondary)]">
                       Drag a node here or load a template. Every node reports its status to the run
                       panel on the right.
                     </p>
@@ -322,7 +322,7 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
                           key={template.id}
                           type="button"
                           onClick={() => loadTemplate(template.id)}
-                          className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 font-mono text-[7.5px] uppercase tracking-[0.06em] text-[#a9a9ba] transition-colors hover:text-white"
+                          className="rounded-full border border-white/[0.08] bg-[var(--color-surface-container)] px-2.5 py-1 font-mono text-[7.5px] uppercase tracking-[0.06em] text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
                         >
                           {template.name}
                         </button>
@@ -344,14 +344,14 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
                               <span
                                 aria-hidden="true"
                                 className={cn(
-                                  "absolute left-[6px] top-1/2 h-[8px] w-[8px] -translate-y-1/2 rounded-full border-2 border-[#0b0b11]",
+                                  "absolute left-[6px] top-1/2 h-[8px] w-[8px] -translate-y-1/2 rounded-full border-2 border-[var(--color-surface)]",
                                   runNode?.status === "complete"
                                     ? "bg-emerald-400"
                                     : runNode?.status === "running"
-                                      ? "animate-pulse-soft bg-[#a8a2ff]"
+                                      ? "animate-pulse-soft bg-[var(--color-tertiary)]"
                                       : runNode?.status === "failed"
                                         ? "bg-rose-400"
-                                        : "bg-[#3d3f4e]",
+                                        : "bg-[var(--color-outline)]",
                                 )}
                               />
                               <WorkflowNodeCard
@@ -370,10 +370,10 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
                       </div>
                     </SortableContext>
                     <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 pl-5">
-                      <span className="font-mono text-[7px] uppercase tracking-[0.06em] text-[#4f5262]">
+                      <span className="font-mono text-[7px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
                         Drag to reorder · click to configure
                       </span>
-                      <span className="flex items-center gap-1 font-mono text-[7px] uppercase tracking-[0.06em] text-[#4f5262]">
+                      <span className="flex items-center gap-1 font-mono text-[7px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
                         <ArrowRight size={8} /> {nodes.length} steps · ~
                         {Math.round(
                           nodes.reduce((total, node) => total + WORKFLOW_NODE_DEFS[node.type].estimatedMs, 0) / 1000,
@@ -387,10 +387,10 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
             </div>
 
             {/* inspector */}
-            <aside className="self-start rounded-2xl border border-white/[0.07] bg-[#0c0c13]/80 lg:sticky lg:top-0">
+            <aside className="self-start rounded-2xl border border-white/[0.07] bg-[var(--color-surface)] lg:sticky lg:top-0">
               <div className="flex items-center gap-2 border-b border-white/[0.06] px-3 py-2.5">
-                <SlidersHorizontal size={12} className="text-[#8b8ba3]" />
-                <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#9b9cae]">
+                <SlidersHorizontal size={12} className="text-[var(--color-text-secondary)]" />
+                <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
                   Node inspector
                 </span>
                 {selectedNode ? (
@@ -398,7 +398,7 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
                     type="button"
                     onClick={() => selectNode(null)}
                     aria-label="Close inspector"
-                    className="ml-auto flex h-5 w-5 items-center justify-center rounded text-[#6f7284] hover:text-white"
+                    className="ml-auto flex h-5 w-5 items-center justify-center rounded text-[var(--color-text-faint)] hover:text-[var(--color-text-primary)]"
                   >
                     <X size={11} />
                   </button>
@@ -415,13 +415,13 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
                 />
               ) : (
                 <div className="p-3.5">
-                  <p className="text-[11px] leading-relaxed text-[#8d8d9f]">
+                  <p className="text-[11px] leading-relaxed text-[var(--color-text-secondary)]">
                     Select a node to set the role, difficulty or resume context. Configuration is
                     stored locally with the pipeline.
                   </p>
                   <div className="mt-3 space-y-1.5">
                     {CATEGORY_GROUPS.map((group) => (
-                      <div key={group.id} className="flex items-center gap-2 rounded-lg border border-white/[0.05] bg-white/[0.02] px-2 py-1.5">
+                      <div key={group.id} className="flex items-center gap-2 rounded-lg border border-white/[0.05] bg-[var(--color-surface-container)] px-2 py-1.5">
                         <span className="flex gap-0.5">
                           {group.types.map((type) => {
                             const Visual = NODE_VISUALS[type];
@@ -429,16 +429,16 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
                             return <Icon key={type} size={8} className={Visual.tint} />;
                           })}
                         </span>
-                        <span className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#6f7284]">
+                        <span className="font-mono text-[7px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">
                           {group.label}
                         </span>
-                        <span className="ml-auto font-mono text-[6.5px] text-[#4f5262]">{group.types.length}</span>
+                        <span className="ml-auto font-mono text-[6.5px] text-[var(--color-text-faint)]">{group.types.length}</span>
                       </div>
                     ))}
                   </div>
                   <div className="mt-3 flex items-start gap-2 rounded-lg border border-[#6c63ff]/15 bg-[#6c63ff]/[0.05] px-2.5 py-2">
-                    <Sparkles size={11} className="mt-0.5 shrink-0 text-[#a8a2ff]" />
-                    <p className="text-[10px] leading-relaxed text-[#9b9cae]">
+                    <Sparkles size={11} className="mt-0.5 shrink-0 text-[var(--color-tertiary)]" />
+                    <p className="text-[10px] leading-relaxed text-[var(--color-text-secondary)]">
                       Tip: the 30-minute drill is the fastest path from role to report.
                     </p>
                   </div>
@@ -451,18 +451,18 @@ export default function WorkflowBuilder({ onToast, onOpenRight }: WorkflowBuilde
 
       <DragOverlay dropAnimation={null}>
         {activeDrag?.kind === "palette" ? (
-          <div className="flex items-center gap-2 rounded-xl border border-[#6c63ff]/35 bg-[#15131f] px-3 py-2 shadow-2xl">
+          <div className="flex items-center gap-2 rounded-xl border border-[#6c63ff]/35 bg-[var(--color-surface-container)] px-3 py-2 shadow-2xl">
             {(() => {
               const Visual = NODE_VISUALS[activeDrag.type];
               const Icon = Visual.icon;
               return <Icon size={12} className={Visual.tint} />;
             })()}
-            <span className="text-[11px] text-white">{WORKFLOW_NODE_DEFS[activeDrag.type].label}</span>
+            <span className="text-[11px] text-[var(--color-text-primary)]">{WORKFLOW_NODE_DEFS[activeDrag.type].label}</span>
           </div>
         ) : draggingNode ? (
-          <div className="w-[420px] max-w-[80vw] rounded-xl border border-[#6c63ff]/35 bg-[#15131f] px-3 py-2.5 shadow-2xl">
-            <p className="text-[11px] text-white">{WORKFLOW_NODE_DEFS[draggingNode.type].label}</p>
-            <p className="font-mono text-[7px] uppercase tracking-[0.06em] text-[#6f7284]">
+          <div className="w-[420px] max-w-[80vw] rounded-xl border border-[#6c63ff]/35 bg-[var(--color-surface-container)] px-3 py-2.5 shadow-2xl">
+            <p className="text-[11px] text-[var(--color-text-primary)]">{WORKFLOW_NODE_DEFS[draggingNode.type].label}</p>
+            <p className="font-mono text-[7px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
               {WORKFLOW_NODE_DEFS[draggingNode.type].outputs}
             </p>
           </div>
@@ -508,18 +508,18 @@ function Inspector({
           <Icon size={14} />
         </span>
         <div className="min-w-0">
-          <p className="truncate font-display text-[13px] font-semibold text-white">{def.label}</p>
-          <p className="mt-0.5 font-mono text-[6.5px] uppercase tracking-[0.07em] text-[#6f7284]">
+          <p className="truncate font-display text-[13px] font-semibold text-[var(--color-text-primary)]">{def.label}</p>
+          <p className="mt-0.5 font-mono text-[6.5px] uppercase tracking-[0.07em] text-[var(--color-text-faint)]">
             {def.category} · ~{formatMs(def.estimatedMs)}
           </p>
         </div>
       </div>
-      <p className="mt-2.5 text-[10.5px] leading-relaxed text-[#8d8d9f]">{def.description}</p>
+      <p className="mt-2.5 text-[10.5px] leading-relaxed text-[var(--color-text-secondary)]">{def.description}</p>
 
       <div className="mt-3 space-y-2.5">
         {node.type === "upload-resume" ? (
           <div>
-            <label htmlFor="node-resume" className="mb-1 block text-[10px] font-medium text-[#c5c5d4]">
+            <label htmlFor="node-resume" className="mb-1 block text-[10px] font-medium text-[var(--color-text-primary)]">
               Resume text
             </label>
             <textarea
@@ -530,7 +530,7 @@ function Inspector({
               className="input !text-[10.5px]"
               placeholder="Paste resume text. Stays in this browser."
             />
-            <p className="mt-1 font-mono text-[7px] text-[#565969]">
+            <p className="mt-1 font-mono text-[7px] text-[var(--color-text-faint)]">
               {String(config.resume ?? "").length} chars · local only
             </p>
           </div>
@@ -590,8 +590,8 @@ function Inspector({
 
         {node.type === "mock-interview" ? (
           <div>
-            <span className="mb-1 block text-[10px] font-medium text-[#c5c5d4]">Answer mode</span>
-            <div className="grid grid-cols-2 gap-1 rounded-lg border border-white/[0.07] bg-black/25 p-[3px]">
+            <span className="mb-1 block text-[10px] font-medium text-[var(--color-text-primary)]">Answer mode</span>
+            <div className="grid grid-cols-2 gap-1 rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] p-[3px]">
               {["voice", "text"].map((mode) => (
                 <button
                   key={mode}
@@ -601,25 +601,25 @@ function Inspector({
                   className={cn(
                     "rounded-md py-1.5 font-mono text-[7.5px] uppercase tracking-[0.08em] transition-colors",
                     String(config.mode ?? "voice") === mode
-                      ? "bg-white/[0.09] text-white"
-                      : "text-[#6f7284] hover:text-[#b8b8c9]",
+                      ? "bg-[var(--color-surface-container-high)] text-[var(--color-text-primary)]"
+                      : "text-[var(--color-text-faint)] hover:text-[var(--color-text-primary)]",
                   )}
                 >
                   {mode}
                 </button>
               ))}
             </div>
-            <p className="mt-1.5 text-[9.5px] leading-relaxed text-[#6f7284]">
+            <p className="mt-1.5 text-[9.5px] leading-relaxed text-[var(--color-text-faint)]">
               Voice falls back to the browser speech engine when ElevenLabs is unavailable.
             </p>
           </div>
         ) : null}
 
         {!["upload-resume", "set-target-role", "generate-questions", "mock-interview"].includes(node.type) ? (
-          <div className="rounded-lg border border-white/[0.05] bg-white/[0.02] px-2.5 py-2">
-            <p className="font-mono text-[6.5px] uppercase tracking-[0.08em] text-[#6f7284]">Output</p>
-            <p className="mt-1 text-[10.5px] leading-relaxed text-[#b8b8c9]">{def.outputs}</p>
-            <p className="mt-1.5 text-[9.5px] leading-relaxed text-[#6f7284]">
+          <div className="rounded-lg border border-white/[0.05] bg-[var(--color-surface-container)] px-2.5 py-2">
+            <p className="font-mono text-[6.5px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">Output</p>
+            <p className="mt-1 text-[10.5px] leading-relaxed text-[var(--color-text-primary)]">{def.outputs}</p>
+            <p className="mt-1.5 text-[9.5px] leading-relaxed text-[var(--color-text-faint)]">
               No configuration. Reads the output of the previous node.
             </p>
           </div>
@@ -627,14 +627,14 @@ function Inspector({
       </div>
 
       <div className="mt-3 flex items-center gap-1.5 border-t border-white/[0.06] pt-2.5">
-        <span className="flex items-center gap-1 font-mono text-[6.5px] uppercase tracking-[0.06em] text-[#4f5262]">
+        <span className="flex items-center gap-1 font-mono text-[6.5px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
           <ChevronRight size={8} /> Changes save automatically
         </span>
         <button
           type="button"
           onClick={onRemove}
           disabled={running}
-          className="ml-auto flex items-center gap-1 rounded px-1.5 py-1 font-mono text-[6.5px] uppercase tracking-[0.06em] text-[#6f7284] transition-colors hover:text-rose-300 disabled:opacity-40"
+          className="ml-auto flex items-center gap-1 rounded px-1.5 py-1 font-mono text-[6.5px] uppercase tracking-[0.06em] text-[var(--color-text-faint)] transition-colors hover:text-rose-300 disabled:opacity-40"
         >
           <RotateCcw size={8} /> Remove
         </button>
@@ -657,7 +657,7 @@ function SelectField({
   const id = `node-field-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
   return (
     <div>
-      <label htmlFor={id} className="mb-1 block text-[10px] font-medium text-[#c5c5d4]">
+      <label htmlFor={id} className="mb-1 block text-[10px] font-medium text-[var(--color-text-primary)]">
         {label}
       </label>
       <select id={id} value={value} onChange={(event) => onChange(event.target.value)} className="input !py-1.5 !text-[10.5px]">

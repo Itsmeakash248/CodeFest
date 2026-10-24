@@ -28,9 +28,10 @@ export function formatClock(seconds: number): string {
   return `${String(Math.floor(safe / 60)).padStart(2, "0")}:${String(safe % 60).padStart(2, "0")}`;
 }
 
-export function sourceLabel(source?: "gemini" | "openrouter" | "local"): string {
+export function sourceLabel(source?: "gemini" | "openrouter" | "local" | "error"): string {
   if (source === "gemini") return "Gemini";
   if (source === "openrouter") return "OpenRouter";
-  if (source === "local") return "Local rubric";
+  if (source === "error") return "API Error";
+  if (source === "local") return "Offline";
   return "Streaming";
 }

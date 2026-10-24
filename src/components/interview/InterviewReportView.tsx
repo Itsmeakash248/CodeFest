@@ -15,6 +15,7 @@ import {
   Printer,
   Quote,
   RotateCcw,
+  ShieldCheck,
   Sparkles,
   Target,
   TrendingUp,
@@ -93,7 +94,7 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
         <button
           type="button"
           onClick={onPracticeAgain}
-          className="flex items-center gap-1.5 rounded-lg border border-white/[0.07] bg-white/[0.025] px-2.5 py-2 text-[11px] text-[#b8b8c9] transition-colors hover:bg-white/[0.06] hover:text-white"
+          className="flex items-center gap-1.5 rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] px-2.5 py-2 text-[11px] text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-container-high)] hover:text-[var(--color-text-primary)]"
         >
           <ArrowLeft size={12} /> Back to setup
         </button>
@@ -101,7 +102,7 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
           <button
             type="button"
             onClick={() => void copySummary()}
-            className="flex items-center gap-1.5 rounded-lg border border-white/[0.07] bg-white/[0.025] px-2.5 py-2 text-[11px] text-[#b8b8c9] transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="flex items-center gap-1.5 rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] px-2.5 py-2 text-[11px] text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-container-high)] hover:text-[var(--color-text-primary)]"
           >
             {copyState === "copied" ? (
               <>
@@ -120,14 +121,14 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
           <button
             type="button"
             onClick={downloadJson}
-            className="flex items-center gap-1.5 rounded-lg border border-white/[0.07] bg-white/[0.025] px-2.5 py-2 text-[11px] text-[#b8b8c9] transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="flex items-center gap-1.5 rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] px-2.5 py-2 text-[11px] text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-container-high)] hover:text-[var(--color-text-primary)]"
           >
             <Download size={12} /> JSON
           </button>
           <button
             type="button"
             onClick={() => window.print()}
-            className="flex items-center gap-1.5 rounded-lg border border-white/[0.07] bg-white/[0.025] px-2.5 py-2 text-[11px] text-[#b8b8c9] transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="flex items-center gap-1.5 rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] px-2.5 py-2 text-[11px] text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-container-high)] hover:text-[var(--color-text-primary)]"
           >
             <Printer size={12} /> Print
           </button>
@@ -153,23 +154,23 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
           />
 
           <div className="relative flex flex-wrap items-center gap-2">
-            <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-[#a9a9ba]">
+            <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-[var(--color-text-secondary)]">
               Session report
             </span>
             <span className="h-1 w-1 rounded-full bg-white/20" />
-            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#565969]">
+            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[var(--color-text-faint)]">
               {report.source === "ai" ? "AI + local rubric" : "Local rubric"}
             </span>
-            <span className="ml-auto font-mono text-[7.5px] uppercase tracking-[0.1em] text-[#565969]">
+            <span className="ml-auto font-mono text-[7.5px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
               {formatDate(report.generatedAt)}
             </span>
           </div>
 
           <div className="relative mt-5 grid items-start gap-6 sm:grid-cols-[minmax(0,1fr)_auto]">
             <div className="min-w-0">
-              <h1 className="font-display text-[30px] font-semibold leading-[1.02] tracking-[-0.04em] text-white sm:text-[38px]">
+              <h1 className="font-display text-[30px] font-semibold leading-[1.02] tracking-[-0.04em] text-[var(--color-text-primary)] sm:text-[38px]">
                 {report.setup.role}
-                <span className="text-[#8b8ba3]"> mock interview</span>
+                <span className="text-[var(--color-text-secondary)]"> mock interview</span>
               </h1>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 <Badge tone="neutral">{report.setup.level}</Badge>
@@ -179,7 +180,7 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
                   {report.band}
                 </Badge>
               </div>
-              <p className="mt-4 max-w-[610px] text-[12.5px] leading-relaxed text-[#c5c5d4]">
+              <p className="mt-4 max-w-[610px] text-[12.5px] leading-relaxed text-[var(--color-text-primary)]">
                 {report.summary}
               </p>
             </div>
@@ -187,11 +188,11 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
             <div className="flex items-center gap-3 sm:flex-col sm:items-end">
               <ScoreRing score={report.overall} size={126} stroke={8} label="overall" />
               <div className="sm:text-right">
-                <p className="font-mono text-[7px] uppercase tracking-[0.12em] text-[#7fe8ff]">
+                <p className="font-mono text-[7px] uppercase tracking-[0.12em] text-[var(--color-info)]">
                   Practice estimate
                 </p>
-                <p className="mt-1 text-[11.5px] font-medium text-white">{report.band}</p>
-                <p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#6f7284]">
+                <p className="mt-1 text-[11.5px] font-medium text-[var(--color-text-primary)]">{report.band}</p>
+                <p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">
                   4 weighted dimensions
                 </p>
               </div>
@@ -210,13 +211,13 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
               { label: "Next rep", value: `${report.nextPractice.reduce((sum, item) => sum + item.minutes, 0)}m`, note: "practice plan" },
             ].map((stat) => (
               <div key={stat.label}>
-                <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#6f7284]">
+                <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
                   {stat.label}
                 </p>
-                <p className="mt-1.5 font-display text-[19px] font-semibold leading-none text-white">
+                <p className="mt-1.5 font-display text-[19px] font-semibold leading-none text-[var(--color-text-primary)]">
                   {stat.value}
                 </p>
-                <p className="mt-1 font-mono text-[6.5px] uppercase tracking-[0.07em] text-[#565969]">
+                <p className="mt-1 font-mono text-[6.5px] uppercase tracking-[0.07em] text-[var(--color-text-faint)]">
                   {stat.note}
                 </p>
               </div>
@@ -224,10 +225,100 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
           </div>
         </header>
 
+        {/* Anti-Cheating & AI Proctoring Audit Card */}
+        {report.integrity && (
+          <section className="print-break mt-4 rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.03] to-white/[0.01] p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3.5">
+              <div className="flex items-center gap-2.5">
+                <ShieldCheck size={18} className={report.integrity.integrityScore >= 80 ? "text-emerald-400" : "text-amber-400"} />
+                <div>
+                  <h2 className="font-display text-[15px] font-semibold text-[var(--color-text-primary)]">
+                    Session Integrity &amp; Proctoring Audit
+                  </h2>
+                  <p className="text-[10.5px] text-[var(--color-text-faint)]">
+                    Real-time biometric gaze tracking, tab focus monitoring, and clipboard paste verification.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 font-mono text-[8.5px] font-semibold uppercase tracking-[0.08em] text-emerald-300">
+                  {report.integrity.integrityScore}% {report.integrity.rating} Integrity
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="rounded-xl border border-white/[0.05] bg-[var(--color-surface-container)] p-3">
+                <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
+                  Eye Contact
+                </p>
+                <p className="mt-1 font-display text-[20px] font-semibold text-emerald-400">
+                  {report.integrity.eyeContactPct}%
+                </p>
+                <p className="font-mono text-[7px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
+                  Focused on camera
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-white/[0.05] bg-[var(--color-surface-container)] p-3">
+                <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
+                  Face Presence
+                </p>
+                <p className="mt-1 font-display text-[20px] font-semibold text-emerald-400">
+                  {report.integrity.faceInFramePct}%
+                </p>
+                <p className="font-mono text-[7px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
+                  Candidate in frame
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-white/[0.05] bg-[var(--color-surface-container)] p-3">
+                <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
+                  Tab Switches
+                </p>
+                <p className={cn("mt-1 font-display text-[20px] font-semibold", report.integrity.tabSwitches === 0 ? "text-emerald-400" : "text-amber-400")}>
+                  {report.integrity.tabSwitches}
+                </p>
+                <p className="font-mono text-[7px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
+                  Window blur events
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-white/[0.05] bg-[var(--color-surface-container)] p-3">
+                <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
+                  Pasted Chunks
+                </p>
+                <p className={cn("mt-1 font-display text-[20px] font-semibold", report.integrity.pasteEvents === 0 ? "text-emerald-400" : "text-amber-400")}>
+                  {report.integrity.pasteEvents}
+                </p>
+                <p className="font-mono text-[7px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
+                  Clipboard insertions
+                </p>
+              </div>
+            </div>
+
+            {report.integrity.violations.length > 0 && (
+              <div className="mt-3.5 border-t border-white/[0.05] pt-3">
+                <p className="font-mono text-[7.5px] uppercase tracking-[0.08em] text-amber-300">
+                  Logged Incidents ({report.integrity.violations.length})
+                </p>
+                <ul className="mt-1.5 space-y-1">
+                  {report.integrity.violations.slice(0, 4).map((v) => (
+                    <li key={v.id} className="flex items-center gap-2 text-[10px] text-[var(--color-text-secondary)] font-mono">
+                      <span className="text-amber-400">⚠️</span>
+                      <span>{v.message}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </section>
+        )}
+
         <section className="print-break mt-4">
           <div className="mb-2.5 flex items-center justify-between px-0.5">
-            <h2 className="font-display text-[15px] font-semibold text-white">The four dimensions</h2>
-            <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#565969]">
+            <h2 className="font-display text-[15px] font-semibold text-[var(--color-text-primary)]">The four dimensions</h2>
+            <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
               Evidence from your answers
             </span>
           </div>
@@ -238,8 +329,8 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
                 className="rounded-2xl border border-white/[0.06] bg-white/[0.022] p-4"
               >
                 <div className="flex items-baseline justify-between gap-3">
-                  <h3 className="text-[12px] font-semibold text-[#dedee9]">{dimension.label}</h3>
-                  <span className="font-mono text-[8px] uppercase tracking-[0.06em] text-[#565969]">
+                  <h3 className="text-[12px] font-semibold text-[var(--color-text-primary)]">{dimension.label}</h3>
+                  <span className="font-mono text-[8px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
                     {Math.round(dimension.weight * 100)}% weight
                   </span>
                 </div>
@@ -249,10 +340,10 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
                   className="mt-2 [&>div:first-child]:hidden"
                   compact
                 />
-                <p className="mt-2.5 text-[11px] leading-relaxed text-[#b8b8c9]">{dimension.note}</p>
-                <div className="mt-2.5 flex items-start gap-2 rounded-lg border border-white/[0.05] bg-black/15 px-2.5 py-2">
+                <p className="mt-2.5 text-[11px] leading-relaxed text-[var(--color-text-primary)]">{dimension.note}</p>
+                <div className="mt-2.5 flex items-start gap-2 rounded-lg border border-white/[0.05] bg-[var(--color-surface-container)] px-2.5 py-2">
                   <Quote size={10} className="mt-0.5 shrink-0 text-[#8d86ff]" />
-                  <p className="text-[10px] italic leading-relaxed text-[#8d8d9f]">
+                  <p className="text-[10px] italic leading-relaxed text-[var(--color-text-secondary)]">
                     {dimension.evidence}
                   </p>
                 </div>
@@ -268,7 +359,7 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
             </p>
             <ul className="mt-3 space-y-2.5">
               {report.strengths.map((item) => (
-                <li key={item} className="flex items-start gap-2 text-[11.5px] leading-relaxed text-[#c5d8ce]">
+                <li key={item} className="flex items-start gap-2 text-[11.5px] leading-relaxed text-[var(--color-success)]">
                   <CheckCircle2 size={12} className="mt-0.5 shrink-0 text-emerald-400/80" />
                   {item}
                 </li>
@@ -281,7 +372,7 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
             </p>
             <ul className="mt-3 space-y-2.5">
               {report.improvements.map((item) => (
-                <li key={item} className="flex items-start gap-2 text-[11.5px] leading-relaxed text-[#ddd3c0]">
+                <li key={item} className="flex items-start gap-2 text-[11.5px] leading-relaxed text-[var(--color-warning)]">
                   <ArrowUpRight size={12} className="mt-0.5 shrink-0 text-amber-400/80" />
                   {item}
                 </li>
@@ -292,8 +383,8 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
 
         <section className="print-break mt-4">
           <div className="mb-2.5 flex items-center justify-between px-0.5">
-            <h2 className="font-display text-[15px] font-semibold text-white">Answer by answer</h2>
-            <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#565969]">
+            <h2 className="font-display text-[15px] font-semibold text-[var(--color-text-primary)]">Answer by answer</h2>
+            <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
               {report.perQuestion.length} scored response{report.perQuestion.length === 1 ? "" : "s"}
             </span>
           </div>
@@ -301,15 +392,15 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
             {report.perQuestion.map((item, index) => (
               <article
                 key={`${item.question}-${index}`}
-                className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4"
+                className="rounded-2xl border border-white/[0.06] bg-[var(--color-surface-container)] p-4"
               >
                 <div className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] font-mono text-[8px] text-[#8b8ba3]">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/[0.08] bg-[var(--color-surface-container)] font-mono text-[8px] text-[var(--color-text-secondary)]">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11.5px] font-medium leading-snug text-[#dedee9]">{item.question}</p>
-                    <p className="mt-1.5 text-[10.5px] leading-relaxed text-[#8d8d9f]">{item.note}</p>
+                    <p className="text-[11.5px] font-medium leading-snug text-[var(--color-text-primary)]">{item.question}</p>
+                    <p className="mt-1.5 text-[10.5px] leading-relaxed text-[var(--color-text-secondary)]">{item.note}</p>
                   </div>
                   <span
                     className={cn(
@@ -317,14 +408,14 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
                       item.score >= 75
                         ? "border-emerald-400/20 bg-emerald-500/[0.07] text-emerald-300"
                         : item.score >= 60
-                          ? "border-[#00d9ff]/20 bg-[#00d9ff]/[0.06] text-[#8feaff]"
+                          ? "border-[var(--color-info-strong)]/20 bg-[var(--color-info-strong)]/[0.06] text-[var(--color-info)]"
                           : "border-amber-400/20 bg-amber-500/[0.06] text-amber-300",
                     )}
                   >
                     {item.score}
                   </span>
                 </div>
-                <blockquote className="mt-3 border-l border-[#6c63ff]/30 pl-3 text-[10.5px] leading-relaxed text-[#8d8d9f]">
+                <blockquote className="mt-3 border-l border-[#6c63ff]/30 pl-3 text-[10.5px] leading-relaxed text-[var(--color-text-secondary)]">
                   {item.answer}
                 </blockquote>
               </article>
@@ -335,10 +426,10 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
         <div className="mt-4 grid gap-2.5 lg:grid-cols-[1.05fr_0.95fr]">
           <section className="print-break rounded-2xl border border-white/[0.06] bg-white/[0.022] p-4">
             <div className="flex items-center justify-between">
-              <h2 className="flex items-center gap-1.5 font-display text-[14px] font-semibold text-white">
-                <GraduationCap size={14} className="text-[#b3adff]" /> Next practice
+              <h2 className="flex items-center gap-1.5 font-display text-[14px] font-semibold text-[var(--color-text-primary)]">
+                <GraduationCap size={14} className="text-[var(--color-tertiary)]" /> Next practice
               </h2>
-              <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#565969]">
+              <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
                 {report.nextPractice.reduce((sum, item) => sum + item.minutes, 0)} min total
               </span>
             </div>
@@ -346,16 +437,16 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
               {report.nextPractice.map((action, index) => (
                 <div
                   key={action.title}
-                  className="flex items-start gap-2.5 rounded-xl border border-white/[0.05] bg-black/15 p-3"
+                  className="flex items-start gap-2.5 rounded-xl border border-white/[0.05] bg-[var(--color-surface-container)] p-3"
                 >
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-[#6c63ff]/25 bg-[#6c63ff]/10 font-mono text-[8px] text-[#c9c5ff]">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-[#6c63ff]/25 bg-[#6c63ff]/10 font-mono text-[8px] text-[var(--color-tertiary)]">
                     {index + 1}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11.5px] font-medium text-[#dedee9]">{action.title}</p>
-                    <p className="mt-1 text-[10.5px] leading-relaxed text-[#8d8d9f]">{action.detail}</p>
+                    <p className="text-[11.5px] font-medium text-[var(--color-text-primary)]">{action.title}</p>
+                    <p className="mt-1 text-[10.5px] leading-relaxed text-[var(--color-text-secondary)]">{action.detail}</p>
                   </div>
-                  <span className="flex shrink-0 items-center gap-1 font-mono text-[7px] uppercase tracking-[0.06em] text-[#565969]">
+                  <span className="flex shrink-0 items-center gap-1 font-mono text-[7px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
                     <Clock3 size={8} /> {action.minutes}m
                   </span>
                 </div>
@@ -365,10 +456,10 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
 
           <section className="print-break rounded-2xl border border-white/[0.06] bg-white/[0.022] p-4">
             <div className="flex items-center justify-between">
-              <h2 className="flex items-center gap-1.5 font-display text-[14px] font-semibold text-white">
-                <Sparkles size={14} className="text-[#7fe8ff]" /> STAR blueprint
+              <h2 className="flex items-center gap-1.5 font-display text-[14px] font-semibold text-[var(--color-text-primary)]">
+                <Sparkles size={14} className="text-[var(--color-info)]" /> STAR blueprint
               </h2>
-              <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#565969]">
+              <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
                 Rebuild your richest answer
               </span>
             </div>
@@ -380,14 +471,14 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
                 { key: "R", label: "Result", value: report.starBlueprint.result },
               ].map((item) => (
                 <div key={item.key} className="flex items-start gap-2.5">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.035] font-mono text-[8px] font-semibold text-[#b3adff]">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-white/[0.08] bg-[var(--color-surface-container)] font-mono text-[8px] font-semibold text-[var(--color-tertiary)]">
                     {item.key}
                   </span>
                   <div className="min-w-0">
-                    <p className="font-mono text-[6.5px] uppercase tracking-[0.1em] text-[#565969]">
+                    <p className="font-mono text-[6.5px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
                       {item.label}
                     </p>
-                    <p className="mt-0.5 text-[10.5px] leading-relaxed text-[#9b9cae]">{item.value}</p>
+                    <p className="mt-0.5 text-[10.5px] leading-relaxed text-[var(--color-text-secondary)]">{item.value}</p>
                   </div>
                 </div>
               ))}
@@ -398,15 +489,15 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
         <footer className="mt-4 rounded-2xl border border-white/[0.06] bg-white/[0.018] p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex items-start gap-2">
-              <FileText size={12} className="mt-0.5 shrink-0 text-[#6f7284]" />
-              <p className="max-w-[620px] text-[10px] leading-relaxed text-[#6f7284]">
+              <FileText size={12} className="mt-0.5 shrink-0 text-[var(--color-text-faint)]" />
+              <p className="max-w-[620px] text-[10px] leading-relaxed text-[var(--color-text-faint)]">
                 This is a practice estimate generated from {report.answeredWords.toLocaleString()} words
                 in your own answers. It is not a hiring decision, a personality test, or a prediction of
                 interview outcomes. No protected traits are scored. Stored locally in this browser under{" "}
                 <span className="font-mono text-[9px]">viewpilot.latestReport</span>.
               </p>
             </div>
-            <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#4f5262]">
+            <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
               ViewPilot Pro · Team Mooncraft
             </p>
           </div>
@@ -426,7 +517,7 @@ export default function InterviewReportView({ report, onPracticeAgain }: Intervi
             >
               <Printer size={12} /> Print or save PDF
             </button>
-            <span className="ml-auto font-mono text-[7px] uppercase tracking-[0.08em] text-[#565969]">
+            <span className="ml-auto font-mono text-[7px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">
               Session {report.sessionId.slice(0, 12)}
             </span>
           </div>

@@ -14,6 +14,8 @@ import {
   ShieldCheck,
   Sparkles,
   Target,
+  Video,
+  VideoOff,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -77,19 +79,19 @@ export default function InterviewSetup({
     <div className="mx-auto w-full max-w-[1320px] px-5 py-10 sm:px-8 lg:py-14">
       <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
         <div className="min-w-0">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5">
-            <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-[#00d9ff]" />
-            <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-[#a9a9ba]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-[var(--color-surface-container)] px-3 py-1.5">
+            <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-[var(--color-info-strong)]" />
+            <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-[var(--color-text-secondary)]">
               Adaptive mock interview
             </span>
           </div>
 
-          <h1 className="mt-6 max-w-[520px] font-display text-[44px] font-semibold leading-[0.96] tracking-[-0.05em] text-white sm:text-[58px]">
+          <h1 className="mt-6 max-w-[520px] font-display text-[44px] font-semibold leading-[0.96] tracking-[-0.05em] text-[var(--color-text-primary)] sm:text-[58px]">
             Five questions.
             <br />
             One <span className="text-gradient">honest scorecard.</span>
           </h1>
-          <p className="mt-5 max-w-[470px] text-[13.5px] leading-relaxed text-[#a9a9ba]">
+          <p className="mt-5 max-w-[470px] text-[13.5px] leading-relaxed text-[var(--color-text-secondary)]">
             Rehearse out loud or in text. The interviewer probes thin answers, then scores what you
             actually said against four visible dimensions. No key required.
           </p>
@@ -99,7 +101,7 @@ export default function InterviewSetup({
               const Icon = item.icon;
               return (
                 <div key={item.title} className="flex items-start gap-3.5">
-                  <span className="relative mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035] text-[#b3adff]">
+                  <span className="relative mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-[var(--color-surface-container)] text-[var(--color-tertiary)]">
                     <Icon size={14} strokeWidth={1.7} />
                     {index < flow.length - 1 ? (
                       <span
@@ -109,8 +111,8 @@ export default function InterviewSetup({
                     ) : null}
                   </span>
                   <div>
-                    <p className="text-[12.5px] font-medium text-[#dedee9]">{item.title}</p>
-                    <p className="mt-1 max-w-[380px] text-[11.5px] leading-relaxed text-[#7d7f92]">
+                    <p className="text-[12.5px] font-medium text-[var(--color-text-primary)]">{item.title}</p>
+                    <p className="mt-1 max-w-[380px] text-[11.5px] leading-relaxed text-[var(--color-text-faint)]">
                       {item.body}
                     </p>
                   </div>
@@ -119,12 +121,12 @@ export default function InterviewSetup({
             })}
           </div>
 
-          <div className="mt-8 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4">
+          <div className="mt-8 rounded-2xl border border-white/[0.07] bg-[var(--color-surface-container)] p-4">
             <div className="flex items-center justify-between gap-3">
-              <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#6f7284]">
+              <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-[var(--color-text-faint)]">
                 What gets scored
               </p>
-              <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#565969]">
+              <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
                 Weighted rubric
               </span>
             </div>
@@ -137,16 +139,16 @@ export default function InterviewSetup({
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="flex items-center justify-between rounded-lg border border-white/[0.05] bg-black/15 px-2.5 py-2"
+                  className="flex items-center justify-between rounded-lg border border-white/[0.05] bg-[var(--color-surface-container)] px-2.5 py-2"
                 >
-                  <span className="text-[10.5px] text-[#b8b8c9]">{item.label}</span>
-                  <span className="font-mono text-[9px] tabular-nums text-[#8d8d9f]">
+                  <span className="text-[10.5px] text-[var(--color-text-primary)]">{item.label}</span>
+                  <span className="font-mono text-[9px] tabular-nums text-[var(--color-text-secondary)]">
                     {item.weight}
                   </span>
                 </div>
               ))}
             </div>
-            <p className="mt-3 flex items-start gap-2 text-[10px] leading-relaxed text-[#6f7284]">
+            <p className="mt-3 flex items-start gap-2 text-[10px] leading-relaxed text-[var(--color-text-faint)]">
               <ShieldCheck size={11} className="mt-0.5 shrink-0 text-emerald-300/70" />
               Practice estimate only. No protected traits are scored, inferred or stored.
             </p>
@@ -157,20 +159,20 @@ export default function InterviewSetup({
               <div className="flex items-center gap-3">
                 <ScoreRing score={latestReport.overall} size={54} stroke={4.5} />
                 <div className="min-w-0 flex-1">
-                  <p className="flex items-center gap-1.5 font-mono text-[7.5px] uppercase tracking-[0.12em] text-[#c9c5ff]">
+                  <p className="flex items-center gap-1.5 font-mono text-[7.5px] uppercase tracking-[0.12em] text-[var(--color-tertiary)]">
                     <History size={9} /> Last rehearsal
                   </p>
-                  <p className="mt-1 truncate text-[11.5px] font-medium text-white">
+                  <p className="mt-1 truncate text-[11.5px] font-medium text-[var(--color-text-primary)]">
                     {latestReport.setup.role}
                   </p>
-                  <p className="truncate font-mono text-[7px] uppercase tracking-[0.07em] text-[#6f7284]">
+                  <p className="truncate font-mono text-[7px] uppercase tracking-[0.07em] text-[var(--color-text-faint)]">
                     {latestReport.band} · {new Date(latestReport.generatedAt).toLocaleDateString()}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={onOpenLatest}
-                  className="flex shrink-0 items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.04] px-2.5 py-1.5 text-[10.5px] text-[#d4d4e0] transition-colors hover:bg-white/[0.08] hover:text-white"
+                  className="flex shrink-0 items-center gap-1 rounded-lg border border-white/[0.08] bg-[var(--color-surface-container)] px-2.5 py-1.5 text-[10.5px] text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-container-high)] hover:text-[var(--color-text-primary)]"
                 >
                   Open <ArrowRight size={10} />
                 </button>
@@ -184,14 +186,14 @@ export default function InterviewSetup({
             <div className="flex items-start justify-between gap-4 border-b border-white/[0.06] px-5 py-5 sm:px-6">
               <div>
                 <span className="label">Session setup</span>
-                <h2 className="mt-2.5 font-display text-[24px] font-semibold tracking-[-0.03em] text-white">
+                <h2 className="mt-2.5 font-display text-[24px] font-semibold tracking-[-0.03em] text-[var(--color-text-primary)]">
                   Who are you rehearsing for?
                 </h2>
-                <p className="mt-1 text-[11.5px] leading-relaxed text-[#8d8d9f]">
+                <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-text-secondary)]">
                   Five questions, about twelve minutes. You can stop early and still get scored.
                 </p>
               </div>
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#6c63ff]/25 bg-[#6c63ff]/10 text-[#b3adff]">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#6c63ff]/25 bg-[#6c63ff]/10 text-[var(--color-tertiary)]">
                 <Sparkles size={15} />
               </span>
             </div>
@@ -209,7 +211,7 @@ export default function InterviewSetup({
               ) : null}
 
               <div>
-                <label htmlFor="interview-role" className="mb-1.5 block text-[11px] font-medium text-[#c5c5d4]">
+                <label htmlFor="interview-role" className="mb-1.5 block text-[11px] font-medium text-[var(--color-text-primary)]">
                   Target role
                 </label>
                 <select
@@ -228,7 +230,7 @@ export default function InterviewSetup({
                   {role.skills.slice(0, 5).map((skill) => (
                     <span
                       key={skill}
-                      className="rounded-md border border-white/[0.06] bg-white/[0.025] px-1.5 py-0.5 font-mono text-[7.5px] uppercase tracking-[0.04em] text-[#7d7f92]"
+                      className="rounded-md border border-white/[0.06] bg-[var(--color-surface-container)] px-1.5 py-0.5 font-mono text-[7.5px] uppercase tracking-[0.04em] text-[var(--color-text-faint)]"
                     >
                       {skill}
                     </span>
@@ -263,7 +265,7 @@ export default function InterviewSetup({
                 columns="sm:grid-cols-3"
               />
 
-              <div className="rounded-xl border border-white/[0.06] bg-black/15">
+              <div className="rounded-xl border border-white/[0.06] bg-[var(--color-surface-container)]">
                 <button
                   type="button"
                   onClick={() => setShowResume((value) => !value)}
@@ -271,18 +273,18 @@ export default function InterviewSetup({
                   aria-controls="interview-resume-wrap"
                   className="flex w-full items-center gap-2.5 px-3.5 py-3 text-left"
                 >
-                  <FileText size={13} className="shrink-0 text-[#8b8ba3]" />
+                  <FileText size={13} className="shrink-0 text-[var(--color-text-secondary)]" />
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[11.5px] font-medium text-[#c5c5d4]">
-                      Resume context <span className="font-normal text-[#6f7284]">(optional)</span>
+                    <span className="block text-[11.5px] font-medium text-[var(--color-text-primary)]">
+                      Resume context <span className="font-normal text-[var(--color-text-faint)]">(optional)</span>
                     </span>
-                    <span className="block text-[10px] text-[#6f7284]">
+                    <span className="block text-[10px] text-[var(--color-text-faint)]">
                       Pastes into question context. Never stored on the server.
                     </span>
                   </span>
                   <ChevronDown
                     size={13}
-                    className={cn("shrink-0 text-[#6f7284] transition-transform", showResume && "rotate-180")}
+                    className={cn("shrink-0 text-[var(--color-text-faint)] transition-transform", showResume && "rotate-180")}
                   />
                 </button>
                 {showResume ? (
@@ -298,7 +300,7 @@ export default function InterviewSetup({
                       onChange={(event) => onChange({ resume: event.target.value })}
                       placeholder="Paste two or three bullets: projects you owned, tools you used, one result with a number."
                     />
-                    <div className="mt-1.5 flex items-center justify-between font-mono text-[7px] uppercase tracking-[0.07em] text-[#565969]">
+                    <div className="mt-1.5 flex items-center justify-between font-mono text-[7px] uppercase tracking-[0.07em] text-[var(--color-text-faint)]">
                       <span>Read for tailoring only</span>
                       <span className="tabular-nums">{(setup.resume ?? "").length}/6000</span>
                     </div>
@@ -306,39 +308,114 @@ export default function InterviewSetup({
                 ) : null}
               </div>
 
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-3">
-                <div className="flex items-center gap-2.5">
-                  <Volume2 size={13} className="text-[#8b8ba3]" />
-                  <div>
-                    <p className="text-[11.5px] font-medium text-[#c5c5d4]">Read questions aloud</p>
-                    <p className="text-[10px] text-[#6f7284]">
-                      ElevenLabs when configured, browser voice as fallback.
-                    </p>
+              <div className="space-y-2">
+                {/* Webcam & Proctoring Toggle */}
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-[var(--color-surface-container)] px-3.5 py-3">
+                  <div className="flex items-center gap-2.5">
+                    <ShieldCheck size={14} className="text-emerald-400" />
+                    <div>
+                      <p className="text-[11.5px] font-medium text-[var(--color-text-primary)]">Webcam &amp; AI Proctoring</p>
+                      <p className="text-[10px] text-[var(--color-text-faint)]">
+                        Live face tracking, eye-contact detection, and tab focus monitoring.
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={voiceEnabled}
-                  aria-label="Read interview questions aloud"
-                  onClick={onToggleVoice}
-                  className={cn(
-                    "relative h-6 w-11 shrink-0 rounded-full border transition-colors",
-                    voiceEnabled
-                      ? "border-[#6c63ff]/40 bg-[#6c63ff]/40"
-                      : "border-white/[0.09] bg-white/[0.05]",
-                  )}
-                >
-                  <span
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={setup.videoEnabled ?? true}
+                    aria-label="Toggle camera and proctoring"
+                    onClick={() => onChange({ videoEnabled: !(setup.videoEnabled ?? true) })}
                     className={cn(
-                      "absolute top-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white text-[#1a1a24] shadow transition-[left] duration-200",
-                      voiceEnabled ? "left-[22px]" : "left-0.5",
+                      "relative h-6 w-11 shrink-0 rounded-full border transition-colors",
+                      setup.videoEnabled ?? true
+                        ? "border-emerald-500/40 bg-emerald-500/30"
+                        : "border-white/[0.09] bg-[var(--color-surface-container-high)]",
                     )}
-                    style={{ height: 18, width: 18 }}
                   >
-                    {voiceEnabled ? <Volume2 size={9} /> : <VolumeX size={9} />}
-                  </span>
-                </button>
+                    <span
+                      className={cn(
+                        "absolute top-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white text-[#1a1a24] shadow transition-[left] duration-200",
+                        setup.videoEnabled ?? true ? "left-[22px]" : "left-0.5",
+                      )}
+                      style={{ height: 18, width: 18 }}
+                    >
+                      {setup.videoEnabled ?? true ? <Video size={9} /> : <VideoOff size={9} />}
+                    </span>
+                  </button>
+                </div>
+
+                {/* Conversational Hands-Free Mode Toggle */}
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-[var(--color-surface-container)] px-3.5 py-3">
+                  <div className="flex items-center gap-2.5">
+                    <Sparkles size={14} className="text-[#6c63ff]" />
+                    <div>
+                      <p className="text-[11.5px] font-medium text-[var(--color-text-primary)]">Conversational AI Mode</p>
+                      <p className="text-[10px] text-[var(--color-text-faint)]">
+                        Voice-first turn-taking with live transcript streaming and audio visualizer.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={setup.conversationalMode ?? true}
+                    aria-label="Toggle conversational hands-free mode"
+                    onClick={() => onChange({ conversationalMode: !(setup.conversationalMode ?? true) })}
+                    className={cn(
+                      "relative h-6 w-11 shrink-0 rounded-full border transition-colors",
+                      setup.conversationalMode ?? true
+                        ? "border-[#6c63ff]/40 bg-[#6c63ff]/40"
+                        : "border-white/[0.09] bg-[var(--color-surface-container-high)]",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "absolute top-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white text-[#1a1a24] shadow transition-[left] duration-200",
+                        setup.conversationalMode ?? true ? "left-[22px]" : "left-0.5",
+                      )}
+                      style={{ height: 18, width: 18 }}
+                    >
+                      <Sparkles size={9} />
+                    </span>
+                  </button>
+                </div>
+
+                {/* Read questions aloud */}
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-[var(--color-surface-container)] px-3.5 py-3">
+                  <div className="flex items-center gap-2.5">
+                    <Volume2 size={13} className="text-[var(--color-text-secondary)]" />
+                    <div>
+                      <p className="text-[11.5px] font-medium text-[var(--color-text-primary)]">Read questions aloud</p>
+                      <p className="text-[10px] text-[var(--color-text-faint)]">
+                        ElevenLabs when configured, browser voice as fallback.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={voiceEnabled}
+                    aria-label="Read interview questions aloud"
+                    onClick={onToggleVoice}
+                    className={cn(
+                      "relative h-6 w-11 shrink-0 rounded-full border transition-colors",
+                      voiceEnabled
+                        ? "border-[#6c63ff]/40 bg-[#6c63ff]/40"
+                        : "border-white/[0.09] bg-[var(--color-surface-container-high)]",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "absolute top-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white text-[#1a1a24] shadow transition-[left] duration-200",
+                        voiceEnabled ? "left-[22px]" : "left-0.5",
+                      )}
+                      style={{ height: 18, width: 18 }}
+                    >
+                      {voiceEnabled ? <Volume2 size={9} /> : <VolumeX size={9} />}
+                    </span>
+                  </button>
+                </div>
               </div>
 
               {error ? (
@@ -351,7 +428,7 @@ export default function InterviewSetup({
                     <p>{error}</p>
                     <button
                       type="submit"
-                      className="mt-1 font-medium text-rose-100 underline underline-offset-2 hover:text-white"
+                      className="mt-1 font-medium text-rose-100 underline underline-offset-2 hover:text-[var(--color-text-primary)]"
                     >
                       Try again
                     </button>
@@ -378,7 +455,7 @@ export default function InterviewSetup({
                 )}
               </button>
 
-              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-mono text-[7.5px] uppercase tracking-[0.1em] text-[#565969]">
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-mono text-[7.5px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
                 <span className="flex items-center gap-1">
                   <Clock3 size={8} /> ~12 minutes
                 </span>
@@ -392,7 +469,7 @@ export default function InterviewSetup({
             </div>
           </div>
 
-          <p className="mt-4 px-1 text-[10.5px] leading-relaxed text-[#6f7284]">
+          <p className="mt-4 px-1 text-[10.5px] leading-relaxed text-[var(--color-text-faint)]">
             By starting, you agree this is a practice tool, not a hiring decision. Your answers stay
             in this browser unless you download the report.
           </p>
@@ -420,13 +497,13 @@ function Segmented({
   return (
     <div>
       <div className="mb-1.5 flex items-baseline justify-between gap-3">
-        <span className="text-[11px] font-medium text-[#c5c5d4]">{label}</span>
-        <span className="truncate text-[9.5px] text-[#5f6273]">{hint}</span>
+        <span className="text-[11px] font-medium text-[var(--color-text-primary)]">{label}</span>
+        <span className="truncate text-[9.5px] text-[var(--color-text-faint)]">{hint}</span>
       </div>
       <div
         role="group"
         aria-label={label}
-        className={cn("grid grid-cols-2 gap-1 rounded-xl border border-white/[0.06] bg-black/20 p-1", columns)}
+        className={cn("grid grid-cols-2 gap-1 rounded-xl border border-white/[0.06] bg-[var(--color-surface-container)] p-1", columns)}
       >
         {options.map((option) => {
           const active = option === value;
@@ -439,8 +516,8 @@ function Segmented({
               className={cn(
                 "rounded-lg px-2 py-2 text-[10.5px] font-medium transition-all",
                 active
-                  ? "bg-white/[0.09] text-white shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
-                  : "text-[#7d7f92] hover:bg-white/[0.04] hover:text-[#c5c5d4]",
+                  ? "bg-[var(--color-surface-container-high)] text-[var(--color-text-primary)] shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
+                  : "text-[var(--color-text-faint)] hover:bg-[var(--color-surface-container)] hover:text-[var(--color-text-primary)]",
               )}
             >
               {option}

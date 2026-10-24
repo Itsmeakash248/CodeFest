@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AuthForm from "@/components/auth/AuthForm";
+import { safeNext } from "@/lib/next-path";
 
 export const metadata: Metadata = {
   title: "Log in",
@@ -7,13 +8,6 @@ export const metadata: Metadata = {
 };
 
 export const dynamic = "force-dynamic";
-
-function safeNext(value: string | string[] | undefined): string {
-  const raw = Array.isArray(value) ? value[0] : value;
-  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/dashboard";
-  if (raw === "/login" || raw.startsWith("/login?")) return "/dashboard";
-  return raw;
-}
 
 export default async function LoginPage({
   searchParams,

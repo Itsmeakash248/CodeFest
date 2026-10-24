@@ -93,7 +93,7 @@ export default function RobotDemo() {
           />
           <div className="glass relative overflow-hidden rounded-[32px] p-6 shadow-[0_40px_100px_rgba(0,0,0,0.45)]">
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.15em] text-[#7d7f92]">
+              <span className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.15em] text-[var(--color-text-faint)]">
                 <Bot size={12} /> Presence dock
               </span>
               <span className="chip chip-cyan" style={{ fontSize: "8px" }}>
@@ -122,42 +122,42 @@ export default function RobotDemo() {
                 { label: "Latency", value: online ? "~40ms" : "—" },
               ].map((item) => (
                 <div key={item.label}>
-                  <p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#5f6273]">{item.label}</p>
-                  <p className="mt-1 truncate font-mono text-[10.5px] capitalize text-[#d4d4e0]">{item.value}</p>
+                  <p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[var(--color-text-faint)]">{item.label}</p>
+                  <p className="mt-1 truncate font-mono text-[10.5px] capitalize text-[var(--color-text-primary)]">{item.value}</p>
                 </div>
               ))}
             </div>
           </div>
 
           <div
-            className="absolute -right-2 top-8 z-20 hidden items-center gap-1.5 rounded-full border border-white/[0.1] bg-[#101018]/90 px-2.5 py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:flex"
+            className="absolute -right-2 top-8 z-20 hidden items-center gap-1.5 rounded-full border border-white/[0.1] bg-[var(--color-surface-container)] px-2.5 py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:flex"
             style={{ transform: "translateZ(60px)" }}
           >
-            <span className="h-1 w-1 rounded-full bg-[#00d9ff]" />
-            <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#8b8ba3]">ESP32-S3</span>
+            <span className="h-1 w-1 rounded-full bg-[var(--color-info-strong)]" />
+            <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-secondary)]">ESP32-S3</span>
           </div>
 
           <div
             className="glass-subtle mt-3 flex items-center gap-2.5 px-3.5 py-3"
             style={{ transform: "translateZ(30px)" }}
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#00d9ff]/20 bg-[#00d9ff]/10 text-[#7fe8ff]">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--color-info-strong)]/20 bg-[var(--color-info-strong)]/10 text-[var(--color-info)]">
               <Radio size={13} />
             </span>
-            <p className="flex-1 text-[11px] leading-snug text-[#9b9cae]">
+            <p className="flex-1 text-[11px] leading-snug text-[var(--color-text-secondary)]">
               Optional face. Same rubric.
             </p>
-            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#647085]">LAN only</span>
+            <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">LAN only</span>
           </div>
         </div>
       </TiltCard>
 
       <div>
         <span className="label">Optional hardware</span>
-        <h2 className="mt-4 max-w-[520px] font-display text-[38px] font-semibold leading-[1.02] tracking-[-0.04em] text-white sm:text-[46px]">
+        <h2 className="mt-4 max-w-[520px] font-display text-[38px] font-semibold leading-[1.02] tracking-[-0.04em] text-[var(--color-text-primary)] sm:text-[46px]">
           The interviewer can <span className="text-gradient-cyan">have a face.</span>
         </h2>
-        <p className="mt-5 max-w-[480px] text-[13.5px] leading-relaxed text-[#a9a9ba]">
+        <p className="mt-5 max-w-[480px] text-[13.5px] leading-relaxed text-[var(--color-text-secondary)]">
           An ESP32-S3 face over LAN. Optional — browser voice needs no hardware.
         </p>
 
@@ -174,8 +174,8 @@ export default function RobotDemo() {
                 className={cn(
                   "flex items-center gap-2 rounded-full border px-3.5 py-2 text-[12px] font-medium transition-all duration-200",
                   active
-                    ? "border-[#00d9ff]/40 bg-[#00d9ff]/12 text-[#c9f8ff] shadow-[0_0_24px_rgba(0,217,255,0.12)]"
-                    : "border-white/[0.08] bg-white/[0.025] text-[#9b9cae] hover:border-white/[0.16] hover:text-white",
+                    ? "border-[var(--color-info-strong)]/40 bg-[var(--color-info-strong)]/12 text-[var(--color-info)] shadow-[0_0_24px_rgba(0,217,255,0.12)]"
+                    : "border-white/[0.08] bg-[var(--color-surface-container)] text-[var(--color-text-secondary)] hover:border-white/[0.16] hover:text-[var(--color-text-primary)]",
                 )}
               >
                 <Icon size={13} strokeWidth={1.7} />
@@ -187,17 +187,17 @@ export default function RobotDemo() {
 
         <div className="mt-4 flex min-h-[38px] items-center gap-2.5">
           {sending ? (
-            <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[#7fe8ff]">
+            <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-info)]">
               <Loader2 size={12} className="animate-spin" /> Sending expression
             </span>
           ) : note ? (
-            <p className="flex items-start gap-2 text-[11px] leading-relaxed text-[#8d8d9f]">
-              <CircleDot size={11} className="mt-0.5 shrink-0 text-[#00d9ff]" />
+            <p className="flex items-start gap-2 text-[11px] leading-relaxed text-[var(--color-text-secondary)]">
+              <CircleDot size={11} className="mt-0.5 shrink-0 text-[var(--color-info-strong)]" />
               {note}
             </p>
           ) : (
-            <p className="flex items-center gap-2 text-[11px] text-[#7d7f92]">
-              <Waves size={12} className="text-[#647085]" />
+            <p className="flex items-center gap-2 text-[11px] text-[var(--color-text-faint)]">
+              <Waves size={12} className="text-[var(--color-text-secondary)]" />
               Pick an expression. Gaze follows your pointer.
             </p>
           )}
@@ -208,7 +208,7 @@ export default function RobotDemo() {
             Try the interview room
             <ArrowUpRight size={15} />
           </Link>
-          <span className="text-[11px] leading-relaxed text-[#7d7f92]">
+          <span className="text-[11px] leading-relaxed text-[var(--color-text-faint)]">
             Five questions · four scores · no robot required.
           </span>
         </div>

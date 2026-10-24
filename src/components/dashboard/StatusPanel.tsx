@@ -164,7 +164,7 @@ export default function StatusPanel({
               aria-pressed={active}
               className={cn(
                 "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 font-mono text-[7.5px] uppercase tracking-[0.05em] transition-colors",
-                active ? "bg-white/[0.08] text-white" : "text-[#6f7284] hover:text-[#b8b8c9]",
+                active ? "bg-[var(--color-surface-container-high)] text-[var(--color-text-primary)]" : "text-[var(--color-text-faint)] hover:text-[var(--color-text-primary)]",
               )}
             >
               <Icon size={10} className={item.id === "run" && run?.status === "running" ? "animate-spin" : ""} />
@@ -190,12 +190,12 @@ export default function StatusPanel({
                   </button>
                 }
               />
-              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                <p className="font-mono text-[7px] uppercase tracking-[0.12em] text-[#6f7284]">What streams in</p>
+              <div className="rounded-xl border border-white/[0.06] bg-[var(--color-surface-container)] p-3">
+                <p className="font-mono text-[7px] uppercase tracking-[0.12em] text-[var(--color-text-faint)]">What streams in</p>
                 <div className="mt-2 space-y-1.5">
                   {["Node start and completion", "Elapsed time per step", "Output previews", "Overall progress"].map((item) => (
-                    <p key={item} className="flex items-center gap-2 text-[10.5px] text-[#9b9cae]">
-                      <Circle size={6} className="text-[#565969]" /> {item}
+                    <p key={item} className="flex items-center gap-2 text-[10.5px] text-[var(--color-text-secondary)]">
+                      <Circle size={6} className="text-[var(--color-text-faint)]" /> {item}
                     </p>
                   ))}
                 </div>
@@ -223,18 +223,18 @@ export default function StatusPanel({
 
         {tab === "robot" ? (
           <div className="space-y-3">
-            <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
+            <div className="rounded-xl border border-white/[0.07] bg-[var(--color-surface-container)] p-3">
               <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#00d9ff]/20 bg-[#00d9ff]/10 text-[#7fe8ff]">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--color-info-strong)]/20 bg-[var(--color-info-strong)]/10 text-[var(--color-info)]">
                   <Bot size={14} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11.5px] font-medium text-white">ESP32-S3 presence</p>
-                  <p className="flex items-center gap-1 font-mono text-[7px] uppercase tracking-[0.07em] text-[#6f7284]">
+                  <p className="text-[11.5px] font-medium text-[var(--color-text-primary)]">ESP32-S3 presence</p>
+                  <p className="flex items-center gap-1 font-mono text-[7px] uppercase tracking-[0.07em] text-[var(--color-text-faint)]">
                     <span
                       className={cn(
                         "h-1 w-1 rounded-full",
-                        robotReady ? "bg-emerald-400" : "bg-[#565969]",
+                        robotReady ? "bg-emerald-400" : "bg-[var(--color-text-faint)]",
                       )}
                     />
                     {robotReady ? "Online over LAN" : "Offline · optional"}
@@ -245,7 +245,7 @@ export default function StatusPanel({
                   onClick={() => void refreshRobot()}
                   disabled={robotBusy}
                   aria-label="Refresh robot status"
-                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.07] text-[#8b8ba3] transition-colors hover:text-white disabled:opacity-40"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.07] text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)] disabled:opacity-40"
                 >
                   <RotateCcw size={11} className={robotBusy ? "animate-spin" : ""} />
                 </button>
@@ -253,20 +253,20 @@ export default function StatusPanel({
 
               {robot?.battery ? (
                 <div className="mt-3 flex items-center gap-2">
-                  <span className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#6f7284]">Battery</span>
-                  <span className="h-1 flex-1 overflow-hidden rounded-full bg-white/[0.07]">
+                  <span className="font-mono text-[7px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">Battery</span>
+                  <span className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--color-surface-container-high)]">
                     <span
                       className="block h-full rounded-full bg-gradient-to-r from-emerald-400 to-[#00d9ff]"
                       style={{ width: `${Math.max(0, Math.min(100, robot.battery))}%` }}
                     />
                   </span>
-                  <span className="font-mono text-[8px] text-[#b8b8c9]">{robot.battery}%</span>
+                  <span className="font-mono text-[8px] text-[var(--color-text-primary)]">{robot.battery}%</span>
                 </div>
               ) : null}
             </div>
 
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-              <p className="font-mono text-[7px] uppercase tracking-[0.12em] text-[#6f7284]">Test expression</p>
+            <div className="rounded-xl border border-white/[0.06] bg-[var(--color-surface-container)] p-3">
+              <p className="font-mono text-[7px] uppercase tracking-[0.12em] text-[var(--color-text-faint)]">Test expression</p>
               <div className="mt-2 grid grid-cols-3 gap-1.5">
                 {[
                   { id: "happy", label: "Happy", icon: Smile },
@@ -284,8 +284,8 @@ export default function StatusPanel({
                       className={cn(
                         "flex flex-col items-center gap-1 rounded-lg border px-1.5 py-2 font-mono text-[7px] uppercase tracking-[0.05em] transition-colors",
                         expression === item.id
-                          ? "border-[#00d9ff]/30 bg-[#00d9ff]/10 text-[#c9f8ff]"
-                          : "border-white/[0.07] bg-white/[0.025] text-[#8b8ba3] hover:text-white",
+                          ? "border-[var(--color-info-strong)]/30 bg-[var(--color-info-strong)]/10 text-[var(--color-info)]"
+                          : "border-white/[0.07] bg-[var(--color-surface-container)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]",
                         !robotReady && "cursor-not-allowed opacity-40",
                       )}
                     >
@@ -295,7 +295,7 @@ export default function StatusPanel({
                   );
                 })}
               </div>
-              <p className="mt-2 text-[9.5px] leading-relaxed text-[#6f7284]">
+              <p className="mt-2 text-[9.5px] leading-relaxed text-[var(--color-text-faint)]">
                 {robotReady
                   ? "Expressions sync with the interview: listening, evaluating, encouraging."
                   : "The robot bridge is configured with a server-side LAN URL. Nothing else in the product depends on it."}
@@ -304,7 +304,7 @@ export default function StatusPanel({
 
             <div className="flex items-start gap-2 rounded-xl border border-white/[0.05] bg-white/[0.015] p-2.5">
               <CheckCircle2 size={11} className="mt-0.5 shrink-0 text-emerald-300/70" />
-              <p className="text-[9.5px] leading-relaxed text-[#6f7284]">
+              <p className="text-[9.5px] leading-relaxed text-[var(--color-text-faint)]">
                 Robot presence is optional. The interview runs with browser voice when the bridge is
                 offline.
               </p>
@@ -314,7 +314,7 @@ export default function StatusPanel({
       </div>
 
       <div className="shrink-0 border-t border-white/[0.06] px-3.5 py-2.5">
-        <p className="flex items-center gap-1.5 font-mono text-[7px] uppercase tracking-[0.08em] text-[#4f5262]">
+        <p className="flex items-center gap-1.5 font-mono text-[7px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">
           <CircleDot size={7} className="text-emerald-400/70" />
           Every run works offline
         </p>
@@ -337,11 +337,11 @@ function RunView({
 
   return (
     <div className="space-y-3">
-      <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
+      <div className="rounded-xl border border-white/[0.07] bg-[var(--color-surface-container)] p-3">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="truncate font-display text-[13px] font-semibold text-white">{run.workflowName}</p>
-            <p className="mt-0.5 font-mono text-[7px] uppercase tracking-[0.08em] text-[#6f7284]">
+            <p className="truncate font-display text-[13px] font-semibold text-[var(--color-text-primary)]">{run.workflowName}</p>
+            <p className="mt-0.5 font-mono text-[7px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">
               Started {relativeTime(run.startedAt)} ago · {run.nodes.length} nodes
             </p>
           </div>
@@ -361,7 +361,7 @@ function RunView({
         </div>
 
         <div className="mt-3 flex items-center gap-2">
-          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.07]">
+          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-[var(--color-surface-container-high)]">
             <span
               className={cn(
                 "block h-full rounded-full transition-[width] duration-500",
@@ -372,9 +372,9 @@ function RunView({
               style={{ width: `${run.progress}%` }}
             />
           </span>
-          <span className="font-mono text-[8px] tabular-nums text-[#b8b8c9]">{run.progress}%</span>
+          <span className="font-mono text-[8px] tabular-nums text-[var(--color-text-primary)]">{run.progress}%</span>
         </div>
-        <p className="mt-2 font-mono text-[6.5px] uppercase tracking-[0.06em] text-[#565969]">
+        <p className="mt-2 font-mono text-[6.5px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
           {completed} / {run.nodes.length} complete
         </p>
       </div>
@@ -399,7 +399,7 @@ function RunView({
                 "rounded-lg border transition-colors",
                 nodeRun.status === "running"
                   ? "border-[#6c63ff]/25 bg-[#6c63ff]/[0.05]"
-                  : "border-white/[0.05] bg-white/[0.02]",
+                  : "border-white/[0.05] bg-[var(--color-surface-container)]",
               )}
             >
               <button
@@ -414,36 +414,36 @@ function RunView({
                     nodeRun.status === "complete"
                       ? "text-emerald-300"
                       : nodeRun.status === "running"
-                        ? "animate-spin text-[#a8a2ff]"
+                        ? "animate-spin text-[var(--color-tertiary)]"
                         : nodeRun.status === "failed"
                           ? "text-rose-300"
-                          : "text-[#4f5262]",
+                          : "text-[var(--color-text-faint)]",
                   )}
                 />
                 <span
                   className={cn(
                     "min-w-0 flex-1 truncate text-[10px]",
-                    nodeRun.status === "queued" ? "text-[#6f7284]" : "text-[#d4d4e0]",
+                    nodeRun.status === "queued" ? "text-[var(--color-text-faint)]" : "text-[var(--color-text-primary)]",
                   )}
                 >
                   {label}
                 </span>
-                <span className="font-mono text-[6.5px] tabular-nums text-[#565969]">
+                <span className="font-mono text-[6.5px] tabular-nums text-[var(--color-text-faint)]">
                   {formatMs(nodeRun.elapsedMs)}
                 </span>
                 <ChevronDown
                   size={9}
-                  className={cn("shrink-0 text-[#565969] transition-transform", open && "rotate-180")}
+                  className={cn("shrink-0 text-[var(--color-text-faint)] transition-transform", open && "rotate-180")}
                 />
               </button>
               {open ? (
                 <div className="border-t border-white/[0.05] px-2.5 py-2">
                   {nodeRun.output ? (
-                    <p className="text-[9.5px] leading-relaxed text-[#9b9cae]">{nodeRun.output}</p>
+                    <p className="text-[9.5px] leading-relaxed text-[var(--color-text-secondary)]">{nodeRun.output}</p>
                   ) : nodeRun.error ? (
                     <p className="text-[9.5px] leading-relaxed text-rose-300">{nodeRun.error}</p>
                   ) : (
-                    <p className="font-mono text-[7px] uppercase tracking-[0.06em] text-[#565969]">
+                    <p className="font-mono text-[7px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
                       {nodeRun.status === "running" ? "Waiting for output…" : "No output yet."}
                     </p>
                   )}
@@ -454,7 +454,7 @@ function RunView({
                         .map(([key, value]) => (
                           <span
                             key={key}
-                            className="rounded border border-white/[0.06] bg-black/20 px-1.5 py-0.5 font-mono text-[6.5px] text-[#7d7f92]"
+                            className="rounded border border-white/[0.06] bg-[var(--color-surface-container)] px-1.5 py-0.5 font-mono text-[6.5px] text-[var(--color-text-faint)]"
                           >
                             {key}: {String(value)}
                           </span>
@@ -471,11 +471,11 @@ function RunView({
       {run.summary ? (
         <div className="flex items-start gap-2 rounded-xl border border-emerald-400/15 bg-emerald-500/[0.05] p-2.5">
           <Check size={11} className="mt-0.5 shrink-0 text-emerald-300" />
-          <p className="text-[9.5px] leading-relaxed text-[#b7d9c6]">{run.summary}</p>
+          <p className="text-[9.5px] leading-relaxed text-[var(--color-success)]">{run.summary}</p>
         </div>
       ) : null}
 
-      <div className="flex items-center gap-1.5 font-mono text-[6.5px] uppercase tracking-[0.06em] text-[#4f5262]">
+      <div className="flex items-center gap-1.5 font-mono text-[6.5px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
         <Clock3 size={8} /> Streamed node events · {relativeTime(run.startedAt)} ago
       </div>
     </div>
@@ -485,23 +485,23 @@ function RunView({
 function ReportView({ report }: { report: InterviewReport }) {
   return (
     <div className="space-y-3">
-      <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
+      <div className="rounded-xl border border-white/[0.07] bg-[var(--color-surface-container)] p-3">
         <div className="flex items-center gap-3">
           <ScoreRing score={report.overall} size={72} stroke={5.5} label="overall" />
           <div className="min-w-0">
-            <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#7fe8ff]">{report.band}</p>
-            <p className="mt-1 text-[11px] font-medium text-white">
+            <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-info)]">{report.band}</p>
+            <p className="mt-1 text-[11px] font-medium text-[var(--color-text-primary)]">
               {report.setup.role}
             </p>
-            <p className="mt-0.5 font-mono text-[6.5px] uppercase tracking-[0.06em] text-[#6f7284]">
+            <p className="mt-0.5 font-mono text-[6.5px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
               {report.setup.level} · {report.setup.type} · {relativeTime(report.generatedAt)} ago
             </p>
           </div>
         </div>
-        <p className="mt-2.5 line-clamp-3 text-[10px] leading-relaxed text-[#9b9cae]">{report.summary}</p>
+        <p className="mt-2.5 line-clamp-3 text-[10px] leading-relaxed text-[var(--color-text-secondary)]">{report.summary}</p>
       </div>
 
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+      <div className="rounded-xl border border-white/[0.06] bg-[var(--color-surface-container)] p-3">
         <div className="space-y-2.5">
           {report.dimensions.map((dimension) => (
             <ScoreBar
@@ -518,7 +518,7 @@ function ReportView({ report }: { report: InterviewReport }) {
       <Link href="/interview?report=latest" className="btn btn-soft w-full !py-2.5 !text-[11px]">
         Open full report <ArrowRight size={12} />
       </Link>
-      <p className="text-center font-mono text-[6.5px] uppercase tracking-[0.06em] text-[#4f5262]">
+      <p className="text-center font-mono text-[6.5px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
         Stored locally · not a hiring decision
       </p>
     </div>

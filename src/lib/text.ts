@@ -90,3 +90,51 @@ export function percent(value: number, max: number): number {
   if (max <= 0) return 0;
   return clamp(Math.round((value / max) * 100), 0, 100);
 }
+
+/**
+ * Strips Markdown formatting, code blocks, bullet markers, and decorative
+ * symbols to produce clean, natural text suitable for text-to-speech audio.
+ */
+export function stripMarkdown(text: string): string {
+  if (!text) return "";
+
+  return text
+    // Remove fenced code blocks completely
+    .replace(/```[\s\S]*?```/g, " ")
+    // Remove inline code ticks but preserve the code content
+    .replace(/`([^`]+)`/g, "$1")
+    // Remove images
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "")
+    // Replace links with their text content
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    // Remove HTML tags
+    .replace(/<[^>]*>/g, " ")
+    // Remove blockquote markers
+    .replace(/^>\s+/gm, "")
+    // Remove header hashes
+    .replace(/^#{1,6}\s+/gm, "")
+    // Remove horizontal rules
+    .replace(/^[-*_]{3,}\s*$/gm, " ")
+    // Remove bullet markers at line starts
+    .replace(/^[\s]*[-*+]\s+/gm, "")
+    // Remove bold, italic, strikethrough delimiters
+    .replace(/(\*\*|__)(.*?)\1/g, "$2")
+    .replace(/(\*|_)(.*?)\1/g, "$2")
+    .replace(/~~(.*?)~~/g, "$1")
+    // Remove table pipes
+    .replace(/\|/g, " ")
+    // Remove decorative bullet characters & symbols
+    .replace(/[•·▪▫►▸★☆✓✔✕✖]/g, " ")
+    // Remove decorative emojis
+    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}]/gu, "")
+    // Convert newlines to sentence pauses if not already punctuated with . ! ? or :
+    .replace(/([^.!?:\n])\n+/g, "$1. ")
+    // Otherwise collapse newlines to a space
+    .replace(/\n+/g, " ")
+    // Clean up duplicate punctuation and whitespace
+    .replace(/([:;?!])\s*\./g, "$1")
+    .replace(/\s*\.\s*\./g, ".")
+    .replace(/\s+([.,!?;:])/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}

@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowUpRight, Menu, X } from "lucide-react";
+import { logout } from "@/lib/client/api";
 import Logo from "@/components/ui/Logo";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { cn } from "@/components/ui/cn";
@@ -20,10 +22,24 @@ const links = [
 ];
 
 export default function LandingNav({ user }: LandingNavProps) {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
   const [active, setActive] = useState("");
   const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    try {
+      await logout();
+      setOpen(false);
+      router.push("/");
+      router.refresh();
+    } catch {
+      setSigningOut(false);
+    }
+  }
 
   useEffect(() => {
     let frame = 0;
@@ -113,9 +129,20 @@ export default function LandingNav({ user }: LandingNavProps) {
           <ThemeToggle />
           {user ? (
             <>
+              <span className="hidden max-w-[140px] truncate font-mono text-[9px] uppercase tracking-[0.1em] text-[var(--color-text-secondary)] xl:block">
+                {user.email}
+              </span>
               <Link href="/settings" className="btn btn-ghost !px-4.5 !py-2.5 !text-[13.5px]">
                 Settings
               </Link>
+              <button
+                type="button"
+                onClick={() => void handleSignOut()}
+                disabled={signingOut}
+                className="btn btn-ghost !px-4.5 !py-2.5 !text-[13.5px] disabled:opacity-60"
+              >
+                {signingOut ? "Signing out…" : "Sign out"}
+              </button>
               <Link href="/dashboard" className="btn btn-primary !px-5 !py-2.5 !text-[13.5px]">
                 Open workspace
                 <ArrowUpRight size={14} />
@@ -126,8 +153,8 @@ export default function LandingNav({ user }: LandingNavProps) {
               <Link href="/login" className="btn btn-ghost !px-4.5 !py-2.5 !text-[13.5px]">
                 Log in
               </Link>
-              <Link href="/interview" className="btn btn-primary !px-5 !py-2.5 !text-[13.5px]">
-                Start practicing
+              <Link href="/signup" className="btn btn-primary !px-5 !py-2.5 !text-[13.5px]">
+                Sign up free
                 <ArrowUpRight size={14} />
               </Link>
             </>
@@ -136,9 +163,20 @@ export default function LandingNav({ user }: LandingNavProps) {
 
         <div className="ml-auto flex items-center gap-2 sm:hidden">
           <ThemeToggle />
-          <Link href="/interview" className="btn btn-primary !px-3.5 !py-2 !text-[12.5px]">
-            Practice
-          </Link>
+          {user ? (
+            <Link href="/dashboard" className="btn btn-primary !px-3.5 !py-2 !text-[12.5px]">
+              Workspace
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" className="btn btn-ghost !px-3 !py-2 !text-[12px]">
+                Log in
+              </Link>
+              <Link href="/signup" className="btn btn-primary !px-3.5 !py-2 !text-[12px]">
+                Sign up
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -198,14 +236,22 @@ export default function LandingNav({ user }: LandingNavProps) {
                 <Link href="/dashboard" className="btn btn-primary w-full !text-[12px]">
                   Workspace
                 </Link>
+                <button
+                  type="button"
+                  onClick={() => void handleSignOut()}
+                  disabled={signingOut}
+                  className="btn btn-ghost col-span-2 w-full !text-[12px] disabled:opacity-60"
+                >
+                  {signingOut ? "Signing out…" : "Sign out"}
+                </button>
               </>
             ) : (
               <>
                 <Link href="/login" className="btn btn-ghost w-full !text-[12px]">
                   Log in
                 </Link>
-                <Link href="/interview" className="btn btn-primary w-full !text-[12px]">
-                  Start practicing
+                <Link href="/signup" className="btn btn-primary w-full !text-[12px]">
+                  Sign up free
                 </Link>
               </>
             )}

@@ -23,7 +23,7 @@ import ToastStack from "@/components/ui/ToastStack";
 import { useToasts } from "@/components/ui/useToasts";
 import { AgentGlyph } from "@/components/ui/AgentIcon";
 import { useChatStore } from "@/lib/store/chat-store";
-import { fetchRobotStatus } from "@/lib/client/api";
+import { fetchRobotStatus, fetchStatus, type ProviderStatus } from "@/lib/client/api";
 import { AGENT_MAP } from "@/lib/agents/agents";
 import { isAgentId } from "@/lib/agents/agents";
 import { cn } from "@/components/ui/cn";
@@ -45,6 +45,7 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
   const [rightOpen, setRightOpen] = useState(false);
   const [voiceReplies, setVoiceReplies] = useState(false);
   const [robotOnline, setRobotOnline] = useState<boolean | null>(null);
+  const [providerStatus, setProviderStatus] = useState<ProviderStatus | null>(null);
 
   const activeAgentId = useChatStore((state) => state.activeAgentId);
   const hydrated = useChatStore((state) => state.hydrated);
@@ -75,6 +76,20 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
       })
       .catch(() => {
         if (alive) setRobotOnline(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+    fetchStatus()
+      .then((status) => {
+        if (alive) setProviderStatus(status);
+      })
+      .catch(() => {
+        if (alive) setProviderStatus(null);
       });
     return () => {
       alive = false;
@@ -119,7 +134,7 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
   }
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-[#0a0a0f]">
+    <div className="flex h-dvh flex-col overflow-hidden bg-[var(--color-background)]">
       {/* mobile scrims */}
       {(sidebarOpen || rightOpen) && (
         <button
@@ -155,20 +170,20 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
         />
 
         <main className="flex min-w-0 flex-1 flex-col">
-          <header className="flex h-[64px] shrink-0 items-center gap-2 border-b border-white/[0.06] bg-[#0a0a0f]/85 px-3 backdrop-blur-xl sm:px-4">
+          <header className="flex h-[64px] shrink-0 items-center gap-2 border-b border-white/[0.06] bg-[var(--color-background)] px-3 backdrop-blur-xl sm:px-4">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
               aria-label="Open agent and history panel"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-[#b8b8c9] transition-colors hover:text-white lg:hidden"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-[var(--color-surface-container)] text-[var(--color-text-primary)] transition-colors hover:text-[var(--color-text-primary)] lg:hidden"
             >
               <Menu size={16} />
             </button>
 
             <AgentGlyph agentId={activeAgentId} boxed size={15} boxSize="h-9 w-9" />
             <div className="min-w-0 max-w-[220px]">
-              <p className="truncate font-display text-[13px] font-semibold text-white">{agent.name}</p>
-              <p className="hidden truncate font-mono text-[8px] uppercase tracking-[0.08em] text-[#6f7284] sm:block">
+              <p className="truncate font-display text-[13px] font-semibold text-[var(--color-text-primary)]">{agent.name}</p>
+              <p className="hidden truncate font-mono text-[8px] uppercase tracking-[0.08em] text-[var(--color-text-faint)] sm:block">
                 {agent.tagline}
               </p>
             </div>
@@ -176,7 +191,7 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
             <div
               role="tablist"
               aria-label="Workspace mode"
-              className="ml-2 flex shrink-0 items-center gap-0.5 rounded-xl border border-white/[0.07] bg-black/30 p-[3px]"
+              className="ml-2 flex shrink-0 items-center gap-0.5 rounded-xl border border-white/[0.07] bg-[var(--color-surface-container)] p-[3px]"
             >
               <button
                 type="button"
@@ -186,8 +201,8 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
                 className={cn(
                   "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-mono text-[8.5px] font-semibold uppercase tracking-[0.08em] transition-all",
                   mode === "chat"
-                    ? "bg-white/[0.09] text-white shadow-[0_2px_8px_rgba(0,0,0,0.3)]"
-                    : "text-[#6f7284] hover:text-[#b8b8c9]",
+                    ? "bg-[var(--color-surface-container-high)] text-[var(--color-text-primary)] shadow-[0_2px_8px_rgba(0,0,0,0.3)]"
+                    : "text-[var(--color-text-faint)] hover:text-[var(--color-text-primary)]",
                 )}
               >
                 <MessageSquare size={11} /> Chat
@@ -200,8 +215,8 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
                 className={cn(
                   "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-mono text-[8.5px] font-semibold uppercase tracking-[0.08em] transition-all",
                   mode === "workflow"
-                    ? "bg-white/[0.09] text-white shadow-[0_2px_8px_rgba(0,0,0,0.3)]"
-                    : "text-[#6f7284] hover:text-[#b8b8c9]",
+                    ? "bg-[var(--color-surface-container-high)] text-[var(--color-text-primary)] shadow-[0_2px_8px_rgba(0,0,0,0.3)]"
+                    : "text-[var(--color-text-faint)] hover:text-[var(--color-text-primary)]",
                 )}
               >
                 <Workflow size={11} /> Workflow
@@ -209,10 +224,25 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
             </div>
 
             <div className="ml-auto flex items-center gap-1.5">
-              <span className="hidden items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-500/[0.07] px-2.5 py-1 font-mono text-[7.5px] uppercase tracking-[0.08em] text-emerald-300 xl:flex">
-                <span className="h-1 w-1 animate-pulse-soft rounded-full bg-emerald-400" />
-                Local fallback ready
-              </span>
+              {providerStatus === null ? (
+                <span className="hidden items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 font-mono text-[7.5px] uppercase tracking-[0.08em] text-[var(--color-text-faint)] xl:flex">
+                  <span className="h-1 w-1 animate-pulse-soft rounded-full bg-white/40" />
+                  Checking API
+                </span>
+              ) : providerStatus.connected ? (
+                <span className="hidden items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-500/[0.07] px-2.5 py-1 font-mono text-[7.5px] uppercase tracking-[0.08em] text-emerald-300 xl:flex">
+                  <span className="h-1 w-1 animate-pulse-soft rounded-full bg-emerald-400" />
+                  API Connected
+                </span>
+              ) : (
+                <span
+                  className="hidden items-center gap-1.5 rounded-full border border-rose-400/25 bg-rose-500/10 px-2.5 py-1 font-mono text-[7.5px] uppercase tracking-[0.08em] text-rose-300 xl:flex"
+                  title="No AI API connected. Configure GEMINI_API_KEY or OPENROUTER_API_KEY in .env.local"
+                >
+                  <span className="h-1 w-1 rounded-full bg-rose-400" />
+                  API Not Connected
+                </span>
+              )}
 
               {mode === "chat" ? (
                 <button
@@ -224,8 +254,8 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
                   className={cn(
                     "flex h-8 items-center gap-1.5 rounded-lg border px-2 font-mono text-[7.5px] uppercase tracking-[0.08em] transition-colors",
                     voiceReplies
-                      ? "border-[#6c63ff]/30 bg-[#6c63ff]/12 text-[#c9c5ff]"
-                      : "border-white/[0.07] bg-white/[0.025] text-[#8b8ba3] hover:text-white",
+                      ? "border-[#6c63ff]/30 bg-[#6c63ff]/12 text-[var(--color-tertiary)]"
+                      : "border-white/[0.07] bg-[var(--color-surface-container)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]",
                   )}
                 >
                   {voiceReplies ? <Volume2 size={12} /> : <VolumeX size={12} />}
@@ -237,14 +267,14 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
                 <button
                   type="button"
                   onClick={startNewChat}
-                  className="flex h-8 items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 text-[11px] font-medium text-[#c5c5d4] transition-colors hover:bg-white/[0.06] hover:text-white"
+                  className="flex h-8 items-center gap-1.5 rounded-lg border border-white/[0.08] bg-[var(--color-surface-container)] px-2.5 text-[11px] font-medium text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-container-high)] hover:text-[var(--color-text-primary)]"
                 >
                   <Plus size={13} />
                   <span className="hidden sm:inline">New chat</span>
                 </button>
               ) : (
-                <span className="hidden items-center gap-1.5 rounded-lg border border-white/[0.07] bg-white/[0.025] px-2.5 py-1.5 font-mono text-[7.5px] uppercase tracking-[0.08em] text-[#8b8ba3] sm:flex">
-                  <Sparkles size={10} className="text-[#a8a2ff]" /> 9 node types
+                <span className="hidden items-center gap-1.5 rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] px-2.5 py-1.5 font-mono text-[7.5px] uppercase tracking-[0.08em] text-[var(--color-text-secondary)] sm:flex">
+                  <Sparkles size={10} className="text-[var(--color-tertiary)]" /> 9 node types
                 </span>
               )}
 
@@ -268,7 +298,7 @@ export default function DashboardShell({ user, initialAgent, initialMode }: Dash
                 type="button"
                 onClick={startNewChat}
                 aria-label="New chat"
-                className="hidden h-8 w-8 items-center justify-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-[#8b8ba3] transition-colors hover:text-white sm:flex md:hidden"
+                className="hidden h-8 w-8 items-center justify-center rounded-lg border border-white/[0.07] bg-[var(--color-surface-container)] text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)] sm:flex md:hidden"
               >
                 <Plus size={14} />
               </button>

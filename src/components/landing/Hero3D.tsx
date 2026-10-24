@@ -144,12 +144,12 @@ export default function Hero3D() {
               "translateZ(200px) translate(calc(var(--mx, 0) * 5px), calc(var(--my, 0) * 3px))",
           }}
         >
-          <div className="flex items-center gap-2 rounded-full border border-white/[0.11] bg-[#101018]/92 px-3 py-2 shadow-[0_18px_44px_rgba(0,0,0,0.5)] backdrop-blur-xl">
-            <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-[#00d9ff]" />
-            <span className="font-mono text-[7.5px] uppercase tracking-[0.12em] text-[#8b8ba3]">
+          <div className="flex items-center gap-2 rounded-full border border-white/[0.11] bg-[var(--color-surface-container)] px-3 py-2 shadow-[0_18px_44px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+            <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-[var(--color-info-strong)]" />
+            <span className="font-mono text-[7.5px] uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
               Target
             </span>
-            <span className="text-[10.5px] font-medium text-white">Frontend Engineer</span>
+            <span className="text-[10.5px] font-medium text-[var(--color-text-primary)]">Frontend Engineer</span>
             <span className="h-3 w-px bg-white/[0.1]" />
             <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-emerald-300">
               Voice on
@@ -167,24 +167,24 @@ export default function Hero3D() {
               "translateZ(120px) translate(calc(var(--mx, 0) * -8px), calc(var(--my, 0) * -5px))",
           }}
         >
-          <div className="rounded-2xl border border-white/[0.11] bg-[#101018]/92 p-3.5 shadow-[0_24px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+          <div className="rounded-2xl border border-white/[0.11] bg-[var(--color-surface-container)] p-3.5 shadow-[0_24px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl">
             <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#6c63ff]/25 bg-[#6c63ff]/12 text-[#b3adff]">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#6c63ff]/25 bg-[#6c63ff]/12 text-[var(--color-tertiary)]">
                 <Layers3 size={13} />
               </span>
-              <span className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#8b8ba3]">Rubric</span>
+              <span className="font-mono text-[8px] uppercase tracking-[0.13em] text-[var(--color-text-secondary)]">Rubric</span>
             </div>
-            <p className="mt-2 font-display text-[15px] font-semibold leading-tight text-white">4 dimensions</p>
+            <p className="mt-2 font-display text-[15px] font-semibold leading-tight text-[var(--color-text-primary)]">4 dimensions</p>
             <div className="mt-2 space-y-1.5">
               {["Communication", "Role knowledge", "Problem solving"].map((item, index) => (
                 <div key={item} className="flex items-center gap-1.5">
-                  <span className="h-1 flex-1 overflow-hidden rounded-full bg-white/[0.08]">
+                  <span className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--color-surface-container-high)]">
                     <span
                       className="block h-full rounded-full bg-gradient-to-r from-[#6c63ff] to-[#00d9ff]"
                       style={{ width: `${82 - index * 7}%` }}
                     />
                   </span>
-                  <span className="font-mono text-[7px] text-[#7d7f92]">{82 - index * 7}</span>
+                  <span className="font-mono text-[7px] text-[var(--color-text-faint)]">{82 - index * 7}</span>
                 </div>
               ))}
             </div>
@@ -200,12 +200,12 @@ export default function Hero3D() {
               "translateZ(80px) translate(calc(var(--mx, 0) * 6px), calc(var(--my, 0) * 4px))",
           }}
         >
-          <div className="rounded-2xl border border-white/[0.11] bg-[#101018]/92 p-3.5 shadow-[0_24px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl">
-            <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[#8b8ba3]">Report ready</span>
-            <p className="mt-1.5 font-display text-[25px] font-semibold leading-none text-white">
-              48<span className="ml-0.5 text-[12px] font-normal text-[#8b8ba3]">s</span>
+          <div className="rounded-2xl border border-white/[0.11] bg-[var(--color-surface-container)] p-3.5 shadow-[0_24px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+            <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">Report ready</span>
+            <p className="mt-1.5 font-display text-[25px] font-semibold leading-none text-[var(--color-text-primary)]">
+              48<span className="ml-0.5 text-[12px] font-normal text-[var(--color-text-secondary)]">s</span>
             </p>
-            <p className="mt-1 text-[9.5px] leading-snug text-[#8d8d9f]">5 answers · 4 scores · 1 plan</p>
+            <p className="mt-1 text-[9.5px] leading-snug text-[var(--color-text-secondary)]">5 answers · 4 scores · 1 plan</p>
             <div className="mt-2 flex items-center gap-1 border-t border-white/[0.06] pt-2 font-mono text-[7.5px] uppercase tracking-[0.08em] text-emerald-300">
               <Check size={8} /> Evidence quoted
             </div>
@@ -214,18 +214,18 @@ export default function Hero3D() {
       </div>
 
       <div
-        className="absolute -right-2 bottom-[13%] z-20 hidden items-center gap-2.5 rounded-2xl border border-white/[0.11] bg-[#101018]/92 px-3.5 py-3 shadow-[0_24px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl xl:flex"
+        className="absolute -right-2 bottom-[13%] z-20 hidden items-center gap-2.5 rounded-2xl border border-white/[0.11] bg-[var(--color-surface-container)] px-3.5 py-3 shadow-[0_24px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl xl:flex"
         style={{
           transform:
             "translateZ(150px) translate(calc(var(--mx, 0) * 10px), calc(var(--my, 0) * 7px))",
         }}
       >
-        <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#00d9ff]/20 bg-[#00d9ff]/10 text-[#7fe8ff]">
+        <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--color-info-strong)]/20 bg-[var(--color-info-strong)]/10 text-[var(--color-info)]">
           <Bot size={15} />
         </span>
         <div>
-          <p className="text-[10.5px] font-medium text-white">Robot presence</p>
-          <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#6f7284]">Optional · LAN</p>
+          <p className="text-[10.5px] font-medium text-[var(--color-text-primary)]">Robot presence</p>
+          <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">Optional · LAN</p>
         </div>
         <span className="ml-1 h-1.5 w-1.5 animate-pulse-soft rounded-full bg-emerald-400" />
       </div>
@@ -237,26 +237,26 @@ export default function Hero3D() {
             "translateZ(60px) translate(calc(var(--mx, 0) * -5px), calc(var(--my, 0) * -3px))",
         }}
       >
-        <div className="rounded-2xl border border-white/[0.11] bg-[#101018]/92 p-3.5 shadow-[0_24px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+        <div className="rounded-2xl border border-white/[0.11] bg-[var(--color-surface-container)] p-3.5 shadow-[0_24px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl">
           <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-cyan-400/20 bg-cyan-500/10 text-[#7fe8ff]">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-cyan-400/20 bg-cyan-500/10 text-[var(--color-info)]">
               <Sparkles size={11} />
             </span>
-            <span className="font-mono text-[7.5px] uppercase tracking-[0.12em] text-[#8b8ba3]">Specialists</span>
+            <span className="font-mono text-[7.5px] uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">Specialists</span>
           </div>
-          <p className="mt-2 font-display text-[20px] font-semibold leading-none text-white">5 agents</p>
-          <p className="mt-1 text-[9.5px] text-[#8d8d9f]">one workspace</p>
+          <p className="mt-2 font-display text-[20px] font-semibold leading-none text-[var(--color-text-primary)]">5 agents</p>
+          <p className="mt-1 text-[9.5px] text-[var(--color-text-secondary)]">one workspace</p>
         </div>
       </div>
 
       {/* caption */}
       <div className="relative z-20 mt-5 flex items-center justify-center gap-2.5 px-4 text-center">
         <span className="h-px w-8 bg-gradient-to-r from-transparent to-white/20" />
-        <p className="font-mono text-[8.5px] uppercase tracking-[0.16em] text-[#6f7284]">
+        <p className="font-mono text-[8.5px] uppercase tracking-[0.16em] text-[var(--color-text-faint)]">
           Live workspace · move to orbit
         </p>
         <span className="h-px w-8 bg-gradient-to-l from-transparent to-white/20" />
-        <ArrowUpRight size={10} className="text-[#6f7284]" />
+        <ArrowUpRight size={10} className="text-[var(--color-text-faint)]" />
       </div>
     </div>
   );

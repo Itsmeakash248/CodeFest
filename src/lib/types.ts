@@ -12,7 +12,7 @@ export interface ChatMessage {
   role: ChatRole;
   content: string;
   createdAt: number;
-  source?: "gemini" | "openrouter" | "local";
+  source?: "gemini" | "openrouter" | "local" | "error";
   latencyMs?: number;
 }
 
@@ -50,6 +50,34 @@ export interface InterviewSetup {
   type: string;
   difficulty: string;
   resume?: string;
+  videoEnabled?: boolean;
+  conversationalMode?: boolean;
+}
+
+export type ViolationType =
+  | "tab-switch"
+  | "face-absent"
+  | "multiple-faces"
+  | "gaze-away"
+  | "paste-detected"
+  | "window-blur";
+
+export interface ProctoringViolation {
+  id: string;
+  type: ViolationType;
+  timestamp: number;
+  message: string;
+  severity: "low" | "medium" | "high";
+}
+
+export interface ProctoringReport {
+  integrityScore: number;
+  rating: "High" | "Moderate" | "Needs Review";
+  tabSwitches: number;
+  pasteEvents: number;
+  eyeContactPct: number;
+  faceInFramePct: number;
+  violations: ProctoringViolation[];
 }
 
 export interface InterviewQuestion {
@@ -126,6 +154,7 @@ export interface InterviewReport {
   starBlueprint: StarBlueprint;
   answeredWords: number;
   source: "local" | "ai";
+  integrity?: ProctoringReport;
 }
 
 export interface InterviewResponse {

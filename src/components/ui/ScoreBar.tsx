@@ -14,15 +14,15 @@ export default function ScoreBar({ label, score, weight, className, compact = fa
   return (
     <div className={cn("w-full", className)}>
       <div className="mb-1.5 flex items-baseline justify-between gap-3">
-        <span className={cn("truncate text-[#c5c5d4]", compact ? "text-[11.5px]" : "text-[12.5px]")}>
+        <span className={cn("truncate text-[var(--color-text-primary)]", compact ? "text-[11.5px]" : "text-[12.5px]")}>
           {label}
         </span>
-        <span className="flex items-baseline gap-1.5 font-mono text-[11px] tabular-nums text-white">
+        <span className="flex items-baseline gap-1.5 font-mono text-[11px] tabular-nums text-[var(--color-text-primary)]">
           {clamped}
-          {weight ? <span className="text-[9px] text-[#6b7280]">{Math.round(weight * 100)}%</span> : null}
+          {weight ? <span className="text-[9px] text-[var(--color-text-faint)]">{Math.round(weight * 100)}%</span> : null}
         </span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
+      <div className="h-1.5 overflow-hidden rounded-full bg-[var(--color-surface-container-high)]">
         <div
           className="h-full rounded-full"
           style={{

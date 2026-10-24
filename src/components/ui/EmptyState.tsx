@@ -29,18 +29,18 @@ export default function EmptyState({
     >
       <span
         className={cn(
-          "flex items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-[#9a94ff]",
+          "flex items-center justify-center rounded-xl border border-white/[0.08] bg-[var(--color-surface-container)] text-[var(--color-tertiary)]",
           compact ? "h-8 w-8" : "h-11 w-11",
         )}
       >
         <Icon size={compact ? 15 : 18} strokeWidth={1.7} aria-hidden="true" />
       </span>
       <div>
-        <p className={cn("font-display font-semibold text-white", compact ? "text-[13.5px]" : "text-[15px]")}>
+        <p className={cn("font-display font-semibold text-[var(--color-text-primary)]", compact ? "text-[13.5px]" : "text-[15px]")}>
           {title}
         </p>
         {body ? (
-          <p className={cn("mx-auto max-w-[300px] text-[#8d8d9f]", compact ? "mt-1 text-[11.5px]" : "mt-1.5 text-[12.5px]")}>
+          <p className={cn("mx-auto max-w-[300px] text-[var(--color-text-secondary)]", compact ? "mt-1 text-[11.5px]" : "mt-1.5 text-[12.5px]")}>
             {body}
           </p>
         ) : null}

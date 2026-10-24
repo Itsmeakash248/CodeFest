@@ -5,7 +5,7 @@ import { AlertCircle, ArrowRight, Loader2, MessageSquare, RotateCcw, Sparkles, S
 import type { AgentId, ChatMessage as ChatMessageType } from "@/lib/types";
 import { AGENT_MAP } from "@/lib/agents/agents";
 import { useChatStore } from "@/lib/store/chat-store";
-import { streamChat } from "@/lib/client/api";
+import { fetchStatus, streamChat } from "@/lib/client/api";
 import { speakText, stopSpeaking, type SpeechHandle } from "@/lib/voice/browser";
 import { uid } from "@/lib/text";
 import ChatMessage from "@/components/dashboard/ChatMessage";
@@ -41,6 +41,7 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
   const [streamingId, setStreamingId] = useState<string | null>(null);
   const [chatError, setChatError] = useState<ChatError | null>(null);
   const [voiceMode, setVoiceMode] = useState<"elevenlabs" | "browser" | null>(null);
+  const [apiConnected, setApiConnected] = useState<boolean | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const stickRef = useRef(true);
   const abortRef = useRef<AbortController | null>(null);
@@ -52,6 +53,20 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
     [sessions, activeSessionId],
   );
   const messages = session?.messages ?? [];
+
+  useEffect(() => {
+    let alive = true;
+    fetchStatus()
+      .then((status) => {
+        if (alive) setApiConnected(Boolean(status.connected));
+      })
+      .catch(() => {
+        if (alive) setApiConnected(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -143,7 +158,7 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
     const controller = new AbortController();
     abortRef.current = controller;
     let received = "";
-    let finalSource: "gemini" | "openrouter" | "local" | undefined;
+    let finalSource: "gemini" | "openrouter" | "local" | "error" | undefined;
     let finalLatency: number | undefined;
     let eventError: string | null = null;
 
@@ -175,23 +190,23 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
 
       if (eventError && !received) {
         updateMessage(sessionId, assistantMessage.id, {
-          content: `**The reply stopped early.** ${eventError}`,
-          source: "local",
+          content: `⚠️ **API Error**\n\n${eventError}`,
+          source: "error",
           latencyMs: 0,
         });
         setChatError({ prompt, message: eventError });
         setDraft(prompt);
       } else if (!latest.trim()) {
         updateMessage(sessionId, assistantMessage.id, {
-          content: "**No reply arrived.** The stream closed before the agent produced text. Try the prompt again.",
-          source: "local",
+          content: "⚠️ **No reply arrived.** The stream closed before the agent produced text. Check your API connection.",
+          source: "error",
           latencyMs: 0,
         });
         setChatError({ prompt, message: "The stream closed before a reply arrived." });
         setDraft(prompt);
       } else {
         updateMessage(sessionId, assistantMessage.id, {
-          source: finalSource ?? "local",
+          source: finalSource ?? "gemini",
           latencyMs: finalLatency,
         });
         speakReply(latest);
@@ -200,11 +215,11 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
       const aborted = cause instanceof DOMException && cause.name === "AbortError";
       if (!aborted) {
         const message =
-          cause instanceof Error ? cause.message : "The agent could not be reached. Check the connection.";
+          cause instanceof Error ? cause.message : "The agent API could not be reached. Check the connection.";
         if (!received) {
           updateMessage(sessionId, assistantMessage.id, {
-            content: `**That reply did not complete.** ${message}`,
-            source: "local",
+            content: `⚠️ **API Not Connected**\n\n${message}`,
+            source: "error",
             latencyMs: 0,
           });
         }
@@ -235,9 +250,9 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
         <div className="mx-auto w-full max-w-[860px]">
           {session ? (
             <div className="mb-4 flex items-center gap-2 rounded-xl border border-white/[0.05] bg-white/[0.018] px-3 py-2">
-              <MessageSquare size={11} className="text-[#6f7284]" />
-              <p className="min-w-0 flex-1 truncate text-[10.5px] text-[#9b9cae]">{session.title}</p>
-              <span className="hidden font-mono text-[7px] uppercase tracking-[0.08em] text-[#565969] sm:inline">
+              <MessageSquare size={11} className="text-[var(--color-text-faint)]" />
+              <p className="min-w-0 flex-1 truncate text-[10.5px] text-[var(--color-text-secondary)]">{session.title}</p>
+              <span className="hidden font-mono text-[7px] uppercase tracking-[0.08em] text-[var(--color-text-faint)] sm:inline">
                 {messages.length} messages · saved locally
               </span>
             </div>
@@ -249,15 +264,24 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
                 <span className="orbit-ring inset-0" aria-hidden="true" />
                 <AgentGlyph agentId={activeAgentId} boxed size={22} boxSize="h-12 w-12" />
               </span>
-              <p className="mt-5 font-mono text-[8px] uppercase tracking-[0.15em] text-[#6f7284]">
+              <p className="mt-5 font-mono text-[8px] uppercase tracking-[0.15em] text-[var(--color-text-faint)]">
                 {agent.shortName} · ready
               </p>
-              <h2 className="mt-2 font-display text-[26px] font-semibold tracking-[-0.03em] text-white">
+              <h2 className="mt-2 font-display text-[26px] font-semibold tracking-[-0.03em] text-[var(--color-text-primary)]">
                 Start with a prompt
               </h2>
-              <p className="mt-2 max-w-[430px] text-[12px] leading-relaxed text-[#8d8d9f]">
+              <p className="mt-2 max-w-[430px] text-[12px] leading-relaxed text-[var(--color-text-secondary)]">
                 {agent.description}
               </p>
+
+              {apiConnected === false ? (
+                <div className="mt-4 flex max-w-[620px] items-center gap-2 rounded-xl border border-rose-400/25 bg-rose-500/[0.08] px-3.5 py-2.5 text-left text-[11px] leading-relaxed text-rose-200" role="alert">
+                  <AlertCircle size={14} className="shrink-0 text-rose-300" />
+                  <span>
+                    <strong>AI API is not connected.</strong> Please configure <code>GEMINI_API_KEY</code> or <code>OPENROUTER_API_KEY</code> in <code>.env.local</code> to chat with agents.
+                  </span>
+                </div>
+              ) : null}
 
               <div className="mt-6 grid w-full max-w-[620px] gap-2 sm:grid-cols-3">
                 {starters.map((starter, index) => (
@@ -265,17 +289,17 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
                     key={starter}
                     type="button"
                     onClick={() => void send(starter)}
-                    className="group flex h-full flex-col rounded-xl border border-white/[0.07] bg-white/[0.025] p-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#6c63ff]/30 hover:bg-[#6c63ff]/[0.06]"
+                    className="group flex h-full flex-col rounded-xl border border-white/[0.07] bg-[var(--color-surface-container)] p-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#6c63ff]/30 hover:bg-[#6c63ff]/[0.06]"
                   >
-                    <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[#565969]">
+                    <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-[var(--color-text-faint)]">
                       0{index + 1}
                     </span>
-                    <span className="mt-2 flex-1 text-[11.5px] leading-snug text-[#c5c5d4] group-hover:text-white">
+                    <span className="mt-2 flex-1 text-[11.5px] leading-snug text-[var(--color-text-primary)] group-hover:text-[var(--color-text-primary)]">
                       {starter}
                     </span>
                     <ArrowRight
                       size={11}
-                      className="mt-3 text-[#565969] transition-transform group-hover:translate-x-0.5 group-hover:text-[#c9c5ff]"
+                      className="mt-3 text-[var(--color-text-faint)] transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--color-tertiary)]"
                     />
                   </button>
                 ))}
@@ -290,14 +314,20 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
               </div>
 
               <div className="mt-6 flex flex-wrap items-center justify-center gap-2 rounded-xl border border-white/[0.05] bg-white/[0.015] px-3 py-2">
-                <span className="flex items-center gap-1.5 font-mono text-[7px] uppercase tracking-[0.08em] text-[#6f7284]">
-                  <Sparkles size={8} className="text-[#a8a2ff]" /> Local rubric ready
-                </span>
+                {apiConnected === false ? (
+                  <span className="flex items-center gap-1.5 font-mono text-[7px] uppercase tracking-[0.08em] text-rose-400">
+                    <AlertCircle size={8} /> AI API not connected (Keys required)
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1.5 font-mono text-[7px] uppercase tracking-[0.08em] text-emerald-400">
+                    <Sparkles size={8} /> {apiConnected ? "AI API connected" : "Checking API connection"}
+                  </span>
+                )}
                 <span className="h-1 w-1 rounded-full bg-white/10" />
                 <button
                   type="button"
                   onClick={onOpenWorkflow}
-                  className="flex items-center gap-1 font-mono text-[7px] uppercase tracking-[0.08em] text-[#7fe8ff] transition-colors hover:text-white"
+                  className="flex items-center gap-1 font-mono text-[7px] uppercase tracking-[0.08em] text-[var(--color-info)] transition-colors hover:text-[var(--color-text-primary)]"
                 >
                   Or run a workflow <ArrowRight size={8} />
                 </button>
@@ -322,7 +352,7 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
                   </span>
                   <div className="min-w-0 flex-1 rounded-[16px] rounded-tl-[5px] border border-rose-400/20 bg-rose-500/[0.05] px-3.5 py-2.5">
                     <p className="text-[12px] font-medium text-rose-100">That reply did not land.</p>
-                    <p className="mt-1 text-[11px] leading-relaxed text-[#b8a8ad]">{chatError.message}</p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-[var(--color-text-secondary)]">{chatError.message}</p>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                       <button
                         type="button"
@@ -334,11 +364,11 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
                       <button
                         type="button"
                         onClick={() => setChatError(null)}
-                        className="rounded-lg px-2 py-1.5 text-[10.5px] text-[#8d8d9f] transition-colors hover:text-white"
+                        className="rounded-lg px-2 py-1.5 text-[10.5px] text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
                       >
                         Dismiss
                       </button>
-                      <span className="font-mono text-[7px] uppercase tracking-[0.06em] text-[#6f7284]">
+                      <span className="font-mono text-[7px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
                         Your prompt was restored below
                       </span>
                     </div>
@@ -352,7 +382,7 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
 
       {voiceMode ? (
         <div className="mx-auto flex w-full max-w-[860px] items-center gap-2 px-4 pb-1">
-          <span className="flex items-center gap-1.5 rounded-full border border-[#6c63ff]/25 bg-[#6c63ff]/10 px-2.5 py-1 font-mono text-[7.5px] uppercase tracking-[0.08em] text-[#c9c5ff]">
+          <span className="flex items-center gap-1.5 rounded-full border border-[#6c63ff]/25 bg-[#6c63ff]/10 px-2.5 py-1 font-mono text-[7.5px] uppercase tracking-[0.08em] text-[var(--color-tertiary)]">
             <Volume2 size={9} className="animate-pulse-soft" />
             {voiceMode === "elevenlabs" ? "ElevenLabs voice" : "Browser voice"}
           </span>
@@ -363,11 +393,11 @@ export default function ChatPanel({ activeAgentId, voiceReplies, onToast, onOpen
               stopSpeaking();
               setVoiceMode(null);
             }}
-            className="flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.03] px-2 py-1 font-mono text-[7px] uppercase tracking-[0.08em] text-[#8b8ba3] transition-colors hover:text-white"
+            className="flex items-center gap-1 rounded-full border border-white/[0.08] bg-[var(--color-surface-container)] px-2 py-1 font-mono text-[7px] uppercase tracking-[0.08em] text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
           >
             <Square size={7} /> Stop
           </button>
-          <span className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#565969]">Reply audio</span>
+          <span className="font-mono text-[7px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">Reply audio</span>
         </div>
       ) : null}
 
